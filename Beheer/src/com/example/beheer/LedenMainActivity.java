@@ -13,7 +13,7 @@ public class LedenMainActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_leden_main);
 		// Show the Up button in the action bar.
-		getActionBar().setDisplayHomeAsUpEnabled(true);
+		//getActionBar().setDisplayHomeAsUpEnabled(true);
 	}
 
 	@Override
@@ -39,5 +39,4 @@ public class LedenMainActivity extends Activity {
 		}
 		return super.onOptionsItemSelected(item);
 	}
-
 }

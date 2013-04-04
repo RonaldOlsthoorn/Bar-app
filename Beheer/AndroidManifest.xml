@@ -46,6 +46,14 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.beheer.LedenMainActivity" />
         </activity>
+        <activity
+            android:name="com.example.beheer.ArticleMainActivity"
+            android:label="@string/title_activity_article_main"
+            android:parentActivityName="com.example.beheer.MainActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.example.beheer.MainActivity" />
+        </activity>
     </application>
 
 </manifest>

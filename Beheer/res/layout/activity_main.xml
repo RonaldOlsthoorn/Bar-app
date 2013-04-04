@@ -42,6 +42,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_margin="5dp"
+            android:onClick="toArticles"
             android:text="Bar artikelen &amp; prijzen" />
 
         <Button
@@ -50,6 +51,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_margin="5dp"
+            android:onClick="toMembers"
             android:text="Leden" />
 
         <Button
