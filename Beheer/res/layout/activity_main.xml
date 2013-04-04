@@ -13,7 +13,7 @@
         android:orientation="vertical" >
 
         <Button
-            android:id="@+id/button1"
+            android:id="@+main/button1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
@@ -21,7 +21,7 @@
             android:text="Huidige turflijst" />
 
         <Button
-            android:id="@+id/button2"
+            android:id="@+main/button2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
@@ -29,7 +29,7 @@
             android:text="Turflijst afrekenen" />
 
         <Button
-            android:id="@+id/button3"
+            android:id="@+main/button3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
@@ -37,7 +37,7 @@
             android:text="Eerdere afrekeningen" />
 
         <Button
-            android:id="@+id/button4"
+            android:id="@+main/button4"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
@@ -45,7 +45,7 @@
             android:text="Bar artikelen &amp; prijzen" />
 
         <Button
-            android:id="@+id/button5"
+            android:id="@+main/button5"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
@@ -53,7 +53,7 @@
             android:text="Leden" />
 
         <Button
-            android:id="@+id/button6"
+            android:id="@+main/button6"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
