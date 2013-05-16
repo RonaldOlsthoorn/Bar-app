@@ -15,7 +15,7 @@ public class TurflijstProvider extends ContentProvider {
 		
 	public TurflijstProvider(){
 		
-		dbHelper = DBHelper.getDBHelper();
+		dbHelper = DBHelper.getDBHelper(getContext());
 	}
 
 	@Override
