@@ -18,20 +18,17 @@
             android:label="@string/app_name"
             android:screenOrientation="landscape"
             android:windowSoftInputMode="adjustResize|stateVisible" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
         <activity
             android:name="com.example.groovertest.MainActivity"
             android:label="@string/title_activity_main"
             android:parentActivityName="com.example.groovertest.LoginActivity"
             android:screenOrientation="landscape" >
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.example.groovertest.LoginActivity" />
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
         <activity
             android:name="com.example.groovertest.LedenMainActivity"
@@ -52,6 +49,22 @@
         <activity
             android:name="com.example.groovertest.GroupMainActivity"
             android:label="@string/title_activity_group_main"
+            android:parentActivityName="com.example.groovertest.MainActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.example.groovertest.MainActivity" />
+        </activity>
+        <activity
+            android:name="com.example.groovertest.BeheerActivity"
+            android:label="@string/title_activity_beheer"
+            android:parentActivityName="com.example.groovertest.MainActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.example.groovertest.MainActivity" />
+        </activity>
+        <activity
+            android:name="com.example.groovertest.BarBazzActivity"
+            android:label="@string/title_activity_bar_bazz"
             android:parentActivityName="com.example.groovertest.MainActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"

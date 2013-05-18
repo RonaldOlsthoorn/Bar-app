@@ -12,36 +12,12 @@
         android:orientation="vertical" >
 
         <Button
-            android:id="@+main/turflijst"
+            android:id="@+main/BarBazz"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:onClick="toTurflijst"
-            android:text="Turflijst" />
-
-        <Button
-            android:id="@+main/leden"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:onClick="toLeden"
-            android:text="Leden" />
-
-        <Button
-            android:id="@+main/groepen"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:onClick="toGroepen"
-            android:text="Groepen" />
-
-        <Button
-            android:id="@+main/artikelen"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:onClick="toArtikelen"
-            android:text="Artikelen" />
+            android:onClick="toBarBazz"
+            android:text="BarBazz" />
 
         <Button
             android:id="@+main/beheer"
