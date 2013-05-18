@@ -8,8 +8,10 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.support.v4.app.NavUtils;
 import android.support.v4.widget.CursorAdapter;
@@ -22,7 +24,10 @@ public class GroupMainActivity extends Activity {
 	private Button voegtoe;
 	private Button wijzig;
 	private Button verwijder;
+	private Button opslaan;
 	
+	
+	private LinearLayout editLayout;
 	private ListView groepen;
 	private ListView leden;
 	private ListView groep;
@@ -36,13 +41,18 @@ public class GroupMainActivity extends Activity {
 	private String[] FROM = new String[]{DBHelper.GroupTable.COLUMN_GROUP_NAME,
 			"COUNT_MEMBERS"
 			};
+	
 	private int[] TO = new int[]{R.groupRow.groupName, R.groupRow.memberNumber};
 
 	private Cursor c_groups;
 	private Cursor c_members;
 	private Cursor c_group_members;
 	
-	private SimpleCursorAdapter adapter;
+	private SimpleCursorAdapter mainAdapter;
+	private ArrayAdapter<String> memberAdapter;
+	private ArrayAdapter<String> groupMemberAdapter;
+		
+	//private Filter filter;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -55,28 +65,31 @@ public class GroupMainActivity extends Activity {
 		voegtoe = (Button) findViewById(R.groups.voegtoe);
 		wijzig = (Button) findViewById(R.groups.edit);
 		verwijder = (Button) findViewById(R.groups.delete);
+		opslaan = (Button) findViewById(R.groups.save);
 		
 		groepsNaam = (EditText) findViewById(R.groups.groepsNaam);
 		
 		groepen = (ListView) findViewById(R.groups.LV1);
+		groep  = (ListView) findViewById(R.groups.LV2);
+		leden = (ListView) findViewById(R.groups.LV3);
+		editLayout = (LinearLayout) findViewById(R.groups.editLayout);
 		
 		c_groups = DB.getGroups();
-		Log.i("hello", "helloooo");
 		c_members = DB.getMembers();
-		Log.i("hello", "helloooo");
-		String[] members = membersToArray(c_members);
-		
-		for(int i=0;i<members.length;i++){
-			Log.i("hello", members[i]);
-		}
-
-		
-		adapter = new SimpleCursorAdapter(this,
+		memberPool = membersToArray(c_members);
+		groupMembers = new String[0];
+				
+		mainAdapter = new SimpleCursorAdapter(this,
 				R.layout.group_row, c_groups, FROM,
 				TO,
 				CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
 		
-		groepen.setAdapter(adapter);
+		memberAdapter = new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1, memberPool);
+		groupMemberAdapter = new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1, groupMembers);
+		
+		groepen.setAdapter(mainAdapter);
+		leden.setAdapter(memberAdapter);
+			
 	}
 
 	@Override
@@ -99,7 +112,10 @@ public class GroupMainActivity extends Activity {
 		
 		c_groups.close();
 		c_groups=DB.getGroups();
-		adapter.swapCursor(c_groups);
+		mainAdapter.swapCursor(c_groups);
+		
+		groepen.setVisibility(View.GONE);
+		editLayout.setVisibility(View.VISIBLE);
 		
 	}
 

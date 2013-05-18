@@ -4,4 +4,34 @@
     android:layout_height="match_parent"
     tools:context=".BarBazzActivity" >
 
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:orientation="vertical" >
+
+        <Button
+            android:id="@+BarBazz/turfLijst"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="Turflijst" />
+
+        <Button
+            android:id="@+BarBazz/Leden"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="Leden" />
+
+        <Button
+            android:id="@+BarBazz/Groepen"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="Groepen" />
+
+    </LinearLayout>
+
 </RelativeLayout>

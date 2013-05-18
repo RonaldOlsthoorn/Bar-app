@@ -53,14 +53,10 @@ public class DBHelper extends SQLiteOpenHelper {
 		String query = "SELECT "+GroupTable._ID+" , "+GroupTable.COLUMN_GROUP_NAME+" , COUNT("+GroupMembers.COLUMN_NAME_MEMBER_ID+") AS COUNT_MEMBERS"
 				+" FROM "+GroupTable.TABLE_NAME+" LEFT OUTER JOIN "+GroupMembers.TABLE_NAME+" ON "+GroupTable.TABLE_NAME+"."+GroupTable._ID+"="+GroupMembers.TABLE_NAME+"."+GroupMembers.COLUMN_NAME_GROUP_ID
 				+" GROUP BY "+GroupTable._ID;
-		
-		Log.i("hello",query);
-		
+			
 		return db.rawQuery(query, null);
-		
 	}
-	
-	
+		
 	public Cursor getAccounts() {
 
 		SQLiteDatabase db;
@@ -94,11 +90,8 @@ public class DBHelper extends SQLiteOpenHelper {
 		boolean res = false;
 		Log.d(TAG, "insertOrIgnore on " + values);
 		SQLiteDatabase db = getWritableDatabase();
-		Log.d(TAG, "insertOrIgnore on " + values);
 		try {
-			Log.d(TAG, "insertOrIgnore on " + values);
 			db.insertOrThrow(table, null, values);
-			Log.d(TAG, "insertOrIgnore on " + values);
 			res = true;
 
 		} catch (SQLException e) {
@@ -186,6 +179,7 @@ public class DBHelper extends SQLiteOpenHelper {
 		public static final String COLUMN_LAST_NAME = "last_name";
 		public static final String COLUMN_ACCOUNT = "account";
 		public static final String COLUMN_BALANCE = "balance";
+		public static final String COLUMN_ACTIVE = "active";
 
 		public static final String SQL_CREATE_TABLE = "CREATE TABLE IF NOT EXISTS "
 				+ TABLE_NAME
@@ -203,6 +197,9 @@ public class DBHelper extends SQLiteOpenHelper {
 				+ ","
 				+ COLUMN_BALANCE
 				+ " DOUBLE"
+				+ ","
+				+ COLUMN_ACTIVE
+				+ " BOOLEAN DEFAULT TRUE"
 				+ ","
 				+ "FOREIGN KEY("
 				+ COLUMN_ACCOUNT
@@ -248,6 +245,7 @@ public class DBHelper extends SQLiteOpenHelper {
 		public static final String COLUMN_GROUP_NAME = "group_name";
 		public static final String COLUMN_GROUP_ACCOUNT = "group_account";
 		public static final String COLUMN_GROUP_BALANCE = "group_balance";
+		public static final String COLUMN_ACTIVE = "active";
 
 		public static final String SQL_CREATE_TABLE = "CREATE TABLE IF NOT EXISTS "
 				+ TABLE_NAME
@@ -260,6 +258,9 @@ public class DBHelper extends SQLiteOpenHelper {
 				+ " INTEGER ,"
 				+ COLUMN_GROUP_BALANCE
 				+ " DOUBLE "
+				+ ","
+				+ COLUMN_ACTIVE
+				+ " BOOLEAN DEFAULT TRUE "
 				+ ","
 				+ "FOREIGN KEY("
 				+ COLUMN_GROUP_ACCOUNT

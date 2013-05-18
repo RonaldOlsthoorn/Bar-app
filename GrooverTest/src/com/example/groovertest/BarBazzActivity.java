@@ -13,7 +13,7 @@ public class BarBazzActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_bar_bazz);
 		// Show the Up button in the action bar.
-		getActionBar().setDisplayHomeAsUpEnabled(true);
+		//getActionBar().setDisplayHomeAsUpEnabled(true);
 	}
 
 	@Override

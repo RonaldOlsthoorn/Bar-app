@@ -2,8 +2,10 @@ package com.example.groovertest;
 
 import android.os.Bundle;
 import android.app.Activity;
+import android.content.Intent;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.support.v4.app.NavUtils;
 
 public class BeheerActivity extends Activity {
@@ -13,7 +15,7 @@ public class BeheerActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_beheer);
 		// Show the Up button in the action bar.
-		getActionBar().setDisplayHomeAsUpEnabled(true);
+		//getActionBar().setDisplayHomeAsUpEnabled(true);
 	}
 
 	@Override
@@ -39,5 +41,22 @@ public class BeheerActivity extends Activity {
 		}
 		return super.onOptionsItemSelected(item);
 	}
+	
+	public void toLeden(View view){
+		
+		Intent intent = new Intent(this, LedenMainActivity.class);
+		startActivity(intent);
+	}
 
+	public void toGroepen(View view){
+		
+		Intent intent = new Intent(this, GroupMainActivity.class);
+		startActivity(intent);
+	}
+	
+	public void toArtikelen(View view){
+		
+		Intent intent = new Intent(this, ArticleActivity.class);
+		startActivity(intent);
+	}
 }
