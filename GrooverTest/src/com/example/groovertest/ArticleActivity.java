@@ -183,7 +183,7 @@ public class ArticleActivity extends Activity implements OnItemClickListener, On
 		values.put(DBHelper.ItemList.COLUMN_NAME_PRICE, prijs);
 		values.put(DBHelper.ItemList.COLUMN_NAME_CAT, vt_cat);
 		
-		boolean b = DB.insertOrIgnore(DBHelper.ItemList.TABLE_NAME, values);
+		long b = DB.insertOrIgnore(DBHelper.ItemList.TABLE_NAME, values);
 		
 		c_articles.close();
 		c_articles=DB.getArticles();

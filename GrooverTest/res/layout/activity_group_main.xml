@@ -57,7 +57,16 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="5dp"
+            android:onClick="saveGroup"
             android:text="Groep opslaan"
+            android:visibility="gone" />
+
+        <Button
+            android:id="@+groups/cancel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:text="Anuleren"
             android:visibility="gone" />
 
     </LinearLayout>

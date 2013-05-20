@@ -72,7 +72,7 @@ public class DBHelper extends SQLiteOpenHelper {
 		db = getReadableDatabase();
 
 		return db.query(ItemList.TABLE_NAME, null, null, null, null, null,
-				ItemList.COLUMN_NAME_CAT+" COLLATE NOCASE ASC");
+				ItemList.COLUMN_NAME_CAT+" COLLATE NOCASE ASC, "+ItemList.COLUMN_NAME_ITEM+" COLLATE NOCASE ASC");
 	}
 	
 	public Cursor getCategories() {
@@ -85,18 +85,15 @@ public class DBHelper extends SQLiteOpenHelper {
 	}
 
 	@SuppressWarnings("finally")
-	public boolean insertOrIgnore(String table, ContentValues values) {
+	public long insertOrIgnore(String table, ContentValues values) {
 
-		boolean res = false;
+		long res = -1;
 		Log.d(TAG, "insertOrIgnore on " + values);
 		SQLiteDatabase db = getWritableDatabase();
 		try {
-			db.insertOrThrow(table, null, values);
-			res = true;
-
+			res = db.insertOrThrow(table, null, values);
 		} catch (SQLException e) {
 			Log.d(TAG, "insertOrIgnore on " + values + " fail");
-			res = false;
 		} finally {
 			db.close();
 			return res;
@@ -467,6 +464,8 @@ public class DBHelper extends SQLiteOpenHelper {
 		public static final String SQL_DELETE_ENTRIES = "DROP TABLE IF EXISTS "
 				+ TABLE_NAME;
 	}
+
+	
 
 	
 }

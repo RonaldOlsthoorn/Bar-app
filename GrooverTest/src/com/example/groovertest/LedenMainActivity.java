@@ -123,7 +123,7 @@ public class LedenMainActivity extends Activity implements OnItemClickListener {
 		v.put(DBHelper.MemberTable.COLUMN_LAST_NAME, achternaam);
 		v.put(DBHelper.MemberTable.COLUMN_BALANCE,0);
 		
-		boolean b = DB.insertOrIgnore(DBHelper.MemberTable.TABLE_NAME, v);
+		long b = DB.insertOrIgnore(DBHelper.MemberTable.TABLE_NAME, v);
 		
 		c.close();
 		c=DB.getMembers();

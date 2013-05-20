@@ -47,7 +47,7 @@ public class MainActivity extends Activity {
 	
 	public void toBeheer(View view){
 		
-		Intent intent = new Intent(this, BeheerActivity.class);
+		Intent intent = new Intent(this, LoginActivity.class);
 		startActivity(intent);
 	}
 	
