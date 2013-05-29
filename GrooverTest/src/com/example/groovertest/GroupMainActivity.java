@@ -3,6 +3,8 @@ package com.example.groovertest;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import com.example.groovertest.R.layout;
+
 import android.os.Bundle;
 import android.app.Activity;
 import android.content.ContentValues;
@@ -34,13 +36,16 @@ public class GroupMainActivity extends Activity implements OnItemClickListener{
 	private Button anuleren;
 	
 	
-	private LinearLayout editLayout;
+	private LinearLayout groepen_lo;
+	private LinearLayout leden_lo;
+	private LinearLayout groepsLeden_lo;
+	
 	private ListView groepen;
 	private ListView leden;
 	private ListView groep;
 	
 	private EditText groepsNaam;
-	private int current;
+	private int current=-1;
 	
 	private String[] FROM = new String[]{DBHelper.GroupTable.COLUMN_GROUP_NAME,
 			"COUNT_MEMBERS"
@@ -77,7 +82,10 @@ public class GroupMainActivity extends Activity implements OnItemClickListener{
 		groepen = (ListView) findViewById(R.groups.LV1);
 		groep  = (ListView) findViewById(R.groups.LV2);
 		leden = (ListView) findViewById(R.groups.LV3);
-		editLayout = (LinearLayout) findViewById(R.groups.editLayout);
+		
+		groepsLeden_lo = (LinearLayout) findViewById(R.groups.groepsLeden_lo);
+		leden_lo = (LinearLayout) findViewById(R.groups.leden_lo);
+		groepen_lo = (LinearLayout) findViewById(R.groups.groepen_lo);
 		
 		groepen.setOnItemClickListener(this);
 		groep.setOnItemClickListener(this);
@@ -105,7 +113,10 @@ public class GroupMainActivity extends Activity implements OnItemClickListener{
 		groepen.setAdapter(mainAdapter);
 		leden.setAdapter(memberAdapter);
 		groep.setAdapter(groupMemberAdapter);
-		current = -1;
+		
+		groep.setEnabled(false);
+		leden.setEnabled(false);
+
 	}
 
 	@Override
@@ -117,10 +128,19 @@ public class GroupMainActivity extends Activity implements OnItemClickListener{
 	
 	public void voegToe1(View view){
 		
-		groepen.setVisibility(View.GONE);
+		c_group_members.clearAllRows();
+		c_members.setAll();
+		
+		groepen.setEnabled(true);
+		leden.setEnabled(true);
+		
+		groepen_lo.setVisibility(View.GONE);
 		voegtoe.setVisibility(View.GONE);
-		editLayout.setVisibility(View.VISIBLE);
+		leden_lo.setVisibility(View.VISIBLE);
+		groepsLeden_lo.setVisibility(View.VISIBLE);
+		
 		opslaan.setVisibility(View.VISIBLE);
+		anuleren.setVisibility(View.VISIBLE);
 		
 	}
 
@@ -141,56 +161,61 @@ public class GroupMainActivity extends Activity implements OnItemClickListener{
 		return super.onOptionsItemSelected(item);
 	}
 	
-	public String[] membersToArray(Cursor c){
-			
-		String[] res = new String[c.getCount()];	
-		c.moveToFirst();		
-		
-		while(c.getPosition()<c.getCount()){
-			
-			res[c.getPosition()] =  c.getString(1)+" "+c.getString(2);				
-			c.moveToNext();
-			
-		}
-		
-
-		
-		return res;
-	}
-	
 	public void saveGroup(View view){
 
 		String naam = groepsNaam.getText().toString();
 		
-		ContentValues v = new ContentValues();
-		v.put(DBHelper.GroupTable.COLUMN_GROUP_NAME, naam);
-		v.put(DBHelper.GroupTable.COLUMN_GROUP_BALANCE,0);
-		
-		long b = DB.insertOrIgnore(DBHelper.GroupTable.TABLE_NAME, v);
-		
-		c_groups.close();
-		c_groups=DB.getGroups();
-		mainAdapter.swapCursor(c_groups);
-		
-		v = new ContentValues();
-		
-		c_group_members.moveToFirst();
-		
-		while(c_group_members.getPosition() < c_group_members.getCount() ){
+		if(current == -1){
 			
-			v.put(DBHelper.GroupMembers.COLUMN_NAME_GROUP_ID, (int) b );
-			v.put(DBHelper.GroupMembers.COLUMN_NAME_MEMBER_ID, c_group_members.getInt(0));
-			DB.insertOrIgnore(DBHelper.GroupMembers.TABLE_NAME, v);
+			ContentValues v = new ContentValues();
+			v.put(DBHelper.GroupTable.COLUMN_GROUP_NAME, naam);
+			v.put(DBHelper.GroupTable.COLUMN_GROUP_BALANCE,0);
 			
-			c_group_members.moveToNext();
+			long b = DB.insertOrIgnore(DBHelper.GroupTable.TABLE_NAME, v);
 			
+			v = new ContentValues();
+			
+			c_group_members.moveToFirst();
+			
+			while(c_group_members.getPosition() < c_group_members.getCount() ){
+				
+				v.put(DBHelper.GroupMembers.COLUMN_NAME_GROUP_ID, (int) b );
+				v.put(DBHelper.GroupMembers.COLUMN_NAME_MEMBER_ID, c_group_members.getInt(0));
+				DB.insertOrIgnore(DBHelper.GroupMembers.TABLE_NAME, v);
+				
+				c_group_members.moveToNext();
+				
+			}
+		}else{
+			
+			Log.i("save","1");
+			DB.PayOffGroupOrIgnore(current);
+			ContentValues v = new ContentValues();
+			Log.i("save","2");
+			v.put(DBHelper.GroupTable.COLUMN_GROUP_NAME, naam);
+			DB.updateOrIgnore(DBHelper.GroupTable.TABLE_NAME, current, v);
+			Log.i("save","3");
+			DB.deleteGroupMembers(current);
+			Log.i("save","4");
+			v = new ContentValues();
+			
+			c_group_members.moveToFirst();
+			Log.i("save","5");
+			
+			while(c_group_members.getPosition() < c_group_members.getCount() ){
+				
+				Log.i("save","6");
+				v.put(DBHelper.GroupMembers.COLUMN_NAME_GROUP_ID, current );
+				v.put(DBHelper.GroupMembers.COLUMN_NAME_MEMBER_ID, c_group_members.getInt(0));
+				DB.insertOrIgnore(DBHelper.GroupMembers.TABLE_NAME, v);
+				Log.i("save","7");
+				c_group_members.moveToNext();
+				
+			}
+			Log.i("save","8");
 		}
-			
-		groepen.setVisibility(View.VISIBLE);
-		editLayout.setVisibility(View.GONE);
-		opslaan.setVisibility(View.GONE);
-		anuleren.setVisibility(View.GONE);
 		
+		setToDefault();
 	}
 
 	@Override
@@ -198,38 +223,131 @@ public class GroupMainActivity extends Activity implements OnItemClickListener{
 		// TODO Auto-generated method stub
 		
 		if(arg0.equals(groepen)){
-			
+						
 			voegtoe.setVisibility(View.GONE);
 			wijzig.setVisibility(View.VISIBLE);
 			verwijder.setVisibility(View.VISIBLE);
+			anuleren.setVisibility(View.VISIBLE);
+			
 			c_groups.moveToPosition(arg2);
+			current=c_groups.getInt(0);
+			
 			groepsNaam.setText(c_groups.getString(1));
+			groepsNaam.setEnabled(false);
+			
+			c_group_members.clearAllRows();
+			c_members.setAll();
+			
+			Cursor c = DB.getGroupMembers(c_groups.getInt(0));
+			c.moveToFirst();
+
+			
+			while(c.getPosition()<c.getCount()){
+
+				Log.i("id",""+c.getInt(0));
+				c_group_members.addId(c.getInt(0));	
+				c_members.filterId(c.getInt(0));
+				
+				c.moveToNext();
+				
+			}
+
+			c.close();
+
+			memberAdapter.notifyDataSetChanged();
+			groupMemberAdapter.notifyDataSetChanged();
+							
+			groepsLeden_lo.setVisibility(View.VISIBLE);
 			
 		}
 		
 		if(arg0.equals(leden)){
 			
-			Log.i("Test","leden arg2: "+arg2+", arg3: "+arg3);
-
 			c_members.moveToPosition(arg2);
-			c_members.filter(arg2);
-			c_group_members.addPos(arg2);
+			int res = c_members.getUnfilteredPosition();
 			
-			groupMemberAdapter.notifyDataSetChanged();
+			c_group_members.addPos(c_members.getUnfilteredPosition());
+			c_members.filter(arg2);
+			
+			groupMemberAdapter.notifyDataSetChanged();			
 			memberAdapter.notifyDataSetChanged();
 		}
 		
 		if(arg0.equals(groep)){
 			
-			Log.i("Test","groep arg2: "+arg2+", arg3: "+arg3);
-			
 			c_group_members.moveToPosition(arg2);
-			c_group_members.filter(arg2);
-			c_members.addPos(arg2);
 			
-			groupMemberAdapter.notifyDataSetChanged();
+			int res = c_group_members.getUnfilteredPosition();
+
+			c_members.addPos(res);	
+			c_group_members.filter(arg2);
+			
+			groupMemberAdapter.notifyDataSetChanged();			
 			memberAdapter.notifyDataSetChanged();
-		}
+		}		
+	}
+	
+	public void deleteGroup(View view){
 		
+		boolean res = DB.PayOffGroupOrIgnore(current);		
+		
+		DB.deleteOrIgnore(DBHelper.GroupTable.TABLE_NAME, current);
+		Cursor members = DB.getGroupMembers(current);
+		
+		setToDefault();
+		
+	}
+	
+	public void cancel(View view){
+		
+		setToDefault();
+	}
+	
+	public void edit(View view){
+		
+		groepen_lo.setVisibility(View.GONE);
+		leden_lo.setVisibility(View.VISIBLE);
+		
+		wijzig.setVisibility(View.GONE);
+		opslaan.setVisibility(View.VISIBLE);
+		
+		groep.setEnabled(true);
+		leden.setEnabled(true);
+		
+		groepsNaam.setEnabled(true);
+	}
+	
+	public void setToDefault(){
+		
+		Log.i("default","hello");
+		
+		c_groups.close();
+		
+		c_groups = DB.getGroups();
+		c_members.setAll();
+		c_group_members.clearAllRows();
+		
+		groep.setEnabled(false);
+		leden.setEnabled(false);
+		
+		mainAdapter.swapCursor(c_groups);
+		mainAdapter.notifyDataSetChanged();
+		memberAdapter.notifyDataSetChanged();
+		groupMemberAdapter.notifyDataSetChanged();
+		
+		voegtoe.setVisibility(View.VISIBLE);
+		wijzig.setVisibility(View.GONE);
+		verwijder.setVisibility(View.GONE);
+		opslaan.setVisibility(View.GONE);
+		anuleren.setVisibility(View.GONE);
+		
+		groepen_lo.setVisibility(View.VISIBLE);
+		leden_lo.setVisibility(View.GONE);
+		groepsLeden_lo.setVisibility(View.GONE);
+		
+		groepsNaam.setText("");
+		groepsNaam.setEnabled(true);
+		
+		current = -1;
 	}
 }

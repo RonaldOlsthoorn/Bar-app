@@ -8,12 +8,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.support.v4.app.NavUtils;
 
-public class BarBazzActivity extends Activity {
+public class TurfMenuActivity extends Activity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_bar_bazz);
+		setContentView(R.layout.activity_turf_menu);
 		// Show the Up button in the action bar.
 		//getActionBar().setDisplayHomeAsUpEnabled(true);
 	}
@@ -21,7 +21,7 @@ public class BarBazzActivity extends Activity {
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.activity_bar_bazz, menu);
+		getMenuInflater().inflate(R.menu.activity_turf_menu, menu);
 		return true;
 	}
 
@@ -42,10 +42,10 @@ public class BarBazzActivity extends Activity {
 		return super.onOptionsItemSelected(item);
 	}
 	
-	public void toGroups(View view){
+	public void aanpassen(View view){
 		
-		Intent intent = new Intent(this, GroupMainActivity.class);
+		Intent intent = new Intent(this, EditTurfListActivity.class);
 		startActivity(intent);
-		
 	}
 }
+

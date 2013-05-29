@@ -10,5 +10,7 @@
     <string name="title_activity_group_main">GroupMainActivity</string>
     <string name="title_activity_beheer">BeheerActivity</string>
     <string name="title_activity_bar_bazz">BarBazzActivity</string>
+    <string name="title_activity_turf_menu">TurfMenuActivity</string>
+    <string name="title_activity_edit_turf_list">EditTurfListActivity</string>
 
 </resources>

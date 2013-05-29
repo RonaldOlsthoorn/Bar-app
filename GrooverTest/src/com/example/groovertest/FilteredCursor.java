@@ -12,19 +12,30 @@ public class FilteredCursor extends CursorWrapper{
 
 	
 	private List<Integer> filterMap;
-
 	private int mPos = -1;
+	private Cursor base;
 	
 	public FilteredCursor(Cursor cursor) {
 		super(cursor);
+		base = cursor;
 		// TODO Auto-generated constructor stub
 		filterMap =  new ArrayList<Integer>(cursor.getCount());
 		
-		for(int i =0; i<cursor.getCount();i++){
+	}
+	
+	public Cursor getCursorWrapper(){	
+		return base;
+	}
+	
+	public void setAll(){
+		
+		clearAllRows();
+				
+		for(int i =0 ; i<super.getCount();i++){
 			filterMap.add(Integer.valueOf(i));
 		}
-		
 	}
+	
 	
 	@Override
 	public int getCount() { return filterMap.size(); }
@@ -32,25 +43,26 @@ public class FilteredCursor extends CursorWrapper{
 	@Override
 	public boolean moveToPosition(int pos) {
 		
-
-		
 		if(pos < 0 || pos > filterMap.size()){	
+						
 			return false;		
 		}
 		
 		if(pos == filterMap.size()){
 			
-			Integer res = filterMap.get(pos-1);
+			int res = filterMap.get(pos-1);
 			
 			boolean moved = super.moveToPosition(res);
 		    if (moved) mPos = pos;
+		    		    
 		    return moved;
 		    
 		}
+	
+		int res = filterMap.get(pos);
 		
-		Integer res = filterMap.get(pos); 	
 	    boolean moved = super.moveToPosition(res);
-
+	    
 	    if (moved) mPos = pos;
 	    return moved;
 	}
@@ -122,12 +134,66 @@ public class FilteredCursor extends CursorWrapper{
 	public void filter(int pos){
 		
 		filterMap.remove(pos);
-		Collections.sort(filterMap);
+		sort();
 		
+	}
+	
+	public void sort(){
+		
+		Collections.sort(filterMap);
 	}
 	
 	public void clearAllRows(){
 		
 		filterMap.clear();
+	}
+	
+	public int getUnfilteredPosition(){
+		return filterMap.get(mPos);
+	}
+
+	public void addId(int int1) {
+		// TODO Auto-generated method stub
+		super.moveToFirst();	
+		while(super.getPosition()<super.getCount()){
+			if(super.getInt(0) == int1){
+				addPos(super.getPosition());
+				break;
+			}			
+			super.moveToNext();
+		}
+	}
+
+	public void filterId(int int1) {
+		// TODO Auto-generated method stub
+		
+		
+		super.moveToFirst();	
+		
+		while(super.getPosition()<super.getCount()){
+						
+			if(super.getInt(0) == int1){
+				
+				filterMap.remove(Integer.valueOf(super.getPosition()));
+				sort();
+				break;
+				
+			}			
+			
+			super.moveToNext();
+			
+		}
+	}
+	
+	public FilteredCursor mirrorCursor(){
+		
+		FilteredCursor res = new FilteredCursor(base);
+		
+		for(int i =0; i<filterMap.size();i++){
+			
+			res.addPos(filterMap.get(i));
+		}
+		
+		return res;
 	}
 }

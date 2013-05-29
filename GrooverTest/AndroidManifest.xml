@@ -70,6 +70,22 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.groovertest.MainActivity" />
         </activity>
+        <activity
+            android:name="com.example.groovertest.TurfMenuActivity"
+            android:label="@string/title_activity_turf_menu"
+            android:parentActivityName="com.example.groovertest.BarBazzActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.example.groovertest.BarBazzActivity" />
+        </activity>
+        <activity
+            android:name="com.example.groovertest.EditTurfListActivity"
+            android:label="@string/title_activity_edit_turf_list"
+            android:parentActivityName="com.example.groovertest.TurfMenuActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.example.groovertest.TurfMenuActivity" />
+        </activity>
     </application>
 
 </manifest>
