@@ -49,7 +49,7 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="309dp"
         android:layout_margin="5dp" >
 
         <LinearLayout
@@ -68,7 +68,7 @@
                 android:textAppearance="?android:attr/textAppearanceMedium" />
 
             <ListView
-                android:id="@+id/listView1"
+                android:id="@+editTurf/listView1"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1" >
@@ -92,7 +92,7 @@
                 android:textAppearance="?android:attr/textAppearanceMedium" />
 
             <ListView
-                android:id="@+id/listView2"
+                android:id="@+editTurf/listView2"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" >
             </ListView>
@@ -115,7 +115,7 @@
                 android:textAppearance="?android:attr/textAppearanceMedium" />
 
             <ListView
-                android:id="@+id/listView3"
+                android:id="@+editTurf/listView3"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" >
             </ListView>
@@ -138,12 +138,35 @@
                 android:textAppearance="?android:attr/textAppearanceMedium" />
 
             <ListView
-                android:id="@+id/listView4"
+                android:id="@+editTurf/listView4"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" >
             </ListView>
 
         </LinearLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="0" >
+
+        <Button
+            android:id="@+id/button2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.5"
+            android:onClick="opslaan"
+            android:text="Wijzigingen opslaan" />
+
+        <Button
+            android:id="@+id/button1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.5"
+            android:onClick="annuleren"
+            android:text="Annuleren" />
 
     </LinearLayout>
 

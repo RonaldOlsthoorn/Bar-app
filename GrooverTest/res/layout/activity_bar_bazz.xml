@@ -16,14 +16,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
+            android:onClick="toTurfMenu"
             android:text="Turflijst" />
-
-        <Button
-            android:id="@+BarBazz/Leden"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:text="Leden" />
 
         <Button
             android:id="@+BarBazz/Groepen"

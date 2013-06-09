@@ -1,9 +1,5 @@
 package com.example.groovertest;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-
-import com.example.groovertest.R.layout;
 
 import android.os.Bundle;
 import android.app.Activity;
@@ -91,7 +87,7 @@ public class GroupMainActivity extends Activity implements OnItemClickListener{
 		groep.setOnItemClickListener(this);
 		leden.setOnItemClickListener(this);
 		
-		c_groups = DB.getGroups();
+		c_groups = DB.getGroupsFancy();
 		c_members = new FilteredCursor(DB.getMembers());
 		c_group_members = new FilteredCursor(DB.getMembers());
 		c_group_members.clearAllRows();
@@ -323,7 +319,7 @@ public class GroupMainActivity extends Activity implements OnItemClickListener{
 		
 		c_groups.close();
 		
-		c_groups = DB.getGroups();
+		c_groups = DB.getGroupsFancy();
 		c_members.setAll();
 		c_group_members.clearAllRows();
 		

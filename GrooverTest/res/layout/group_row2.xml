@@ -7,17 +7,17 @@
     <TextView
         android:id="@+groupRow2/first"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="fill_parent"
         android:layout_margin="5dp"
-        android:text="Large Text"
-        android:textAppearance="?android:attr/textAppearanceLarge" />
+        android:text="Medium Text"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
 
     <TextView
         android:id="@+groupRow2/last"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="fill_parent"
         android:layout_margin="5dp"
-        android:text="Large Text"
-        android:textAppearance="?android:attr/textAppearanceLarge" />
+        android:text="Medium Text is Misschien een beetje te lang!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
 
 </LinearLayout>

@@ -18,7 +18,7 @@ public class FilteredCursor extends CursorWrapper{
 	public FilteredCursor(Cursor cursor) {
 		super(cursor);
 		base = cursor;
-		// TODO Auto-generated constructor stub
+
 		filterMap =  new ArrayList<Integer>(cursor.getCount());
 		
 	}
@@ -35,6 +35,133 @@ public class FilteredCursor extends CursorWrapper{
 			filterMap.add(Integer.valueOf(i));
 		}
 	}
+
+	public void clearAllRows(){
+		
+		filterMap.clear();
+	}
+
+	public void addPos(int pos){
+		
+		
+		if(!filterMap.contains(Integer.valueOf(pos))){
+			
+			filterMap.add(Integer.valueOf(pos));
+			
+			if(mPos>pos){
+				mPos++;
+			}
+			sort();
+			if(mPos<getCount() && mPos >-1 ){
+				super.moveToPosition(filterMap.get(mPos));
+			}
+		}	
+	}
+	
+	public void addId(int int1) {
+		// TODO Auto-generated method stub
+				
+		super.moveToFirst();	
+		
+		
+		while(super.getPosition()<super.getCount()){
+			
+
+			if(super.getInt(0) == int1){
+				addPos(super.getPosition());
+				break;
+			}			
+			super.moveToNext();
+		}
+	}
+	
+	public void filter(int pos){
+		
+		filterMap.remove(pos);
+				
+		if(pos<=mPos && mPos>0){
+			
+			mPos--;
+
+		}
+		sort();
+		
+		if(!filterMap.isEmpty() && mPos>-1){
+			
+			super.moveToPosition(filterMap.get(mPos));
+			
+		}
+
+	}
+	
+	public void filterIntern(int pos){
+		
+		boolean res = filterMap.remove(Integer.valueOf(pos));
+		if(res && mPos>0 && pos<=filterMap.get(mPos) ){
+			mPos--;
+		}
+		
+		sort();
+		
+		if(!filterMap.isEmpty() && mPos>-1){
+			
+			super.moveToPosition(filterMap.get(mPos));
+			
+		}		
+	}
+	
+	public void filterId(int int1) {
+		// TODO Auto-generated method stub
+		
+		super.moveToFirst();	
+		
+		while(super.getPosition()<super.getCount()){
+						
+			if(super.getInt(0) == int1){
+				
+				filterIntern(super.getPosition());
+				
+				break;
+				
+			}			
+			
+			super.moveToNext();
+			
+		}
+	}
+	
+	
+	public void sort(){
+		
+		Collections.sort(filterMap);
+	}
+	
+	
+	public int getUnfilteredPosition(){
+		return filterMap.get(mPos);
+	}
+
+
+
+
+	public FilteredCursor mirrorCursor(){
+
+		FilteredCursor res = new FilteredCursor(base);
+		res.setAll();
+		
+		for(int i =0; i<filterMap.size();i++){
+			
+			res.filterIntern(filterMap.get(i));
+		}
+
+		return res;
+	}
+	
+	public Cursor getBase(){
+		
+		return base;
+	}
+	
 	
 	
 	@Override
@@ -43,20 +170,15 @@ public class FilteredCursor extends CursorWrapper{
 	@Override
 	public boolean moveToPosition(int pos) {
 		
-		if(pos < 0 || pos > filterMap.size()){	
-						
+		if(pos < 0 ){	
+			mPos = -1;			
 			return false;		
 		}
 		
-		if(pos == filterMap.size()){
+		if(pos >= filterMap.size()){
 			
-			int res = filterMap.get(pos-1);
-			
-			boolean moved = super.moveToPosition(res);
-		    if (moved) mPos = pos;
-		    		    
-		    return moved;
-		    
+			mPos=filterMap.size();
+			return false;
 		}
 	
 		int res = filterMap.get(pos);
@@ -124,76 +246,14 @@ public class FilteredCursor extends CursorWrapper{
 
 	    return mPos;
 	}
-	
-	public void addPos(int pos){
-		
-		filterMap.add(Integer.valueOf(pos));
-		Collections.sort(filterMap);
-	}
-	
-	public void filter(int pos){
-		
-		filterMap.remove(pos);
-		sort();
-		
-	}
-	
-	public void sort(){
-		
-		Collections.sort(filterMap);
-	}
-	
-	public void clearAllRows(){
-		
-		filterMap.clear();
-	}
-	
-	public int getUnfilteredPosition(){
-		return filterMap.get(mPos);
-	}
 
-	public void addId(int int1) {
+	public List<Integer> getMap() {
 		// TODO Auto-generated method stub
-		super.moveToFirst();	
-		while(super.getPosition()<super.getCount()){
-			if(super.getInt(0) == int1){
-				addPos(super.getPosition());
-				break;
-			}			
-			super.moveToNext();
-		}
-	}
-
-	public void filterId(int int1) {
-		// TODO Auto-generated method stub
-		
-		
-		super.moveToFirst();	
-		
-		while(super.getPosition()<super.getCount()){
-						
-			if(super.getInt(0) == int1){
-				
-				filterMap.remove(Integer.valueOf(super.getPosition()));
-				sort();
-				break;
-				
-			}			
-			
-			super.moveToNext();
-			
-		}
+		return filterMap;
 	}
 	
-	public FilteredCursor mirrorCursor(){
+	public int getSuperPosition(){
 		
-		FilteredCursor res = new FilteredCursor(base);
-		
-		for(int i =0; i<filterMap.size();i++){
-			
-			res.addPos(filterMap.get(i));
-		}
-		
-		return res;
+		return super.getPosition();
 	}
 }

@@ -39,26 +39,23 @@ public class DBHelper extends SQLiteOpenHelper {
 		SQLiteDatabase db;
 		db = getReadableDatabase();
 
-		return db.query(MemberTable.TABLE_NAME, new String[] {
-				MemberTable.COLUMN_ID, MemberTable.COLUMN_FIRST_NAME,
-				MemberTable.COLUMN_LAST_NAME, MemberTable.COLUMN_BALANCE },
+		return db.query(MemberTable.TABLE_NAME, null,
 				null, null, null, null, MemberTable.COLUMN_FIRST_NAME
 						+ " COLLATE NOCASE ASC, "+MemberTable.COLUMN_LAST_NAME+ " COLLATE NOCASE ASC");
 	}
 	
-	public Cursor getListMembers(){
-		
+	public Cursor getListMembers() {
+
 		SQLiteDatabase db;
 		db = getReadableDatabase();
 
-		return db.query(MemberTable.TABLE_NAME, new String[] {
-				MemberTable.COLUMN_ID, MemberTable.COLUMN_FIRST_NAME,
-				MemberTable.COLUMN_LAST_NAME, MemberTable.COLUMN_BALANCE },
-				MemberTable.COLUMN_ACTIVE+"= TRUE", null, null, null, MemberTable.COLUMN_FIRST_NAME
+		return db.query(MemberTable.TABLE_NAME, null,
+				MemberTable.COLUMN_ACTIVE+" = 1", null, null, null, MemberTable.COLUMN_FIRST_NAME
 						+ " COLLATE NOCASE ASC, "+MemberTable.COLUMN_LAST_NAME+ " COLLATE NOCASE ASC");
 	}
+	
 
-	public Cursor getGroups() {
+	public Cursor getGroupsFancy() {
 		
 		SQLiteDatabase db;
 		db = getReadableDatabase();
@@ -70,16 +67,25 @@ public class DBHelper extends SQLiteOpenHelper {
 		return db.rawQuery(query, null);
 	}
 	
+	public Cursor getGroups(){
+		
+		SQLiteDatabase db;
+		db = getReadableDatabase();
+
+		return db.query(GroupTable.TABLE_NAME, null,
+				null, null, null, null, GroupTable.COLUMN_GROUP_NAME
+						+ " COLLATE NOCASE ASC ");
+	}
+	
 	public Cursor getListGroups(){
 		
 		SQLiteDatabase db;
 		db = getReadableDatabase();
 
-		return db.query(GroupTable.TABLE_NAME, new String[] {
-				GroupTable._ID, GroupTable.COLUMN_GROUP_NAME,
-				GroupTable.COLUMN_GROUP_BALANCE },
-				GroupTable.COLUMN_ACTIVE+"= TRUE", null, null, null, GroupTable.COLUMN_GROUP_NAME
+		return db.query(GroupTable.TABLE_NAME, null,
+				GroupTable.COLUMN_ACTIVE+" = 1", null, null, null, GroupTable.COLUMN_GROUP_NAME
 						+ " COLLATE NOCASE ASC ");
+		
 	}
 	
 	public Cursor getGroupMembers(int grId){
@@ -145,7 +151,7 @@ public class DBHelper extends SQLiteOpenHelper {
 			ContentValues values) {
 
 		boolean res = false;
-		Log.d(TAG, "updateOrIgnore on " + values + " " + memberid);
+		Log.d(TAG, "updateOrIgnore on "+table+" values" + values + " " + memberid);
 		SQLiteDatabase db = getWritableDatabase();
 		try {
 			db.update(table, values, MemberTable.COLUMN_ID + "=" + memberid,
@@ -305,7 +311,7 @@ public class DBHelper extends SQLiteOpenHelper {
 				+ " DOUBLE"
 				+ ","
 				+ COLUMN_ACTIVE
-				+ " BOOLEAN DEFAULT TRUE"
+				+ " BOOLEAN DEFAULT 1"
 				+ " )";
 
 		public static final String SQL_DELETE_ENTRIES = "DROP TABLE IF EXISTS "
@@ -360,7 +366,7 @@ public class DBHelper extends SQLiteOpenHelper {
 				+ " DOUBLE DEFAULT 0"
 				+ ","
 				+ COLUMN_ACTIVE
-				+ " BOOLEAN DEFAULT TRUE "
+				+ " BOOLEAN DEFAULT 1 "
 				+ ");";
 
 		public static final String SQL_DELETE_ENTRIES = "DROP TABLE IF EXISTS "

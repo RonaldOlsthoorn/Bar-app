@@ -47,5 +47,11 @@ public class TurfMenuActivity extends Activity {
 		Intent intent = new Intent(this, EditTurfListActivity.class);
 		startActivity(intent);
 	}
+	
+	public void toTurflijst(View view){
+		
+		Intent intent = new Intent(this, TurfSelectCustomerActivity.class);
+		startActivity(intent);
+	}
 }
 

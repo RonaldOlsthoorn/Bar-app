@@ -86,6 +86,22 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.groovertest.TurfMenuActivity" />
         </activity>
+        <activity
+            android:name="com.example.groovertest.TurfSelectCustomerActivity"
+            android:label="@string/title_activity_turf_select_customer"
+            android:parentActivityName="com.example.groovertest.TurfMenuActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.example.groovertest.TurfMenuActivity" />
+        </activity>
+        <activity
+            android:name="com.example.groovertest.TurfOrderActivity"
+            android:label="@string/title_activity_turf_order"
+            android:parentActivityName="com.example.groovertest.TurfSelectCustomerActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.example.groovertest.TurfSelectCustomerActivity" />
+        </activity>
     </application>
 
 </manifest>

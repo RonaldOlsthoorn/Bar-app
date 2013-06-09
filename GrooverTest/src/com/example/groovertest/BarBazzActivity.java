@@ -48,4 +48,13 @@ public class BarBazzActivity extends Activity {
 		startActivity(intent);
 		
 	}
+	
+	public void toTurfMenu(View view){
+		
+		Intent intent = new Intent(this, TurfMenuActivity.class);
+		startActivity(intent);
+		
+	}
+	
+	
 }
