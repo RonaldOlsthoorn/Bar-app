@@ -135,7 +135,7 @@ public class TurfSelectCustomerActivity extends Activity implements OnItemClickL
 	
 	public void next(View view){
 		
-		Intent intent = new Intent(this, TurfSelectCustomerActivity.class);
+		Intent intent = new Intent(this, OrderActivity.class);
 		intent.putExtra("type", customerType);
 		intent.putExtra("ID", customerId);
 		intent.putExtra("account", customerAcount);
@@ -144,6 +144,5 @@ public class TurfSelectCustomerActivity extends Activity implements OnItemClickL
 		startActivity(intent);
 		
 	}
-
 }
 

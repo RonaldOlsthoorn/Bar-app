@@ -95,16 +95,12 @@
                 android:value="com.example.groovertest.TurfMenuActivity" />
         </activity>
         <activity
-            android:name="com.example.groovertest.TurfOrderActivity"
-            android:label="@string/title_activity_turf_order"
+            android:name="com.example.groovertest.OrderActivity"
+            android:label="@string/title_activity_order"
             android:parentActivityName="com.example.groovertest.TurfSelectCustomerActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.groovertest.TurfSelectCustomerActivity" />
-        </activity>
-        <activity
-            android:name="com.example.groovertest.OrderActivity"
-            android:label="@string/title_activity_order" >
         </activity>
     </application>
 
