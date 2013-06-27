@@ -102,6 +102,10 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.groovertest.TurfSelectCustomerActivity" />
         </activity>
+        <activity
+            android:name="com.example.groovertest.TestAnnoyingLayoutsActivity"
+            android:label="@string/title_activity_test_annoying_layouts" >
+        </activity>
     </application>
 
 </manifest>

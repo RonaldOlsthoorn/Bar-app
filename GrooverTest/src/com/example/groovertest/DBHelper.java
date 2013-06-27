@@ -308,7 +308,7 @@ public class DBHelper extends SQLiteOpenHelper {
 				+ " INTEGER "
 				+ ","
 				+ COLUMN_BALANCE
-				+ " DOUBLE"
+				+ " DECIMAL(10,2) DEFAULT 0"
 				+ ","
 				+ COLUMN_ACTIVE
 				+ " BOOLEAN DEFAULT 1"
@@ -317,7 +317,8 @@ public class DBHelper extends SQLiteOpenHelper {
 		public static final String SQL_DELETE_ENTRIES = "DROP TABLE IF EXISTS "
 				+ TABLE_NAME;
 
-		public static final String TRIGGER_NEW_ACCOUNT = "CREATE TRIGGER create_new_account "
+		public static final String TRIGGER_NEW_ACCOUNT = "CREATE TRIGGER create_new_account "  
+				
 				+ "AFTER INSERT ON "
 				+ TABLE_NAME
 				+ " FOR EACH ROW "
@@ -343,6 +344,7 @@ public class DBHelper extends SQLiteOpenHelper {
 				+ "= NEW."
 				+ AccountList.COLUMN_ACCOUNT
 				+ ";" + "END";
+		
 	}
 
 	public static abstract class GroupTable implements BaseColumns {
@@ -363,7 +365,7 @@ public class DBHelper extends SQLiteOpenHelper {
 				+ COLUMN_GROUP_ACCOUNT
 				+ " INTEGER ,"
 				+ COLUMN_GROUP_BALANCE
-				+ " DOUBLE DEFAULT 0"
+				+ " DECIMAL(10,2) DEFAULT 0"
 				+ ","
 				+ COLUMN_ACTIVE
 				+ " BOOLEAN DEFAULT 1 "
@@ -442,7 +444,7 @@ public class DBHelper extends SQLiteOpenHelper {
 				+ COLUMN_NAME_ITEM
 				+ " TEXT NOT NULL , "
 				+ COLUMN_NAME_PRICE
-				+ " DOUBLE ,"
+				+ " DECIMAL(10,2) ,"
 				+ COLUMN_NAME_CAT + " TEXT DEFAULT 'overig' )";
 		public static final String SQL_DELETE_ENTRIES = "DROP TABLE IF EXISTS "
 				+ TABLE_NAME;
@@ -484,7 +486,7 @@ public class DBHelper extends SQLiteOpenHelper {
 				+ " INTEGER PRIMARY KEY AUTOINCREMENT"
 				+ ","
 				+ COLUMN_TOTAL
-				+ " DOUBLE"
+				+ " DECIMAL(10,2)"
 				+ ","
 				+ COLUMN_ACCOUNT
 				+ " INTEGER NOT NULL"
