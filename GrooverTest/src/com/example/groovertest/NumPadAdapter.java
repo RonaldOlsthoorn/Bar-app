@@ -28,7 +28,6 @@ public class NumPadAdapter implements OnClickListener{
 	@Override
 	public void onClick(View v) {
 		// TODO Auto-generated method stub
-		Log.i("INFO","integer: "+number+" "+v.getId()+" "+R.numPad.one);
 		
 		int buttonId = v.getId();
 		switch(buttonId){

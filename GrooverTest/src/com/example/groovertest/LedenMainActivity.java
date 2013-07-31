@@ -143,7 +143,6 @@ public class LedenMainActivity extends Activity implements OnItemClickListener {
 		wijzig.setEnabled(true);
 		verwijder.setEnabled(true);
 		
-		Log.i("current", ""+current);
 	}
 	
 	public void wijzigLid(View view){
@@ -172,7 +171,6 @@ public class LedenMainActivity extends Activity implements OnItemClickListener {
 	public void verwijderLid(View view){
 		
 		c.moveToPosition(current);
-		Log.i("verwijder", ""+current);
 		
 		boolean b = DB.deleteOrIgnore(DBHelper.MemberTable.TABLE_NAME, current);
 		

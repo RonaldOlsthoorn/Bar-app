@@ -41,11 +41,13 @@ public class FilteredCursor extends CursorWrapper{
 		filterMap.clear();
 	}
 
-	public void addPos(int pos){
+	public boolean addPos(int pos){
 		
+		boolean res=false;
 		
 		if(!filterMap.contains(Integer.valueOf(pos))){
 			
+			res = true;
 			filterMap.add(Integer.valueOf(pos));
 			
 			if(mPos>pos){
@@ -55,10 +57,13 @@ public class FilteredCursor extends CursorWrapper{
 			if(mPos<getCount() && mPos >-1 ){
 				super.moveToPosition(filterMap.get(mPos));
 			}
-		}	
+		}
+		
+		return res;
+		
 	}
 	
-	public void addId(int int1) {
+	public boolean addId(int int1) {
 		// TODO Auto-generated method stub
 				
 		super.moveToFirst();	
@@ -69,10 +74,11 @@ public class FilteredCursor extends CursorWrapper{
 
 			if(super.getInt(0) == int1){
 				addPos(super.getPosition());
-				break;
-			}			
+				return true;
+			}
 			super.moveToNext();
 		}
+		return false;
 	}
 	
 	public void filter(int pos){

@@ -151,8 +151,7 @@ OnItemClickListener {
 
 	@Override
 	public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
-
-		
+	
 		// TODO Auto-generated method stub
 		if (arg0.equals(l_groepen1)) {
 
@@ -223,7 +222,6 @@ OnItemClickListener {
 		while(c_groepen1.getPosition()<c_groepen1.getCount()){
 			
 			boolean groupupdate = DB.updateOrIgnore(DBHelper.GroupTable.TABLE_NAME, c_groepen1.getInt(0), c);
-			Log.i("hello",groupupdate+"");
 			c_groepen1.moveToNext();
 		}
 		

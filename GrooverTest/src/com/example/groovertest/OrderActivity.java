@@ -94,19 +94,22 @@ public class OrderActivity extends Activity implements OnItemClickListener, Prop
 
 		numPadAdapter = new NumPadAdapter();
 		
+		Log.i("Count",1+"");
+		
 		a_order = new OrderListAdapter(this,R.layout.order_row,c_Order,FROM_O,TO_O,CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER, numPadAdapter);
-				
+
+		Log.i("Count",2+"");
+
 		s_categories.setAdapter(a_category);
 		l_artikelen.setAdapter(a_artikelen);
 		l_order.setAdapter(a_order);
 		
-		l_artikelen.setOnItemClickListener(this);
 		l_order.setOnItemClickListener(this);
+		l_artikelen.setOnItemClickListener(this);
 		
 		order_amount = (TextView) findViewById(R.order.amount);
 
 		numPadAdapter.addPropertyListener(this);
-
 		
 		findViewById(R.numPad.one).setOnClickListener(numPadAdapter);
 		findViewById(R.numPad.two).setOnClickListener(numPadAdapter);
@@ -121,8 +124,7 @@ public class OrderActivity extends Activity implements OnItemClickListener, Prop
 		findViewById(R.numPad.plus).setOnClickListener(numPadAdapter);
 		findViewById(R.numPad.minus).setOnClickListener(numPadAdapter);
 		findViewById(R.numPad.clear).setOnClickListener(numPadAdapter);
-		
-		
+				
 	}
 
 	private void toArrayList() {
@@ -178,19 +180,18 @@ public class OrderActivity extends Activity implements OnItemClickListener, Prop
 			c_Order.addPos(arg2);
 			a_order.notifyDataSetChanged();
 		}
+
 	}
 
 	@Override
 	public void propertyChange(PropertyChangeEvent event) {
 		// TODO Auto-generated method stub
-		Log.i("Count","4");
 		if(event.getSource() == numPadAdapter){
-			Log.i("Count","5");
 			Integer res = (Integer) event.getNewValue();
-			Log.i("Count","3");
 			current_amount = res.intValue();
 			order_amount.setText(current_amount+"");
 			
 		}
+		
 	}
 }

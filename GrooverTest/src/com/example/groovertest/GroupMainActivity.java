@@ -184,31 +184,23 @@ public class GroupMainActivity extends Activity implements OnItemClickListener{
 			}
 		}else{
 			
-			Log.i("save","1");
 			DB.PayOffGroupOrIgnore(current);
 			ContentValues v = new ContentValues();
-			Log.i("save","2");
 			v.put(DBHelper.GroupTable.COLUMN_GROUP_NAME, naam);
 			DB.updateOrIgnore(DBHelper.GroupTable.TABLE_NAME, current, v);
-			Log.i("save","3");
 			DB.deleteGroupMembers(current);
-			Log.i("save","4");
 			v = new ContentValues();
 			
 			c_group_members.moveToFirst();
-			Log.i("save","5");
 			
 			while(c_group_members.getPosition() < c_group_members.getCount() ){
 				
-				Log.i("save","6");
 				v.put(DBHelper.GroupMembers.COLUMN_NAME_GROUP_ID, current );
 				v.put(DBHelper.GroupMembers.COLUMN_NAME_MEMBER_ID, c_group_members.getInt(0));
 				DB.insertOrIgnore(DBHelper.GroupMembers.TABLE_NAME, v);
-				Log.i("save","7");
 				c_group_members.moveToNext();
 				
 			}
-			Log.i("save","8");
 		}
 		
 		setToDefault();
@@ -240,7 +232,6 @@ public class GroupMainActivity extends Activity implements OnItemClickListener{
 			
 			while(c.getPosition()<c.getCount()){
 
-				Log.i("id",""+c.getInt(0));
 				c_group_members.addId(c.getInt(0));	
 				c_members.filterId(c.getInt(0));
 				
@@ -315,7 +306,6 @@ public class GroupMainActivity extends Activity implements OnItemClickListener{
 	
 	public void setToDefault(){
 		
-		Log.i("default","hello");
 		
 		c_groups.close();
 		
