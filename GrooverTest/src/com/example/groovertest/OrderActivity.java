@@ -3,8 +3,6 @@ package com.example.groovertest;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
-import java.util.List;
-
 import android.os.Bundle;
 import android.app.Activity;
 import android.util.Log;
@@ -14,7 +12,6 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -34,7 +31,6 @@ public class OrderActivity extends Activity implements OnItemClickListener, Prop
 	private int current_amount;
 
 	private Spinner s_categories;
-	private String filterCategorie = "Alle";
 	
 	private ListView l_artikelen;
 	private ListView l_order;
@@ -52,7 +48,6 @@ public class OrderActivity extends Activity implements OnItemClickListener, Prop
 	
 	private DBHelper DB;
 	
-	private Cursor c_category;
 	private Cursor c_Articles;
 	private FilteredCursor c_Order;
 	
@@ -81,10 +76,9 @@ public class OrderActivity extends Activity implements OnItemClickListener, Prop
 		l_artikelen = (ListView) findViewById(R.order.artList);
 		l_order = (ListView) findViewById(R.order.orderList);
 		
-		c_category = DB.getCategories();
-		category = new ArrayList<String>();
+		category = toArrayList(DB.getCategories());
 		category.add("Alle");
-		toArrayList();
+		
 		
 		c_Articles = DB.getArticles();
 		c_Order = new FilteredCursor(DB.getArticles());
@@ -94,11 +88,9 @@ public class OrderActivity extends Activity implements OnItemClickListener, Prop
 
 		numPadAdapter = new NumPadAdapter();
 		
-		Log.i("Count",1+"");
 		
 		a_order = new OrderListAdapter(this,R.layout.order_row,c_Order,FROM_O,TO_O,CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER, numPadAdapter);
 
-		Log.i("Count",2+"");
 
 		s_categories.setAdapter(a_category);
 		l_artikelen.setAdapter(a_artikelen);
@@ -127,15 +119,18 @@ public class OrderActivity extends Activity implements OnItemClickListener, Prop
 				
 	}
 
-	private void toArrayList() {
+	private ArrayList<String> toArrayList(Cursor c) {
 		// TODO Auto-generated method stub
-		c_category.moveToFirst();
+		category = new ArrayList<String>();
+		c.moveToFirst();
 
-		while(c_category.getPosition()<c_category.getCount()){
+		while(c.getPosition()<c.getCount()){
 
-			category.add(c_category.getString(1));
-			c_category.moveToNext();
+			category.add(c.getString(1));
+			c.moveToNext();
 		}
+		
+		return category;
 	}
 
 	/**

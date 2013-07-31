@@ -22,35 +22,21 @@ public class OrderListAdapter extends SimpleCursorAdapter implements PropertyCha
 	public OrderListAdapter(Context context, int layout, FilteredCursor c,
 			String[] from, int[] to, int flags, NumPadAdapter n) {
 		super(context, layout, c, from, to, flags);
-		Log.i("Count",1.1+"");
-
 		base = c;
-		Log.i("Count",1.1+"");
 		numPad = n;
-		Log.i("Count",1.1+"");
 		numPad.addPropertyListener(this);
-		Log.i("Count",1.1+"");
 		this.c=context;
-		Log.i("Count",1.1+"");
 		m = new HashMap<Integer,Integer>();
 	}
 	
 	public View getView(int position, View convertView, ViewGroup parent){
 		
-		Log.i("Count",1.1+"");
 
-        View view = super.getView(position, convertView, parent);
-        
-		Log.i("Count",1.2+"");
-
+        View view = super.getView(position, convertView, parent);        
         Button button = (Button) view.findViewById(R.orderRow.cancel);
         
-		Log.i("Count",1.3+"");
-
         button.setOnClickListener(new deleteAdapter(position)); 
         
-		Log.i("Count",1.4+"");
-
         return view;
     }
 
