@@ -5,6 +5,7 @@
     tools:context=".BarBazzActivity" >
 
     <LinearLayout
+        android:id="@+id/linearLayout1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
@@ -16,8 +17,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:onClick="toTurfMenu"
-            android:text="Turflijst" />
+            android:onClick="editTurflijst"
+            android:text="Turflijst aanpassen" />
 
         <Button
             android:id="@+BarBazz/Groepen"
@@ -26,7 +27,15 @@
             android:layout_gravity="center"
             android:onClick="toGroups"
             android:text="Groepen" />
-
     </LinearLayout>
+
+    <Button
+        android:id="@+id/button1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/linearLayout1"
+        android:layout_centerHorizontal="true"
+        android:onClick="naarTurflijst"
+        android:text="Turven" />
 
 </RelativeLayout>

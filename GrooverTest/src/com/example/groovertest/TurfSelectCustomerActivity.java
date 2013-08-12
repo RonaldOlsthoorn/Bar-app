@@ -7,6 +7,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
@@ -44,6 +45,7 @@ public class TurfSelectCustomerActivity extends Activity implements OnItemClickL
 	private String customerName;
 	private String customerType;
 	private int customerAcount;
+	private Button nextButton;
 	
 	/**
 	 * Set up the {@link android.app.ActionBar}, if the API is available.
@@ -87,6 +89,7 @@ public class TurfSelectCustomerActivity extends Activity implements OnItemClickL
 		// Show the Up button in the action bar.
 		setupActionBar();
 		
+		nextButton = (Button) findViewById(R.selectCustomer.nextButton);
 		customerNameTV = (TextView) findViewById(R.selectCustomer.customer);
 		
 		DB = DBHelper.getDBHelper(this);
@@ -118,6 +121,7 @@ public class TurfSelectCustomerActivity extends Activity implements OnItemClickL
 			customerType = "individual";
 			customerAcount = c_leden.getInt(3);
 			customerNameTV.setText(customerName);
+			nextButton.setEnabled(true);
 		}
 		if(arg0.equals(l_groepen)){
 			c_groepen.moveToPosition(arg2);
@@ -126,6 +130,8 @@ public class TurfSelectCustomerActivity extends Activity implements OnItemClickL
 			customerType = "group";
 			customerAcount = c_groepen.getInt(2);
 			customerNameTV.setText(customerName);
+			nextButton.setEnabled(true);
+
 		}
 	}
 	

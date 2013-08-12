@@ -49,9 +49,16 @@ public class BarBazzActivity extends Activity {
 		
 	}
 	
-	public void toTurfMenu(View view){
+	public void editTurflijst(View view){
 		
-		Intent intent = new Intent(this, TurfMenuActivity.class);
+		Intent intent = new Intent(this, EditTurfListActivity.class);
+		startActivity(intent);
+		
+	}
+	
+	public void naarTurflijst(View view){
+		
+		Intent intent = new Intent(this, TurfSelectCustomerActivity.class);
 		startActivity(intent);
 		
 	}

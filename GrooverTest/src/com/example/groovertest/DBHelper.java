@@ -54,7 +54,6 @@ public class DBHelper extends SQLiteOpenHelper {
 						+ " COLLATE NOCASE ASC, "+MemberTable.COLUMN_LAST_NAME+ " COLLATE NOCASE ASC");
 	}
 	
-
 	public Cursor getGroupsFancy() {
 		
 		SQLiteDatabase db;
@@ -263,8 +262,13 @@ public class DBHelper extends SQLiteOpenHelper {
 		db.execSQL(ItemList.SQL_CREATE_TABLE);
 		db.execSQL(AccountList.SQL_CREATE_TABLE);
 		db.execSQL(Order.SQL_CREATE_TABLE);
+		db.execSQL(Order.SQL_TRIGGER_UPDATE_TOTAL_1);
+		db.execSQL(Order.SQL_TRIGGER_UPDATE_TOTAL_2);
+		db.execSQL(Order.SQL_TRIGGER_UPDATE_TOTAL_3);
+		db.execSQL(Order.SQL_TRIGGER_UPDATE_TOTAL_4);
 		db.execSQL(Consumption.SQL_CREATE_TABLE);
 		db.execSQL(GroupClearances.SQL_CREATE_TABLE);
+		
 	}
 
 	@Override
@@ -476,6 +480,7 @@ public class DBHelper extends SQLiteOpenHelper {
 		public static final String COLUMN_ID = _ID;
 		public static final String COLUMN_TOTAL = "total_amount";
 		public static final String COLUMN_ACCOUNT = "client_account";
+		public static final String COLUMN_TYPE = "order_type";
 		public static final String COLUMN_TS_CREATED = "ts_created";
 		public static final String COLUMN_TS_SETTLED = "ts_settled";
 
@@ -492,13 +497,70 @@ public class DBHelper extends SQLiteOpenHelper {
 				+ " INTEGER NOT NULL"
 				+ ","
 				+ COLUMN_TS_CREATED
-				+ " DATETIME"
+				+ " DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL"
 				+ ","
 				+ COLUMN_TS_SETTLED
-				+ " DATETIME" + ")";
+				+ " DATETIME" 
+				+","
+				+ COLUMN_TYPE
+				+" TEXT NOT NULL"
+				+")";
 
 		public static final String SQL_DELETE_ENTRIES = "DROP TABLE IF EXISTS "
 				+ TABLE_NAME;
+		
+		public static final String SQL_TRIGGER_UPDATE_TOTAL_1 =  "CREATE TRIGGER update_total_1 "  
+				
+				+ "AFTER INSERT ON "
+				+ TABLE_NAME
+				+ " BEGIN "
+				+ " UPDATE "
+				+ MemberTable.TABLE_NAME
+				+ " SET "
+				+ MemberTable.COLUMN_BALANCE +" = NEW."+COLUMN_TOTAL+" + "+MemberTable.COLUMN_BALANCE
+				+ " WHERE "
+				+ MemberTable.COLUMN_ACCOUNT+" = NEW."+COLUMN_ACCOUNT
+				+ ";" + "END";
+		
+	public static final String SQL_TRIGGER_UPDATE_TOTAL_2 =  "CREATE TRIGGER update_total_2 "  
+				
+				+ "AFTER DELETE ON "
+				+ TABLE_NAME
+				+ " BEGIN "
+				+ " UPDATE "
+				+ MemberTable.TABLE_NAME
+				+ " SET "
+				+ MemberTable.COLUMN_BALANCE +" = OLD."+COLUMN_TOTAL+" - "+MemberTable.COLUMN_BALANCE
+				+ " WHERE "
+				+ MemberTable.COLUMN_ACCOUNT+" = OLD."+COLUMN_ACCOUNT
+				+ ";" + "END";
+	
+	public static final String SQL_TRIGGER_UPDATE_TOTAL_3 =  "CREATE TRIGGER update_total_3 "  
+			
+				+ "AFTER DELETE ON "
+				+ TABLE_NAME
+				+ " BEGIN "
+				+ " UPDATE "
+				+ MemberTable.TABLE_NAME
+				+ " SET "
+				+ MemberTable.COLUMN_BALANCE +" = OLD."+COLUMN_TOTAL+" - "+MemberTable.COLUMN_BALANCE
+				+ " WHERE "
+				+ MemberTable.COLUMN_ACCOUNT+" = OLD."+COLUMN_ACCOUNT
+				+ ";" + "END";
+		
+	public static final String SQL_TRIGGER_UPDATE_TOTAL_4 =  "CREATE TRIGGER update_total_4 "  
+			
+				+ "AFTER DELETE ON "
+				+ TABLE_NAME
+				+ " BEGIN "
+				+ " UPDATE "
+				+ MemberTable.TABLE_NAME
+				+ " SET "
+				+ MemberTable.COLUMN_BALANCE +" = NEW."+COLUMN_TOTAL+" + "+MemberTable.COLUMN_BALANCE
+				+ " WHERE "
+				+ MemberTable.COLUMN_ACCOUNT+" = NEW."+COLUMN_ACCOUNT
+				+ ";" + "END";
+	
 	}
 
 	public static abstract class Consumption implements BaseColumns {
@@ -523,6 +585,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
 		public static final String SQL_DELETE_ENTRIES = "DROP TABLE IF EXISTS "
 				+ TABLE_NAME;
+				
 	}
 
 	public static abstract class GroupClearances implements BaseColumns {

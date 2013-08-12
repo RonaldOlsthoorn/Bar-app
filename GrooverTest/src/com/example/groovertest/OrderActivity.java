@@ -2,6 +2,7 @@ package com.example.groovertest;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import android.os.Bundle;
 import android.app.Activity;
@@ -9,9 +10,11 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -19,6 +22,7 @@ import android.support.v4.app.NavUtils;
 import android.support.v4.widget.CursorAdapter;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.annotation.TargetApi;
+import android.content.Intent;
 import android.database.Cursor;
 import android.os.Build;
 
@@ -29,6 +33,7 @@ public class OrderActivity extends Activity implements OnItemClickListener, Prop
 	
 	private TextView order_amount;
 	private int current_amount;
+	private int current_article;
 
 	private Spinner s_categories;
 	
@@ -36,9 +41,10 @@ public class OrderActivity extends Activity implements OnItemClickListener, Prop
 	private ListView l_order;
 	
 	private SimpleCursorAdapter a_artikelen;
-	private SimpleCursorAdapter a_order;
+	private OrderListAdapter a_order;
 	private ArrayAdapter<String> a_category;
 	
+	private DecimalFormat df;
 	
 	private String[] FROM_A = new String[]{DBHelper.ItemList.COLUMN_NAME_ITEM, DBHelper.ItemList.COLUMN_NAME_PRICE};
 	private int[] TO_A = new int[]{R.articlerow2.naam,R.articlerow2.price};
@@ -49,10 +55,12 @@ public class OrderActivity extends Activity implements OnItemClickListener, Prop
 	private DBHelper DB;
 	
 	private Cursor c_Articles;
-	private FilteredCursor c_Order;
+	private Order c_Order;
 	
 	private ArrayList<String> category;
 	private NumPadAdapter numPadAdapter;
+	private TextView totaal_output;
+	
 	
 	
 	@Override
@@ -61,6 +69,10 @@ public class OrderActivity extends Activity implements OnItemClickListener, Prop
 		setContentView(R.layout.activity_order);
 		// Show the Up button in the action bar.
 		setupActionBar();
+		
+		current_article = -1;
+		order_amount = (TextView) findViewById(R.order.amount);
+		totaal_output = (TextView) findViewById(R.order.total);
 		
 		customer = new Customer(getIntent().getIntExtra("ID", -1),
 									getIntent().getIntExtra("account", -1),
@@ -74,33 +86,35 @@ public class OrderActivity extends Activity implements OnItemClickListener, Prop
 		
 		s_categories = (Spinner) findViewById(R.order.catSpinner);
 		l_artikelen = (ListView) findViewById(R.order.artList);
-		l_order = (ListView) findViewById(R.order.orderList);
+		l_order = (ListView) findViewById(R.order.orderList);		
 		
 		category = toArrayList(DB.getCategories());
 		category.add("Alle");
 		
+		df = new DecimalFormat("0.00");
 		
 		c_Articles = DB.getArticles();
-		c_Order = new FilteredCursor(DB.getArticles());
+		ArticleFactory af = new ArticleFactory(c_Articles);
+		c_Order = new Order(customer,af);
 		
 		a_category = new ArrayAdapter<String>(this, android.R.layout.simple_expandable_list_item_1, category);
 		a_artikelen = new SimpleCursorAdapter(this, R.layout.article_row2, c_Articles, FROM_A, TO_A, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER );
 
 		numPadAdapter = new NumPadAdapter();
 		
-		
-		a_order = new OrderListAdapter(this,R.layout.order_row,c_Order,FROM_O,TO_O,CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER, numPadAdapter);
-
+		a_order = new OrderListAdapter(this,R.layout.order_row, c_Order,this);
 
 		s_categories.setAdapter(a_category);
 		l_artikelen.setAdapter(a_artikelen);
+		
+		l_order.getPaddingLeft();
+		a_order.hashCode();
+
 		l_order.setAdapter(a_order);
 		
 		l_order.setOnItemClickListener(this);
 		l_artikelen.setOnItemClickListener(this);
 		
-		order_amount = (TextView) findViewById(R.order.amount);
-
 		numPadAdapter.addPropertyListener(this);
 		
 		findViewById(R.numPad.one).setOnClickListener(numPadAdapter);
@@ -171,22 +185,72 @@ public class OrderActivity extends Activity implements OnItemClickListener, Prop
 	public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
 		// TODO Auto-generated method stub
 		if(arg0.equals(l_artikelen)){
+			c_Order.addUnspecified((int) arg3);
+			a_order.notifyDataSetChanged();	
+			setCurrentArticle(arg3);
 			
-			c_Order.addPos(arg2);
-			a_order.notifyDataSetChanged();
 		}
+		if(arg0.equals(l_order)){
+			setCurrentArticle(arg3);
+			updateTotal();
+		}
+		
+	}
 
+	private void setCurrentArticle(long arg3) {
+		// TODO Auto-generated method stub
+		current_article = (int) arg3;
+		
+		if(arg3 == -1){
+			order_amount.setText("");
+
+		}else{
+			current_amount = c_Order.getUnitById(current_article).getAmount();
+			numPadAdapter.setIntValue(current_amount);
+			order_amount.setText(current_amount+"");
+		}		
 	}
 
 	@Override
 	public void propertyChange(PropertyChangeEvent event) {
 		// TODO Auto-generated method stub
-		if(event.getSource() == numPadAdapter){
+		
+		if(current_article != -1 && event.getSource() == numPadAdapter){
+			
 			Integer res = (Integer) event.getNewValue();
 			current_amount = res.intValue();
+			c_Order.getUnitById(current_article).setAmount(current_amount);
+			a_order.notifyDataSetChanged();
 			order_amount.setText(current_amount+"");
+			updateTotal();
 			
+		}	
+		if(event.getNewValue().equals("clicked")){
+			updateTotal();
 		}
+	}
+	
+	public void goBack(View view){
 		
+		finish();
+	}
+	
+	public void saveOrder(View view){
+		
+		Log.i("Hello","hello");
+		c_Order.writeToDB(this);
+		finish();
+		Intent intent = new Intent(this, TurfSelectCustomerActivity.class);
+		startActivity(intent);
+	}
+	
+	public void updateTotal(){
+		
+		totaal_output.setText(df.format(c_Order.calculateTotal())+"");
+	}
+	
+	public void setUnfocus(View view){
+		
+		setCurrentArticle(-1);
 	}
 }

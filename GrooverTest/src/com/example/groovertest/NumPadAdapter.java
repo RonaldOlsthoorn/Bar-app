@@ -58,7 +58,6 @@ public class NumPadAdapter implements OnClickListener{
 		case R.numPad.minus: number--;
 		break;
 		}
-		Log.i("INFO","integer: "+number);
 		
 		PropertyChangeEvent p = new PropertyChangeEvent(this, "amount", new Integer(0), new Integer(number));
 		

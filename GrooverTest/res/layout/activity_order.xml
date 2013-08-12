@@ -55,41 +55,79 @@
         android:layout_weight="0.5"
         android:orientation="vertical" >
 
-        <TextView
-            android:id="@+id/textView4"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="10dp"
-            android:layout_weight="0"
-            android:text="Klant:  "
-            android:textAppearance="?android:attr/textAppearanceLarge" />
+            android:layout_weight="1"
+            android:orientation="vertical" >
 
-        <TextView
-            android:id="@+order/custName"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
-            android:layout_weight="0"
-            android:textAppearance="?android:attr/textAppearanceLarge" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="0" >
 
-        <TextView
-            android:id="@+id/textView1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="5dp"
-            android:layout_weight="0"
-            android:text="Bestelling"
-            android:textAppearance="?android:attr/textAppearanceLarge" />
+                <TextView
+                    android:id="@+id/textView4"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
+                    android:layout_weight="0"
+                    android:text="Klant:  "
+                    android:textAppearance="?android:attr/textAppearanceLarge" />
 
-        <ListView
-            android:id="@+order/orderList"
+                <TextView
+                    android:id="@+order/custName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_weight="0"
+                    android:textAppearance="?android:attr/textAppearanceLarge" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/textView1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:layout_weight="0"
+                android:text="Bestelling"
+                android:textAppearance="?android:attr/textAppearanceLarge" />
+
+            <ListView
+                android:id="@+order/orderList"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:layout_weight="1"
+                android:choiceMode="singleChoice" >
+            </ListView>
+        </LinearLayout>
+
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="5dp"
-            android:layout_weight="1" >
+            android:layout_weight="0" >
 
-        </ListView>
+            <TextView
+                android:id="@+id/textView5"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="0"
+                android:text="Totaal"
+                android:textAppearance="?android:attr/textAppearanceLarge" />
+
+            <TextView
+                android:id="@+order/total"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="right"
+                android:layout_weight="0"
+                android:gravity="right"
+                android:textAppearance="?android:attr/textAppearanceLarge" />
+
+        </LinearLayout>
+
     </LinearLayout>
 
     <LinearLayout
@@ -212,10 +250,12 @@
                     android:text="0" />
 
                 <Button
-                    android:id="@+id/button3"
+                    android:id="@+numPad/ok"
                     android:layout_width="50dp"
                     android:layout_height="50dp"
+                    android:onClick="setUnfocus"
                     android:text="OK" />
+
             </LinearLayout>
         </LinearLayout>
 
@@ -241,11 +281,11 @@
         <Button
             android:id="@+id/button4"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="55dp"
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
             android:layout_marginTop="10dp"
-            android:layout_weight="0"
+            android:onClick="saveOrder"
             android:text="Bestelling afronden" />
 
         <Button
@@ -254,7 +294,7 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
-            android:layout_weight="0"
+            android:onClick="goBack"
             android:text="Terug" />
 
     </LinearLayout>
