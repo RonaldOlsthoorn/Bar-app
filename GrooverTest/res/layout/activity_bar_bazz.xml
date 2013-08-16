@@ -13,29 +13,31 @@
         android:orientation="vertical" >
 
         <Button
-            android:id="@+BarBazz/turfLijst"
-            android:layout_width="wrap_content"
+            android:id="@+BarBazz/Turven"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:onClick="editTurflijst"
-            android:text="Turflijst aanpassen" />
+            android:layout_margin="5dp"
+            android:onClick="naarTurflijst"
+            android:text="Turven" />
 
         <Button
             android:id="@+BarBazz/Groepen"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
+            android:layout_margin="5dp"
             android:onClick="toGroups"
             android:text="Groepen" />
-    </LinearLayout>
 
-    <Button
-        android:id="@+id/button1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/linearLayout1"
-        android:layout_centerHorizontal="true"
-        android:onClick="naarTurflijst"
-        android:text="Turven" />
+        <Button
+            android:id="@+BarBazz/turfLijst"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:onClick="editTurflijst"
+            android:text="Turflijst aanpassen" />
+
+    </LinearLayout>
 
 </RelativeLayout>

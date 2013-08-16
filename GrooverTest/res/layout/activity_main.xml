@@ -13,9 +13,10 @@
 
         <Button
             android:id="@+main/BarBazz"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
+            android:layout_margin="5dp"
             android:onClick="toBarBazz"
             android:text="BarBazz" />
 
@@ -24,6 +25,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
+            android:layout_margin="5dp"
             android:onClick="toBeheer"
             android:text="Bar beheer" />
 

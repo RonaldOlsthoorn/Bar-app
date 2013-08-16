@@ -13,16 +13,10 @@
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
-        <activity
-            android:name="com.example.groovertest.LoginActivity"
-            android:label="@string/app_name"
-            android:screenOrientation="landscape"
-            android:windowSoftInputMode="adjustResize|stateVisible" >
-        </activity>
+        
         <activity
             android:name="com.example.groovertest.MainActivity"
-            android:label="@string/title_activity_main"
-            android:parentActivityName="com.example.groovertest.LoginActivity"
+            android:label="@string/app_name"
             android:screenOrientation="landscape" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -30,10 +24,19 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        
+        <activity
+            android:name="com.example.groovertest.LoginActivity"
+            android:label="@string/app_name"
+            android:screenOrientation="landscape"
+            android:windowSoftInputMode="adjustResize|stateVisible" >
+        </activity>
+        
         <activity
             android:name="com.example.groovertest.LedenMainActivity"
             android:label="@string/title_activity_leden_main"
-            android:parentActivityName="com.example.groovertest.MainActivity" >
+            android:parentActivityName="com.example.groovertest.MainActivity"
+            android:screenOrientation="landscape" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.groovertest.MainActivity" />
@@ -41,7 +44,8 @@
         <activity
             android:name="com.example.groovertest.ArticleActivity"
             android:label="@string/title_activity_article"
-            android:parentActivityName="com.example.groovertest.MainActivity" >
+            android:parentActivityName="com.example.groovertest.MainActivity"
+            android:screenOrientation="landscape" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.groovertest.MainActivity" />
@@ -49,7 +53,8 @@
         <activity
             android:name="com.example.groovertest.GroupMainActivity"
             android:label="@string/title_activity_group_main"
-            android:parentActivityName="com.example.groovertest.MainActivity" >
+            android:parentActivityName="com.example.groovertest.MainActivity"
+            android:screenOrientation="landscape" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.groovertest.MainActivity" />
@@ -57,7 +62,8 @@
         <activity
             android:name="com.example.groovertest.BeheerActivity"
             android:label="@string/title_activity_beheer"
-            android:parentActivityName="com.example.groovertest.MainActivity" >
+            android:parentActivityName="com.example.groovertest.MainActivity"
+            android:screenOrientation="landscape" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.groovertest.MainActivity" />
@@ -65,7 +71,8 @@
         <activity
             android:name="com.example.groovertest.BarBazzActivity"
             android:label="@string/title_activity_bar_bazz"
-            android:parentActivityName="com.example.groovertest.MainActivity" >
+            android:parentActivityName="com.example.groovertest.MainActivity"
+            android:screenOrientation="landscape" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.groovertest.MainActivity" />
@@ -73,7 +80,8 @@
         <activity
             android:name="com.example.groovertest.TurfMenuActivity"
             android:label="@string/title_activity_turf_menu"
-            android:parentActivityName="com.example.groovertest.BarBazzActivity" >
+            android:parentActivityName="com.example.groovertest.BarBazzActivity"
+            android:screenOrientation="landscape" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.groovertest.BarBazzActivity" />
@@ -81,7 +89,8 @@
         <activity
             android:name="com.example.groovertest.EditTurfListActivity"
             android:label="@string/title_activity_edit_turf_list"
-            android:parentActivityName="com.example.groovertest.TurfMenuActivity" >
+            android:parentActivityName="com.example.groovertest.TurfMenuActivity"
+            android:screenOrientation="landscape" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.groovertest.TurfMenuActivity" />
@@ -89,7 +98,8 @@
         <activity
             android:name="com.example.groovertest.TurfSelectCustomerActivity"
             android:label="@string/title_activity_turf_select_customer"
-            android:parentActivityName="com.example.groovertest.TurfMenuActivity" >
+            android:parentActivityName="com.example.groovertest.TurfMenuActivity"
+            android:screenOrientation="landscape" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.groovertest.TurfMenuActivity" />
@@ -97,14 +107,25 @@
         <activity
             android:name="com.example.groovertest.OrderActivity"
             android:label="@string/title_activity_order"
-            android:parentActivityName="com.example.groovertest.TurfSelectCustomerActivity" >
+            android:parentActivityName="com.example.groovertest.TurfSelectCustomerActivity"
+            android:screenOrientation="landscape" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.groovertest.TurfSelectCustomerActivity" />
         </activity>
         <activity
             android:name="com.example.groovertest.TestAnnoyingLayoutsActivity"
-            android:label="@string/title_activity_test_annoying_layouts" >
+            android:label="@string/title_activity_test_annoying_layouts"
+            android:screenOrientation="landscape" >
+        </activity>
+        <activity
+            android:name="com.example.groovertest.PenningActivity"
+            android:label="@string/title_activity_penning"
+            android:parentActivityName="com.example.groovertest.BeheerActivity"
+            android:screenOrientation="landscape" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.example.groovertest.BeheerActivity" />
         </activity>
     </application>
 
