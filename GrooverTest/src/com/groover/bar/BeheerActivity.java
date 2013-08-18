@@ -1,37 +1,29 @@
-package com.example.groovertest;
+package com.groover.bar;
+
+import com.example.groovertest.R;
 
 import android.os.Bundle;
 import android.app.Activity;
+import android.content.Intent;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.support.v4.app.NavUtils;
-import android.annotation.TargetApi;
-import android.os.Build;
 
-public class PenningActivity extends Activity {
+public class BeheerActivity extends Activity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_penning);
+		setContentView(R.layout.activity_beheer);
 		// Show the Up button in the action bar.
-		setupActionBar();
-	}
-
-	/**
-	 * Set up the {@link android.app.ActionBar}, if the API is available.
-	 */
-	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
-	private void setupActionBar() {
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-			getActionBar().setDisplayHomeAsUpEnabled(true);
-		}
+		//getActionBar().setDisplayHomeAsUpEnabled(true);
 	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.penning, menu);
+		getMenuInflater().inflate(R.menu.activity_beheer, menu);
 		return true;
 	}
 
@@ -51,5 +43,29 @@ public class PenningActivity extends Activity {
 		}
 		return super.onOptionsItemSelected(item);
 	}
+	
+	public void toLeden(View view){
+		
+		Intent intent = new Intent(this, LedenMainActivity.class);
+		startActivity(intent);
+	}
 
+	public void toGroepen(View view){
+		
+		Intent intent = new Intent(this, GroupMainActivity.class);
+		startActivity(intent);
+	}
+	
+	public void toArtikelen(View view){
+		
+		Intent intent = new Intent(this, ArticleActivity.class);
+		startActivity(intent);
+	}
+	
+	public void editCredentials(View view){
+		
+		Intent intent = new Intent(this, EditCredentialsActivity.class);
+		startActivity(intent);
+
+	}
 }

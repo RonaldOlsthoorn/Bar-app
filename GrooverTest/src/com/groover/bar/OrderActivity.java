@@ -1,9 +1,12 @@
-package com.example.groovertest;
+package com.groover.bar;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+
+import com.example.groovertest.R;
+
 import android.os.Bundle;
 import android.app.Activity;
 import android.util.Log;

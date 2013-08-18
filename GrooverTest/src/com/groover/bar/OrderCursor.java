@@ -1,4 +1,4 @@
-package com.example.groovertest;
+package com.groover.bar;
 
 import java.beans.PropertyChangeListener;
 import java.util.HashMap;

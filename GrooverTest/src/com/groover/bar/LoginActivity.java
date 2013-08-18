@@ -1,10 +1,20 @@
-package com.example.groovertest;
+package com.groover.bar;
 
-import com.example.groovertest.MainActivity;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+
+import com.example.groovertest.R;
+
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -27,13 +37,13 @@ public class LoginActivity extends Activity {
 	 * A dummy authentication store containing known user names and passwords.
 	 * TODO: remove after connecting to a real authentication system.
 	 */
-	private static final String[] DUMMY_CREDENTIALS = new String[] {
-			"admin:mcallen" };
+	private static final String[] DUMMY_CREDENTIALS = new String[] { "admin:mcallen" };
 
+	private String[] creds = new String[] { "admin", "mcallen" };
 	/**
 	 * The default email to populate the email field with.
 	 */
-	public static final String EXTRA_EMAIL = "com.example.android.authenticatordemo.extra.EMAIL";
+	public static final String EXTRA_EMAIL = "bestuur@grooverjazz.nl";
 
 	/**
 	 * Keep track of the login task to ensure we can cancel it if requested.
@@ -41,15 +51,17 @@ public class LoginActivity extends Activity {
 	private UserLoginTask mAuthTask = null;
 
 	// Values for email and password at the time of the login attempt.
-	private String mEmail;
+	private String mUsername;
 	private String mPassword;
 
 	// UI references.
-	private EditText mEmailView;
+	private EditText mUsernameView;
 	private EditText mPasswordView;
 	private View mLoginFormView;
 	private View mLoginStatusView;
 	private TextView mLoginStatusMessageView;
+
+	private String FilePath = "sec/main";
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -58,11 +70,11 @@ public class LoginActivity extends Activity {
 		setContentView(R.layout.activity_login);
 
 		// Set up the login form.
-		mEmail = getIntent().getStringExtra(EXTRA_EMAIL);
-		mEmailView = (EditText) findViewById(R.id.email);
-		mEmailView.setText(mEmail);
+		mUsername = getIntent().getStringExtra(EXTRA_EMAIL);
+		mUsernameView = (EditText) findViewById(R.login.username);
+		mUsernameView.setText(mUsername);
 
-		mPasswordView = (EditText) findViewById(R.id.password);
+		mPasswordView = (EditText) findViewById(R.login.password);
 		mPasswordView
 				.setOnEditorActionListener(new TextView.OnEditorActionListener() {
 					@Override
@@ -87,6 +99,51 @@ public class LoginActivity extends Activity {
 						attemptLogin();
 					}
 				});
+
+		if (!(new File(this.getFilesDir(), "sec/main").exists())) {
+
+			File f = new File(this.getFilesDir(), "sec");
+
+			if (!f.exists()) {
+				f.mkdirs();
+			}
+
+			f = new File(this.getFilesDir(), "sec/main");
+			if (!f.exists()) {
+				FileOutputStream outputStream;
+				Log.i("hello", "Hier ben ik");
+				try {
+					outputStream = new FileOutputStream(f);
+					String out = creds[0] + "\n" + creds[1];
+					byte[] buffer = out.getBytes();
+					outputStream.write(buffer);
+					outputStream.close();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		}
+
+		File f = new File(this.getFilesDir(), "sec/main");
+
+		if (f.exists()) {
+			FileInputStream fis;
+			try {
+				fis = new FileInputStream(f);
+				InputStreamReader in = new InputStreamReader(fis);
+				BufferedReader br = new BufferedReader(in);
+				creds[0] = br.readLine();
+				creds[1] = br.readLine();
+				Log.i("username", creds[0]);
+				Log.i("password", creds[1]);
+			} catch (FileNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 	}
 
 	@Override
@@ -107,11 +164,11 @@ public class LoginActivity extends Activity {
 		}
 
 		// Reset errors.
-		mEmailView.setError(null);
+		mUsernameView.setError(null);
 		mPasswordView.setError(null);
 
 		// Store values at the time of the login attempt.
-		mEmail = mEmailView.getText().toString();
+		mUsername = mUsernameView.getText().toString();
 		mPassword = mPasswordView.getText().toString();
 
 		boolean cancel = false;
@@ -129,11 +186,11 @@ public class LoginActivity extends Activity {
 		}
 
 		// Check for a valid email address.
-		if (TextUtils.isEmpty(mEmail)) {
-			mEmailView.setError(getString(R.string.error_field_required));
-			focusView = mEmailView;
+		if (TextUtils.isEmpty(mUsername)) {
+			mUsernameView.setError(getString(R.string.error_field_required));
+			focusView = mUsernameView;
 			cancel = true;
-		} 
+		}
 
 		if (cancel) {
 			// There was an error; don't attempt login and focus the first
@@ -198,37 +255,28 @@ public class LoginActivity extends Activity {
 		@Override
 		protected Boolean doInBackground(Void... params) {
 			// TODO: attempt authentication against a network service.
-/*
-			try {
-				// Simulate network access.
-				Thread.sleep(0);
-			} catch (InterruptedException e) {
-				return false;
-			}
-			
-			*/
+			/*
+			 * try { // Simulate network access. Thread.sleep(0); } catch
+			 * (InterruptedException e) { return false; }
+			 */
 
-			for (String credential : DUMMY_CREDENTIALS) {
-				String[] pieces = credential.split(":");
-				if (pieces[0].equals(mEmail)) {
-					// Account exists, return true if the password matches.
-					return pieces[1].equals(mPassword);
-				}
+			if (creds[0].equals(mUsername)) {
+				// Account exists, return true if the password matches.
+				return creds[1].equals(mPassword);
 			}
-
 			// TODO: register the new account here.
 			return false;
 		}
 
 		@Override
 		protected void onPostExecute(final Boolean success) {
-			
 
 			mAuthTask = null;
 			showProgress(false);
 			Log.i("LoginActivity", "onPostExecute");
 			if (success) {
-				Intent intent = new Intent(LoginActivity.this, BeheerActivity.class);
+				Intent intent = new Intent(LoginActivity.this,
+						BeheerActivity.class);
 				startActivity(intent);
 			} else {
 				mPasswordView

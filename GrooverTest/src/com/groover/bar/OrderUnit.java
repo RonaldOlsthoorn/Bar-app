@@ -1,4 +1,4 @@
-package com.example.groovertest;
+package com.groover.bar;
 
 public class OrderUnit {
 	

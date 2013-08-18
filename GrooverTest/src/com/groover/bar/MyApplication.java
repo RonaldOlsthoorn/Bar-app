@@ -1,4 +1,4 @@
-package com.example.groovertest;
+package com.groover.bar;
 
 import android.app.Application;
 import android.content.Context;

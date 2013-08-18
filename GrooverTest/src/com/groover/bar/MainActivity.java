@@ -1,4 +1,8 @@
-package com.example.groovertest;
+package com.groover.bar;
+
+
+
+import com.example.groovertest.R;
 
 import android.os.Bundle;
 import android.app.Activity;
@@ -8,20 +12,21 @@ import android.view.MenuItem;
 import android.view.View;
 import android.support.v4.app.NavUtils;
 
-public class TurfMenuActivity extends Activity {
+public class MainActivity extends Activity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_turf_menu);
+		setContentView(R.layout.activity_main);
 		// Show the Up button in the action bar.
 		//getActionBar().setDisplayHomeAsUpEnabled(true);
+		
 	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.activity_turf_menu, menu);
+		getMenuInflater().inflate(R.menu.activity_main, menu);
 		return true;
 	}
 
@@ -42,16 +47,15 @@ public class TurfMenuActivity extends Activity {
 		return super.onOptionsItemSelected(item);
 	}
 	
-	public void aanpassen(View view){
+	public void toBeheer(View view){
 		
-		Intent intent = new Intent(this, EditTurfListActivity.class);
+		Intent intent = new Intent(this, LoginActivity.class);
 		startActivity(intent);
 	}
 	
-	public void toTurflijst(View view){
+	public void toBarBazz(View view){
 		
-		Intent intent = new Intent(this, TurfSelectCustomerActivity.class);
+		Intent intent = new Intent(this, BarBazzActivity.class);
 		startActivity(intent);
 	}
 }
-

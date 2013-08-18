@@ -1,6 +1,7 @@
-package com.example.groovertest;
+package com.groover.bar;
 
-import com.example.groovertest.DBHelper.ItemList;
+import com.example.groovertest.R;
+import com.groover.bar.DBHelper.ItemList;
 
 import android.os.Bundle;
 import android.app.Activity;

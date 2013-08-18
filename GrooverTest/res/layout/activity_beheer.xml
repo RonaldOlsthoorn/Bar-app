@@ -14,35 +14,47 @@
 
         <Button
             android:id="@+beheer/leden"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
+            android:layout_margin="5dp"
             android:onClick="toLeden"
             android:text="Leden" />
 
         <Button
             android:id="@+beheer/Groepen"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
+            android:layout_margin="5dp"
             android:onClick="toGroepen"
             android:text="Groepen" />
 
         <Button
             android:id="@+beheer/Artikelen"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
+            android:layout_margin="5dp"
             android:onClick="toArtikelen"
             android:text="Artikelen" />
 
         <Button
             android:id="@+beheer/Penning"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
+            android:layout_margin="5dp"
             android:onClick="toPenning"
             android:text="Penning" />
+
+        <Button
+            android:id="@+beheer/credentials"
+            android:layout_width="130dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:onClick="editCredentials"
+            android:text="Gebruikersnaam wachtwoord wijzigen" />
 
     </LinearLayout>
 

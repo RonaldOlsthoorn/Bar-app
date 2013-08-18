@@ -1,8 +1,10 @@
-package com.example.groovertest;
+package com.groover.bar;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.Stack;
+
+import com.example.groovertest.R;
 
 import android.util.Log;
 import android.view.View;

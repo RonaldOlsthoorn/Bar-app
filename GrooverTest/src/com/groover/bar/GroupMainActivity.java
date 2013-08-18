@@ -1,5 +1,7 @@
-package com.example.groovertest;
+package com.groover.bar;
 
+
+import com.example.groovertest.R;
 
 import android.os.Bundle;
 import android.app.Activity;
