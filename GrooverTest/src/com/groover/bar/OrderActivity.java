@@ -5,7 +5,7 @@ import java.beans.PropertyChangeListener;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 
-import com.example.groovertest.R;
+import com.groover.bar.R;
 
 import android.os.Bundle;
 import android.app.Activity;

@@ -170,7 +170,7 @@ public class DBHelper extends SQLiteOpenHelper {
 		Cursor members = getGroupMembers(groupid);
 		SQLiteDatabase db;
 		db = getReadableDatabase();
-		Cursor group = db.query(GroupTable.TABLE_NAME, new String[]{GroupTable.COLUMN_GROUP_ACCOUNT , GroupTable.COLUMN_GROUP_BALANCE}, GroupTable._ID+" = "+groupid, null, null, null, null);
+		Cursor group = db.query(GroupTable.TABLE_NAME, new String[]{GroupTable.COLUMN_GROUP_ACCOUNT , GroupTable.COLUMN_GROUP_BALANCE, GroupTable.COLUMN_GROUP_NAME}, GroupTable._ID+" = "+groupid, null, null, null, null);
 		group.moveToFirst();
 		members.moveToFirst();
 		double avg = group.getDouble(1)/((double)members.getCount());
@@ -180,7 +180,7 @@ public class DBHelper extends SQLiteOpenHelper {
 			ContentValues v = new ContentValues();
 			v.put(Order.COLUMN_TOTAL, avg);
 			v.put(Order.COLUMN_ACCOUNT, members.getInt(3));
-			v.put(Order.COLUMN_TS_CREATED, "NOW");
+			v.put(Order.COLUMN_TYPE, "group clearance: "+group.getString(2));
 			
 			long l = insertOrIgnore(Order.TABLE_NAME,v);
 			
@@ -252,15 +252,23 @@ public class DBHelper extends SQLiteOpenHelper {
 		return res;
 	}
 
+	public Cursor getMemberOrders(){
+		
+		return null;
+	}
+	
 	@Override
 	public void onCreate(SQLiteDatabase db) {
 		// TODO Auto-generated method stub
 		db.execSQL(MemberTable.SQL_CREATE_TABLE);
 		db.execSQL(MemberTable.TRIGGER_NEW_ACCOUNT);
 		db.execSQL(GroupTable.SQL_CREATE_TABLE);
+		db.execSQL(GroupTable.TRIGGER_NEW_ACCOUNT);
 		db.execSQL(GroupMembers.SQL_CREATE_TABLE);
 		db.execSQL(ItemList.SQL_CREATE_TABLE);
 		db.execSQL(AccountList.SQL_CREATE_TABLE);
+		db.execSQL(AccountList.SQL_TRIGGER_UPDATE_BALANCE1);
+		db.execSQL(AccountList.SQL_TRIGGER_UPDATE_BALANCE2);
 		db.execSQL(Order.SQL_CREATE_TABLE);
 		db.execSQL(Order.SQL_TRIGGER_UPDATE_TOTAL_1);
 		db.execSQL(Order.SQL_TRIGGER_UPDATE_TOTAL_2);
@@ -378,7 +386,7 @@ public class DBHelper extends SQLiteOpenHelper {
 		public static final String SQL_DELETE_ENTRIES = "DROP TABLE IF EXISTS "
 				+ TABLE_NAME;
 		
-		public static final String TRIGGER_NEW_ACCOUNT = "CREATE TRIGGER create_new_account "
+		public static final String TRIGGER_NEW_ACCOUNT = "CREATE TRIGGER create_new_account2 "
 				+ "AFTER INSERT ON "
 				+ TABLE_NAME
 				+ " FOR EACH ROW "
@@ -472,6 +480,36 @@ public class DBHelper extends SQLiteOpenHelper {
 
 		public static final String SQL_DELETE_ENTRIES = "DROP TABLE IF EXISTS "
 				+ TABLE_NAME;
+		
+		public static final String SQL_TRIGGER_UPDATE_BALANCE1 = "CREATE TRIGGER update_balance1 "  
+			
+				+ "AFTER UPDATE ON "
+				+ TABLE_NAME
+				+ " WHEN( OLD."+COLUMN_TYPE+"='individual')"
+				+ " BEGIN "
+				+ " UPDATE "
+				+ MemberTable.TABLE_NAME
+				+ " SET "
+				+ MemberTable.COLUMN_BALANCE +" = NEW."+COLUMN_BALANCE
+				+ " WHERE "
+				+ MemberTable.COLUMN_ACCOUNT+" = NEW."+COLUMN_ACCOUNT
+				+ " ; " + "END";
+		
+		public static final String SQL_TRIGGER_UPDATE_BALANCE2 = "CREATE TRIGGER update_balance2 "  
+				
+				+ "AFTER UPDATE ON "
+				+ TABLE_NAME
+				+ " WHEN( OLD."+COLUMN_TYPE+"='group')"
+				+ " BEGIN "
+				+ " UPDATE "
+				+ GroupTable.TABLE_NAME
+				+ " SET "
+				+ GroupTable.COLUMN_GROUP_BALANCE +" = NEW."+COLUMN_BALANCE
+				+ " WHERE "
+				+ GroupTable.COLUMN_GROUP_ACCOUNT+" = NEW."+COLUMN_ACCOUNT
+				+ " ; " + "END";
+
+
 	}
 
 	public static abstract class Order implements BaseColumns {
@@ -515,11 +553,11 @@ public class DBHelper extends SQLiteOpenHelper {
 				+ TABLE_NAME
 				+ " BEGIN "
 				+ " UPDATE "
-				+ MemberTable.TABLE_NAME
+				+ AccountList.TABLE_NAME
 				+ " SET "
-				+ MemberTable.COLUMN_BALANCE +" = NEW."+COLUMN_TOTAL+" + "+MemberTable.COLUMN_BALANCE
+				+ AccountList.COLUMN_BALANCE +" = NEW."+COLUMN_TOTAL+" + "+AccountList.COLUMN_BALANCE
 				+ " WHERE "
-				+ MemberTable.COLUMN_ACCOUNT+" = NEW."+COLUMN_ACCOUNT
+				+ AccountList.COLUMN_ACCOUNT+" = NEW."+COLUMN_ACCOUNT
 				+ ";" + "END";
 		
 	public static final String SQL_TRIGGER_UPDATE_TOTAL_2 =  "CREATE TRIGGER update_total_2 "  
@@ -528,37 +566,37 @@ public class DBHelper extends SQLiteOpenHelper {
 				+ TABLE_NAME
 				+ " BEGIN "
 				+ " UPDATE "
-				+ MemberTable.TABLE_NAME
+				+ AccountList.TABLE_NAME
 				+ " SET "
-				+ MemberTable.COLUMN_BALANCE +" = OLD."+COLUMN_TOTAL+" - "+MemberTable.COLUMN_BALANCE
+				+ AccountList.COLUMN_BALANCE +" = OLD."+COLUMN_TOTAL+" - "+AccountList.COLUMN_BALANCE
 				+ " WHERE "
-				+ MemberTable.COLUMN_ACCOUNT+" = OLD."+COLUMN_ACCOUNT
+				+ AccountList.COLUMN_ACCOUNT+" = OLD."+COLUMN_ACCOUNT
 				+ ";" + "END";
 	
 	public static final String SQL_TRIGGER_UPDATE_TOTAL_3 =  "CREATE TRIGGER update_total_3 "  
 			
-				+ "AFTER DELETE ON "
+				+ "AFTER UPDATE ON "
 				+ TABLE_NAME
 				+ " BEGIN "
 				+ " UPDATE "
-				+ MemberTable.TABLE_NAME
+				+ AccountList.TABLE_NAME
 				+ " SET "
-				+ MemberTable.COLUMN_BALANCE +" = OLD."+COLUMN_TOTAL+" - "+MemberTable.COLUMN_BALANCE
+				+ AccountList.COLUMN_BALANCE +" = OLD."+COLUMN_TOTAL+" - "+AccountList.COLUMN_BALANCE
 				+ " WHERE "
-				+ MemberTable.COLUMN_ACCOUNT+" = OLD."+COLUMN_ACCOUNT
+				+ AccountList.COLUMN_ACCOUNT+" = OLD."+COLUMN_ACCOUNT
 				+ ";" + "END";
 		
 	public static final String SQL_TRIGGER_UPDATE_TOTAL_4 =  "CREATE TRIGGER update_total_4 "  
 			
-				+ "AFTER DELETE ON "
+				+ "AFTER UPDATE ON "
 				+ TABLE_NAME
 				+ " BEGIN "
 				+ " UPDATE "
-				+ MemberTable.TABLE_NAME
+				+ AccountList.TABLE_NAME
 				+ " SET "
-				+ MemberTable.COLUMN_BALANCE +" = NEW."+COLUMN_TOTAL+" + "+MemberTable.COLUMN_BALANCE
+				+ AccountList.COLUMN_BALANCE +" = NEW."+COLUMN_TOTAL+" + "+AccountList.COLUMN_BALANCE
 				+ " WHERE "
-				+ MemberTable.COLUMN_ACCOUNT+" = NEW."+COLUMN_ACCOUNT
+				+ AccountList.COLUMN_ACCOUNT+" = NEW."+COLUMN_ACCOUNT
 				+ ";" + "END";
 	
 	}

@@ -1,6 +1,6 @@
 package com.groover.bar;
 
-import com.example.groovertest.R;
+import com.groover.bar.R;
 import com.groover.bar.DBHelper.ItemList;
 
 import android.os.Bundle;

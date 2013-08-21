@@ -4,7 +4,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.Stack;
 
-import com.example.groovertest.R;
+import com.groover.bar.R;
 
 import android.util.Log;
 import android.view.View;

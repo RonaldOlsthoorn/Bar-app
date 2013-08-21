@@ -8,7 +8,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-import com.example.groovertest.R;
+import com.groover.bar.R;
 
 import android.os.Bundle;
 import android.app.Activity;
@@ -158,6 +158,5 @@ public class EditCredentialsActivity extends Activity {
 		} else {
 			return credentials;
 		}
-
 	}
 }

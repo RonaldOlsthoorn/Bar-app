@@ -1,16 +1,37 @@
 package com.groover.bar;
 
-import com.example.groovertest.R;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.nio.channels.FileChannel;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Currency;
+import java.util.Date;
+import java.util.TimeZone;
+import java.text.DateFormat;
+import com.groover.bar.R;
 
 import android.os.Bundle;
+import android.os.Environment;
 import android.app.Activity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Toast;
 import android.support.v4.app.NavUtils;
 import android.annotation.TargetApi;
+import android.database.Cursor;
 import android.os.Build;
+import au.com.bytecode.opencsv.CSVWriter;
 
 public class PenningActivity extends Activity {
+	
+	DBHelper DB;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -18,6 +39,8 @@ public class PenningActivity extends Activity {
 		setContentView(R.layout.activity_penning);
 		// Show the Up button in the action bar.
 		setupActionBar();
+		
+		DB = DBHelper.getDBHelper(this);
 	}
 
 	/**
@@ -54,4 +77,85 @@ public class PenningActivity extends Activity {
 		return super.onOptionsItemSelected(item);
 	}
 
+	public void processDB(View v) {
+
+		boolean mExternalStorageAvailable = false;
+		boolean mExternalStorageWriteable = false;
+		String state = Environment.getExternalStorageState();
+
+		if (Environment.MEDIA_MOUNTED.equals(state)) {
+			// We can read and write the media
+			mExternalStorageAvailable = mExternalStorageWriteable = true;
+		} else if (Environment.MEDIA_MOUNTED_READ_ONLY.equals(state)) {
+			// We can only read the media
+			mExternalStorageAvailable = true;
+			mExternalStorageWriteable = false;
+		} else {
+			// Something else is wrong. It may be one of many other states, but
+			// all we need
+			// to know is we can neither read nor write
+			mExternalStorageAvailable = mExternalStorageWriteable = false;
+		}
+
+		Log.i("available", "available: " + mExternalStorageAvailable
+				+ " writable: " + mExternalStorageWriteable);
+
+		if (mExternalStorageAvailable && mExternalStorageWriteable) {
+
+			Calendar c = Calendar.getInstance();
+			SimpleDateFormat df1 = new SimpleDateFormat("dd-MM-yy hh.mm.ss");
+
+			File sdRoot = Environment.getExternalStorageDirectory();
+			File mainFolder = new File(sdRoot,
+					"Groover Bar/Afrekeningen/Afrekening "
+							+ df1.format(c.getTime()));
+			boolean res1 = mainFolder.mkdirs();
+
+			try {
+
+				File currentDB = this.getDatabasePath(DBHelper.DATABASE_NAME);
+				File backupDB = new File(mainFolder, "DB.db");
+				backupDB.createNewFile();
+				FileChannel src = new FileInputStream(currentDB).getChannel();
+				FileChannel dst = new FileOutputStream(backupDB).getChannel();
+				dst.transferFrom(src, 0, src.size());
+				src.close();
+				dst.close();
+				Toast.makeText(getBaseContext(), backupDB.toString(),
+						Toast.LENGTH_LONG).show();
+
+			} catch (Exception e) {
+
+				Toast.makeText(getBaseContext(), e.toString(),
+						Toast.LENGTH_LONG).show();
+
+			}
+
+			File cvs = new File(mainFolder, "afrekening.csv");
+
+			CSVWriter writer;
+			try {
+				writer = new CSVWriter(new FileWriter(cvs.getAbsolutePath()));
+				writer.writeNext(new String[] {"Afrekening"});
+				writer.close();
+
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+		}
+
+	}
+	
+	public String[] memberOrders(){
+		
+		Cursor c = DB.getMemberOrders();
+		
+		return null;
+	}
+
+	public void toStatistics(View view) {
+
+	}
 }

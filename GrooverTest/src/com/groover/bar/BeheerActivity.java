@@ -1,7 +1,6 @@
 package com.groover.bar;
 
-import com.example.groovertest.R;
-
+import com.groover.bar.R;
 import android.os.Bundle;
 import android.app.Activity;
 import android.content.Intent;
@@ -67,5 +66,11 @@ public class BeheerActivity extends Activity {
 		Intent intent = new Intent(this, EditCredentialsActivity.class);
 		startActivity(intent);
 
+	}
+	
+	public void toPenning(View view){
+		
+		Intent intent = new Intent(this, PenningActivity.class);
+		startActivity(intent);
 	}
 }
