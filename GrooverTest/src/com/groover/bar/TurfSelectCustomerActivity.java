@@ -1,10 +1,11 @@
 package com.groover.bar;
 
+import java.text.DecimalFormat;
+
 import com.groover.bar.R;
 
 import android.os.Bundle;
 import android.app.Activity;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -21,34 +22,41 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.os.Build;
 
-public class TurfSelectCustomerActivity extends Activity implements OnItemClickListener{
-	
-	private DBHelper DB; 
+public class TurfSelectCustomerActivity extends Activity implements
+		OnItemClickListener {
+
+	private int REQUEST_CODE = 123;
+
+	private DBHelper DB;
 	private Cursor c_leden;
 	private Cursor c_groepen;
 	private SimpleCursorAdapter a_leden;
 	private SimpleCursorAdapter a_groepen;
-	
-	private String[] FROM_LEDEN =new String[]{DBHelper.MemberTable.COLUMN_FIRST_NAME, 
-			DBHelper.MemberTable.COLUMN_LAST_NAME , 
-			DBHelper.MemberTable.COLUMN_BALANCE};
-	
-	private String[] FROM_GROUPS = new String[]{DBHelper.GroupTable.COLUMN_GROUP_NAME,
-			DBHelper.GroupTable.COLUMN_GROUP_BALANCE};
-	
-	private int[] TO_LEDEN = new int[]{R.ledenlijstrow.voornaam,R.ledenlijstrow.achternaam,R.ledenlijstrow.account};
-	private int[] TO_GROUPS = new int[]{R.grouprow1.naam,R.grouprow1.balance};
+	private DecimalFormat df;
+
+	private String[] FROM_LEDEN = new String[] {
+			DBHelper.MemberTable.COLUMN_FIRST_NAME,
+			DBHelper.MemberTable.COLUMN_LAST_NAME,
+			DBHelper.MemberTable.COLUMN_BALANCE };
+
+	private String[] FROM_GROUPS = new String[] {
+			DBHelper.GroupTable.COLUMN_GROUP_NAME,
+			DBHelper.GroupTable.COLUMN_GROUP_BALANCE };
+
+	private int[] TO_LEDEN = new int[] { R.ledenlijstrow.voornaam,
+			R.ledenlijstrow.achternaam, R.ledenlijstrow.account };
+	private int[] TO_GROUPS = new int[] { R.grouprow1.naam, R.grouprow1.balance };
 
 	private ListView l_leden;
 	private ListView l_groepen;
-	
+
 	private TextView customerNameTV;
 	private int customerId;
 	private String customerName;
 	private String customerType;
 	private int customerAcount;
 	private Button nextButton;
-	
+
 	/**
 	 * Set up the {@link android.app.ActionBar}, if the API is available.
 	 */
@@ -82,50 +90,54 @@ public class TurfSelectCustomerActivity extends Activity implements OnItemClickL
 		getMenuInflater().inflate(R.menu.turf_select_customer, menu);
 		return true;
 	}
-	
-	
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_turf_select_customer);
 		// Show the Up button in the action bar.
 		setupActionBar();
-		
+
 		nextButton = (Button) findViewById(R.selectCustomer.nextButton);
 		customerNameTV = (TextView) findViewById(R.selectCustomer.customer);
-		
+
 		DB = DBHelper.getDBHelper(this);
 		c_leden = DB.getListMembers();
 		c_groepen = DB.getListGroups();
 		
-		a_leden = new SimpleCursorAdapter(this,R.layout.ledenlijstrow, c_leden,FROM_LEDEN, TO_LEDEN,CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
-		a_groepen = new SimpleCursorAdapter(this,R.layout.grouprow, c_groepen,FROM_GROUPS, TO_GROUPS,CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
-		
+		df = new DecimalFormat("0.00");
+
+		a_leden = new FormatTextAdapter(this, R.layout.ledenlijstrow,
+				c_leden, FROM_LEDEN, TO_LEDEN,
+				CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER, df, R.ledenlijstrow.account);
+		a_groepen = new FormatTextAdapter(this, R.layout.grouprow, c_groepen,
+				FROM_GROUPS, TO_GROUPS,
+				CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER, df, R.grouprow1.balance);
+
 		l_leden = (ListView) findViewById(R.selectCustomer.listViewleden);
 		l_groepen = (ListView) findViewById(R.selectCustomer.listViewgroepen);
-		
+
 		l_leden.setAdapter(a_leden);
 		l_groepen.setAdapter(a_groepen);
-		
+
 		l_leden.setOnItemClickListener(this);
 		l_groepen.setOnItemClickListener(this);
-		
-		
+
 	}
 
 	@Override
 	public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
 		// TODO Auto-generated method stub
-		if(arg0.equals(l_leden)){
+		if (arg0.equals(l_leden)) {
 			c_leden.moveToPosition(arg2);
 			customerId = c_leden.getInt(0);
-			customerName = c_leden.getString(1)+" "+c_leden.getString(2);
+			customerName = c_leden.getString(1) + " " + c_leden.getString(2);
 			customerType = "individual";
 			customerAcount = c_leden.getInt(3);
 			customerNameTV.setText(customerName);
 			nextButton.setEnabled(true);
 		}
-		if(arg0.equals(l_groepen)){
+		if (arg0.equals(l_groepen)) {
 			c_groepen.moveToPosition(arg2);
 			customerId = c_groepen.getInt(0);
 			customerName = c_groepen.getString(1);
@@ -136,21 +148,31 @@ public class TurfSelectCustomerActivity extends Activity implements OnItemClickL
 
 		}
 	}
-	
-	public void annuleren(View view){
+
+	public void annuleren(View view) {
 		this.finish();
 	}
-	
-	public void next(View view){
-		
+
+	public void next(View view) {
+
 		Intent intent = new Intent(this, OrderActivity.class);
 		intent.putExtra("type", customerType);
 		intent.putExtra("ID", customerId);
 		intent.putExtra("account", customerAcount);
 		intent.putExtra("name", customerName);
-		
-		startActivity(intent);
-		
+
+		startActivityForResult(intent, REQUEST_CODE);
+
+	}
+
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		if (requestCode == 123) {
+			if (resultCode == RESULT_OK) {
+				Intent intent = getIntent();
+				finish();
+				startActivity(intent);
+			}
+		}
 	}
 }
-

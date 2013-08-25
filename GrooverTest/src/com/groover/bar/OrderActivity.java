@@ -226,6 +226,7 @@ public class OrderActivity extends Activity implements OnItemClickListener, Prop
 			updateTotal();
 			
 		}	
+		
 		if(event.getNewValue().equals("clicked")){
 			updateTotal();
 		}
@@ -238,11 +239,17 @@ public class OrderActivity extends Activity implements OnItemClickListener, Prop
 	
 	public void saveOrder(View view){
 		
-		Log.i("Hello","hello");
 		c_Order.writeToDB(this);
+		
+		Intent intent = new Intent(this,TurfSelectCustomerActivity.class );
+		
+		if (getParent() == null) {
+		    setResult(Activity.RESULT_OK, intent);
+		    } else {
+		        getParent().setResult(Activity.RESULT_OK, intent);
+		    }
 		finish();
-		Intent intent = new Intent(this, TurfSelectCustomerActivity.class);
-		startActivity(intent);
+		
 	}
 	
 	public void updateTotal(){

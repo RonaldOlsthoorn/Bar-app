@@ -3,20 +3,20 @@ package com.groover.bar;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.text.DecimalFormat;
-import java.util.Stack;
+
 
 import com.groover.bar.R;
 
 import android.app.Activity;
 import android.content.Context;
-import android.util.Log;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.View.OnClickListener;
 import android.widget.BaseAdapter;
 import android.widget.Button;
-import android.widget.SimpleAdapter;
+
 import android.widget.TextView;
 
 public class OrderListAdapter extends BaseAdapter{
