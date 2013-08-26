@@ -1,4 +1,6 @@
-package com.groover.bar;
+package com.groover.bar.gui;
+
+
 
 import com.groover.bar.R;
 
@@ -10,20 +12,21 @@ import android.view.MenuItem;
 import android.view.View;
 import android.support.v4.app.NavUtils;
 
-public class BarBazzActivity extends Activity {
+public class MainActivity extends Activity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_bar_bazz);
+		setContentView(R.layout.activity_main);
 		// Show the Up button in the action bar.
 		//getActionBar().setDisplayHomeAsUpEnabled(true);
+		
 	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.activity_bar_bazz, menu);
+		getMenuInflater().inflate(R.menu.activity_main, menu);
 		return true;
 	}
 
@@ -44,26 +47,15 @@ public class BarBazzActivity extends Activity {
 		return super.onOptionsItemSelected(item);
 	}
 	
-	public void toGroups(View view){
+	public void toBeheer(View view){
 		
-		Intent intent = new Intent(this, GroupMainActivity.class);
+		Intent intent = new Intent(this, LoginActivity.class);
 		startActivity(intent);
-		
 	}
 	
-	public void editTurflijst(View view){
+	public void toBarBazz(View view){
 		
-		Intent intent = new Intent(this, EditTurfListActivity.class);
+		Intent intent = new Intent(this, BarBazzActivity.class);
 		startActivity(intent);
-		
 	}
-	
-	public void naarTurflijst(View view){
-		
-		Intent intent = new Intent(this, TurfSelectCustomerActivity.class);
-		startActivity(intent);
-		
-	}
-	
-	
 }

@@ -17,7 +17,7 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name="com.groover.bar.MainActivity"
+            android:name="com.groover.bar.gui.MainActivity"
             android:label="@string/app_name"
             android:screenOrientation="landscape" >
             <intent-filter>
@@ -27,110 +27,110 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.groover.bar.LoginActivity"
+            android:name="com.groover.bar.gui.LoginActivity"
             android:label="@string/app_name"
             android:screenOrientation="landscape"
             android:windowSoftInputMode="adjustResize|stateVisible" >
         </activity>
         <activity
-            android:name="com.groover.bar.LedenMainActivity"
+            android:name="com.groover.bar.gui.LedenMainActivity"
             android:label="@string/title_activity_leden_main"
-            android:parentActivityName="com.groover.bar.MainActivity"
+            android:parentActivityName="com.groover.bar.gui.MainActivity"
             android:screenOrientation="landscape" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.groovertest.MainActivity" />
         </activity>
         <activity
-            android:name="com.groover.bar.ArticleActivity"
+            android:name="com.groover.bar.gui.ArticleActivity"
             android:label="@string/title_activity_article"
-            android:parentActivityName="com.groover.bar.MainActivity"
+            android:parentActivityName="com.groover.bar.gui.MainActivity"
             android:screenOrientation="landscape" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.groovertest.MainActivity" />
         </activity>
         <activity
-            android:name="com.groover.bar.GroupMainActivity"
+            android:name="com.groover.bar.gui.GroupMainActivity"
             android:label="@string/title_activity_group_main"
-            android:parentActivityName="com.groover.bar.MainActivity"
+            android:parentActivityName="com.groover.bar.gui.MainActivity"
             android:screenOrientation="landscape" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.groovertest.MainActivity" />
         </activity>
         <activity
-            android:name="com.groover.bar.BeheerActivity"
+            android:name="com.groover.bar.gui.BeheerActivity"
             android:label="@string/title_activity_beheer"
-            android:parentActivityName="com.groover.bar.MainActivity"
+            android:parentActivityName="com.groover.bar.gui.MainActivity"
             android:screenOrientation="landscape" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.groovertest.MainActivity" />
         </activity>
         <activity
-            android:name="com.groover.bar.BarBazzActivity"
+            android:name="com.groover.bar.gui.BarBazzActivity"
             android:label="@string/title_activity_bar_bazz"
-            android:parentActivityName="com.groover.bar.MainActivity"
+            android:parentActivityName="com.groover.bar.gui.MainActivity"
             android:screenOrientation="landscape" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.groovertest.MainActivity" />
         </activity>
         <activity
-            android:name="com.groover.bar.TurfMenuActivity"
+            android:name="com.groover.bar.gui.TurfMenuActivity"
             android:label="@string/title_activity_turf_menu"
-            android:parentActivityName="com.groover.bar.BarBazzActivity"
+            android:parentActivityName="com.groover.bar.gui.BarBazzActivity"
             android:screenOrientation="landscape" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.groovertest.BarBazzActivity" />
         </activity>
         <activity
-            android:name="com.groover.bar.EditTurfListActivity"
+            android:name="com.groover.bar.gui.EditTurfListActivity"
             android:label="@string/title_activity_edit_turf_list"
-            android:parentActivityName="com.groover.bar.TurfMenuActivity"
+            android:parentActivityName="com.groover.bar.gui.TurfMenuActivity"
             android:screenOrientation="landscape" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.groovertest.TurfMenuActivity" />
         </activity>
         <activity
-            android:name="com.groover.bar.TurfSelectCustomerActivity"
+            android:name="com.groover.bar.gui.TurfSelectCustomerActivity"
             android:label="@string/title_activity_turf_select_customer"
-            android:parentActivityName="com.groover.bar.TurfMenuActivity"
+            android:parentActivityName="com.groover.bar.gui.TurfMenuActivity"
             android:screenOrientation="landscape" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.groovertest.TurfMenuActivity" />
         </activity>
         <activity
-            android:name="com.groover.bar.OrderActivity"
+            android:name="com.groover.bar.gui.OrderActivity"
             android:label="@string/title_activity_order"
-            android:parentActivityName="com.groover.bar.TurfSelectCustomerActivity"
+            android:parentActivityName="com.groover.bar.gui.TurfSelectCustomerActivity"
             android:screenOrientation="landscape" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.groovertest.TurfSelectCustomerActivity" />
         </activity>
         <activity
-            android:name="com.groover.bar.TestAnnoyingLayoutsActivity"
+            android:name="com.groover.bar.gui.TestAnnoyingLayoutsActivity"
             android:label="@string/title_activity_test_annoying_layouts"
             android:screenOrientation="landscape" >
         </activity>
         <activity
-            android:name="com.groover.bar.PenningActivity"
+            android:name="com.groover.bar.gui.PenningActivity"
             android:label="@string/title_activity_penning"
-            android:parentActivityName="com.groover.bar.BeheerActivity"
+            android:parentActivityName="com.groover.bar.gui.BeheerActivity"
             android:screenOrientation="landscape" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.groovertest.BeheerActivity" />
         </activity>
         <activity
-            android:name="com.groover.bar.EditCredentialsActivity"
+            android:name="com.groover.bar.gui.EditCredentialsActivity"
             android:label="@string/title_activity_edit_credentials"
-            android:parentActivityName="com.groover.bar.BeheerActivity" >
+            android:parentActivityName="com.groover.bar.gui.BeheerActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.groovertest.BeheerActivity" />

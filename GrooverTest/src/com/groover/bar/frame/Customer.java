@@ -1,4 +1,4 @@
-package com.groover.bar;
+package com.groover.bar.frame;
 
 public class Customer {
 	

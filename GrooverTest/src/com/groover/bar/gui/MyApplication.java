@@ -1,4 +1,4 @@
-package com.groover.bar;
+package com.groover.bar.gui;
 
 import android.app.Application;
 import android.content.Context;

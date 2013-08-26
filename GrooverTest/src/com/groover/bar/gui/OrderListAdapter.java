@@ -1,4 +1,4 @@
-package com.groover.bar;
+package com.groover.bar.gui;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -6,6 +6,8 @@ import java.text.DecimalFormat;
 
 
 import com.groover.bar.R;
+import com.groover.bar.frame.Order;
+import com.groover.bar.frame.OrderUnit;
 
 import android.app.Activity;
 import android.content.Context;

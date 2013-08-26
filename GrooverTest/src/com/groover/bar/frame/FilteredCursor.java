@@ -1,4 +1,4 @@
-package com.groover.bar;
+package com.groover.bar.frame;
 
 import java.util.ArrayList;
 import java.util.Collections;

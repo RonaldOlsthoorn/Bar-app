@@ -1,9 +1,6 @@
-package com.groover.bar;
-
-
+package com.groover.bar.gui;
 
 import com.groover.bar.R;
-
 import android.os.Bundle;
 import android.app.Activity;
 import android.content.Intent;
@@ -12,21 +9,20 @@ import android.view.MenuItem;
 import android.view.View;
 import android.support.v4.app.NavUtils;
 
-public class MainActivity extends Activity {
+public class BeheerActivity extends Activity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_main);
+		setContentView(R.layout.activity_beheer);
 		// Show the Up button in the action bar.
 		//getActionBar().setDisplayHomeAsUpEnabled(true);
-		
 	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.activity_main, menu);
+		getMenuInflater().inflate(R.menu.activity_beheer, menu);
 		return true;
 	}
 
@@ -47,15 +43,34 @@ public class MainActivity extends Activity {
 		return super.onOptionsItemSelected(item);
 	}
 	
-	public void toBeheer(View view){
+	public void toLeden(View view){
 		
-		Intent intent = new Intent(this, LoginActivity.class);
+		Intent intent = new Intent(this, LedenMainActivity.class);
+		startActivity(intent);
+	}
+
+	public void toGroepen(View view){
+		
+		Intent intent = new Intent(this, GroupMainActivity.class);
 		startActivity(intent);
 	}
 	
-	public void toBarBazz(View view){
+	public void toArtikelen(View view){
 		
-		Intent intent = new Intent(this, BarBazzActivity.class);
+		Intent intent = new Intent(this, ArticleActivity.class);
+		startActivity(intent);
+	}
+	
+	public void editCredentials(View view){
+		
+		Intent intent = new Intent(this, EditCredentialsActivity.class);
+		startActivity(intent);
+
+	}
+	
+	public void toPenning(View view){
+		
+		Intent intent = new Intent(this, PenningActivity.class);
 		startActivity(intent);
 	}
 }

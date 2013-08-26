@@ -1,4 +1,4 @@
-package com.groover.bar;
+package com.groover.bar.gui;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -14,6 +14,7 @@ import java.util.Date;
 import java.util.TimeZone;
 import java.text.DateFormat;
 import com.groover.bar.R;
+import com.groover.bar.frame.DBHelper;
 
 import android.os.Bundle;
 import android.os.Environment;

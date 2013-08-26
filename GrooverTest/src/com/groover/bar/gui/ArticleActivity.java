@@ -1,7 +1,8 @@
-package com.groover.bar;
+package com.groover.bar.gui;
 
 import com.groover.bar.R;
-import com.groover.bar.DBHelper.ItemList;
+import com.groover.bar.frame.DBHelper;
+import com.groover.bar.frame.DBHelper.ItemList;
 
 import android.os.Bundle;
 import android.app.Activity;
