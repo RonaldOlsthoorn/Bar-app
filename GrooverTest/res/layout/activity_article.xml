@@ -60,6 +60,43 @@
             android:layout_height="wrap_content"
             android:visibility="gone" />
 
+        <LinearLayout
+            android:id="@+artikelen/editPane"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:visibility="gone" >
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:orientation="vertical" >
+
+                <Button
+                    android:id="@+id/button1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:onClick="w_article"
+                    android:text="Wijzig" />
+
+                <Button
+                    android:id="@+id/button2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:onClick="annuleren"
+                    android:text="Annuleren" />
+
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/button3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="v_article"
+                android:text="Verwijder" />
+
+        </LinearLayout>
+
         <Button
             android:id="@+artikelen/voegtoe_button"
             android:layout_width="wrap_content"
@@ -70,89 +107,13 @@
 
     </LinearLayout>
 
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:layout_margin="0dp"
-        android:layout_weight="0"
-        android:orientation="vertical" >
-
-        <TextView
-            android:id="@+id/textView1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="0dp"
-            android:text="Naam"
-            android:textAppearance="?android:attr/textAppearanceLarge" />
-
-        <EditText
-            android:id="@+artikelen/w_naam"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="5dp" >
-
-            <requestFocus />
-        </EditText>
-
-        <TextView
-            android:id="@+id/textView2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="0dp"
-            android:text="Prijs"
-            android:textAppearance="?android:attr/textAppearanceLarge" />
-
-        <EditText
-            android:id="@+artikelen/w_prijs"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="5dp"
-            android:inputType="numberDecimal" />
-
-        <TextView
-            android:id="@+id/textView3"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="0dp"
-            android:text="Categorie"
-            android:textAppearance="?android:attr/textAppearanceLarge" />
-
-        <Spinner
-            android:id="@+artikelen/w_categorie"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="5dp"
-            android:clickable="false" />
-
-        <EditText
-            android:id="@+artikelen/w_new_cat"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:visibility="gone" />
-
-        <Button
-            android:id="@+artikelen/wijzig_button"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:enabled="false"
-            android:onClick="w_article"
-            android:text="Wijzig artikel" />
-
-        <Button
-            android:id="@+artikelen/delete_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:enabled="false"
-            android:onClick="v_article"
-            android:text="Verwijder artikel" />
-
-    </LinearLayout>
-
     <ListView
         android:id="@+artikelen/listview"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
         android:layout_weight="1" >
+
     </ListView>
 
 </LinearLayout>

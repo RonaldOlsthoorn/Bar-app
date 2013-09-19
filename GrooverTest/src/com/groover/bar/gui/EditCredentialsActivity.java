@@ -93,12 +93,9 @@ public class EditCredentialsActivity extends Activity {
 
 		if (!newUsername.equals(null) && !newPassword.equals(null)
 				&& newPasswordRepeat.equals(newPassword)) {
-			
-			Log.i("hello", "1");
 
 			if (credentials[0].equals(oldUsername)
 					&& credentials[1].equals(oldPassword)) {
-				Log.i("hello", "2");
 				saveNewCredentials(newUsername, newPassword);
 			}
 		}
@@ -139,11 +136,9 @@ public class EditCredentialsActivity extends Activity {
 			try {
 				fis = new FileInputStream(f);
 				InputStreamReader in = new InputStreamReader(fis);
-				BufferedReader br = new BufferedReader(in);		
+				BufferedReader br = new BufferedReader(in);
 				credentials[0] = br.readLine();
 				credentials[1] = br.readLine();
-				Log.i("username", credentials[0]);
-				Log.i("password", credentials[1]);
 				fis.close();
 				return credentials;
 
@@ -153,7 +148,7 @@ public class EditCredentialsActivity extends Activity {
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
-			} 
+			}
 			return credentials;
 		} else {
 			return credentials;

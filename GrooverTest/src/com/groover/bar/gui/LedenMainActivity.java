@@ -1,16 +1,29 @@
 package com.groover.bar.gui;
 
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.StringWriter;
+import java.nio.channels.FileChannel;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.lang.IllegalStateException;
+
+import org.xmlpull.v1.XmlSerializer;
+
 import com.groover.bar.R;
 import com.groover.bar.frame.DBHelper;
 
 import android.os.Bundle;
+import android.os.Environment;
 import android.app.Activity;
 import android.content.ContentValues;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.content.DialogInterface.OnClickListener;
+
 import android.database.Cursor;
 import android.util.Log;
+import android.util.Xml;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -19,75 +32,62 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.TextView;
+import android.widget.Toast;
 import android.support.v4.app.NavUtils;
 import android.support.v4.widget.CursorAdapter;
 import android.support.v4.widget.SimpleCursorAdapter;
 
 public class LedenMainActivity extends Activity implements OnItemClickListener {
-	
+
 	private DBHelper DB;
 	private ListView ledenlijst;
 
 	private Button voegtoe;
-	private Button wijzig;
-	private Button verwijder;
-	
+
 	private EditText vtVoornaam;
 	private EditText vtAchternaam;
-	private EditText vtId;
-	
-	private EditText wVoornaam;
-	private EditText wAchternaam;
-	private EditText wId;
+	private EditText vtEmail;
 
-	
 	private int current;
 
 	private SimpleCursorAdapter adapter;
 	private Cursor c;
-	private String[] FROM = new String[]{DBHelper.MemberTable.COLUMN_FIRST_NAME,
+	private String[] FROM = new String[] {
+			DBHelper.MemberTable.COLUMN_FIRST_NAME,
 			DBHelper.MemberTable.COLUMN_LAST_NAME,
-			DBHelper.MemberTable.COLUMN_ID};
-	private int[] TO = new int[]{R.ledenlijstrow.voornaam, R.ledenlijstrow.achternaam,R.ledenlijstrow.account};
+			DBHelper.MemberTable.COLUMN_EMAIL };
+	private int[] TO = new int[] { R.ledenlijstrow.voornaam,
+			R.ledenlijstrow.achternaam, R.ledenlijstrow.account };
+
+	private View editPane;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_leden_main);
 		// Show the Up button in the action bar.
-		//getActionBar().setDisplayHomeAsUpEnabled(true);
-		
+		// getActionBar().setDisplayHomeAsUpEnabled(true);
 
 		DB = DBHelper.getDBHelper(this);
 
 		ledenlijst = (ListView) findViewById(R.leden.listview);
-		
-		
+		editPane = findViewById(R.leden.editPane);
+
 		voegtoe = (Button) findViewById(R.leden.voegtoe_button);
-		wijzig = (Button) findViewById(R.leden.wijzig_button);
-		verwijder = (Button) findViewById(R.leden.verwijder_button);
-		
+
 		vtVoornaam = (EditText) findViewById(R.leden.voegtoe_voornaam);
 		vtAchternaam = (EditText) findViewById(R.leden.voegtoe_achternaam);
-		vtId = (EditText) findViewById(R.leden.voegtoe_id);
-		
-		wVoornaam = (EditText) findViewById(R.leden.wijzig_voornaam);
-		wAchternaam = (EditText) findViewById(R.leden.wijzig_achternaam);
-		wId = (EditText) findViewById(R.leden.wijzig_id);
-		
-		c=DB.getMembers();
-		
-		adapter = new SimpleCursorAdapter(this,
-				R.layout.ledenlijstrow, c, FROM,
-				TO,
-				CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
+		vtEmail = (EditText) findViewById(R.leden.email);
+
+		c = DB.getMembers();
+
+		adapter = new SimpleCursorAdapter(this, R.layout.ledenlijstrow, c,
+				FROM, TO, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
 
 		ledenlijst.setOnItemClickListener(this);
 		ledenlijst.setAdapter(adapter);
-		
-		DB.close();
-		
+
+
 	}
 
 	@Override
@@ -114,78 +114,206 @@ public class LedenMainActivity extends Activity implements OnItemClickListener {
 		return super.onOptionsItemSelected(item);
 	}
 
-	public void voegToeLid(View view){
-		
-		int id =Integer.parseInt(vtId.getText().toString());
+	public void voegToeLid(View view) {
+
+		String email = vtEmail.getText().toString();
 		String voornaam = vtVoornaam.getText().toString();
 		String achternaam = vtAchternaam.getText().toString();
-		
+
 		ContentValues v = new ContentValues();
-		v.put(DBHelper.MemberTable.COLUMN_ID, id);
+		v.put(DBHelper.MemberTable.COLUMN_EMAIL, email);
 		v.put(DBHelper.MemberTable.COLUMN_FIRST_NAME, voornaam);
 		v.put(DBHelper.MemberTable.COLUMN_LAST_NAME, achternaam);
-		v.put(DBHelper.MemberTable.COLUMN_BALANCE,0);
-		
-		long b = DB.insertOrIgnore(DBHelper.MemberTable.TABLE_NAME, v);
-		
+		v.put(DBHelper.MemberTable.COLUMN_BALANCE, 0);
+
+		DB.insertOrIgnore(DBHelper.MemberTable.TABLE_NAME, v);
+
 		c.close();
-		c=DB.getMembers();
+		c = DB.getMembers();
 		adapter.swapCursor(c);
-			
+
 	}
 
 	@Override
 	public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
 		// TODO Auto-generated method stub
-		
+
 		c.moveToPosition(arg2);
 		current = c.getInt(0);
-		wId.setText(""+c.getInt(0));
-		wVoornaam.setText(c.getString(1));
-		wAchternaam.setText(c.getString(2));	
-		wijzig.setEnabled(true);
-		verwijder.setEnabled(true);
-		
-	}
-	
-	public void wijzigLid(View view){
-		
-		c.moveToPosition(current);
-		
-		String voornaam = wVoornaam.getText().toString();
-		String achternaam = wAchternaam.getText().toString();
+		vtEmail.setText("" + c.getString(2));
+		vtVoornaam.setText(c.getString(3));
+		vtAchternaam.setText(c.getString(4));
 
-		int id = Integer.parseInt(wId.getText().toString());
+		editPane.setVisibility(View.VISIBLE);
+		voegtoe.setVisibility(View.GONE);
+	}
+
+	public void wijzigLid(View view) {
+
+		c.moveToPosition(current);
+
+		String voornaam = vtVoornaam.getText().toString();
+		String achternaam = vtAchternaam.getText().toString();
+		String email = vtEmail.getText().toString();
+
 		ContentValues v = new ContentValues();
-		v.put(DBHelper.MemberTable.COLUMN_ID, id );
+		v.put(DBHelper.MemberTable.COLUMN_EMAIL, email);
 		v.put(DBHelper.MemberTable.COLUMN_FIRST_NAME, voornaam);
 		v.put(DBHelper.MemberTable.COLUMN_LAST_NAME, achternaam);
-		
-		boolean b = DB.updateOrIgnore(DBHelper.MemberTable.TABLE_NAME, current, v);	
+
+		DB.updateOrIgnore(DBHelper.MemberTable.TABLE_NAME, current, v);
+
 		c.close();
-		c=DB.getMembers();
+		c = DB.getMembers();
 		adapter.swapCursor(c);
-		
-		wijzig.setEnabled(true);
-		verwijder.setEnabled(true);
-		
+
 	}
-	
-	public void verwijderLid(View view){
-		
+
+	public void verwijderLid(View view) {
+
 		c.moveToPosition(current);
-		
-		boolean b = DB.deleteOrIgnore(DBHelper.MemberTable.TABLE_NAME, current);
+
+		DB.deleteOrIgnore(DBHelper.MemberTable.TABLE_NAME, current);
+
+		c.close();
+		c = DB.getMembers();
+		adapter.swapCursor(c);
+		setToDefault();
+	}
+
+	public void annuleren(View view) {
+
+		setToDefault();
+
+	}
+
+	public void setToDefault() {
+		// TODO Auto-generated method stub
+		editPane.setVisibility(View.GONE);
+		voegtoe.setVisibility(View.VISIBLE);
+
+		vtEmail.setText("");
+		vtVoornaam.setText("");
+		vtAchternaam.setText("");
+
+	}
+
+	public void exportMembers(View v) {
+
+		boolean mExternalStorageAvailable = false;
+		boolean mExternalStorageWriteable = false;
+		String state = Environment.getExternalStorageState();
+
+		if (Environment.MEDIA_MOUNTED.equals(state)) {
+			// We can read and write the media
+			mExternalStorageAvailable = mExternalStorageWriteable = true;
+		} else if (Environment.MEDIA_MOUNTED_READ_ONLY.equals(state)) {
+			// We can only read the media
+			mExternalStorageAvailable = true;
+			mExternalStorageWriteable = false;
+		} else {
+			// Something else is wrong. It may be one of many other states, but
+			// all we need
+			// to know is we can neither read nor write
+			mExternalStorageAvailable = mExternalStorageWriteable = false;
+		}
+
+		if (mExternalStorageAvailable && mExternalStorageWriteable) {
+
+			File sdRoot = Environment.getExternalStorageDirectory();
+			File mainFolder = new File(sdRoot,
+					"Groover Bar/import export leden");
+			mainFolder.mkdirs();
+
+			try {
+
+				File currentDB = this.getDatabasePath(DBHelper.DATABASE_NAME);
+				File backupDB = new File(mainFolder, "DB.db");
+				backupDB.createNewFile();
+				FileChannel src = new FileInputStream(currentDB).getChannel();
+				FileChannel dst = new FileOutputStream(backupDB).getChannel();
+				dst.transferFrom(src, 0, src.size());
+				src.close();
+				dst.close();
+				Toast.makeText(getBaseContext(), backupDB.toString(),
+						Toast.LENGTH_LONG).show();
+
+			} catch (Exception e) {
+
+				Toast.makeText(getBaseContext(), e.toString(),
+						Toast.LENGTH_LONG).show();
+
+			}
+
+			Calendar c = Calendar.getInstance();
+			SimpleDateFormat df1 = new SimpleDateFormat("dd-MM-yy hh.mm.ss");
+
+			File xml = new File(mainFolder, "ledenbestand "
+					+ df1.format(c.getTime()) + ".xml");
+
+			try {
+				
+				BufferedOutputStream buf = new BufferedOutputStream(
+						new FileOutputStream(xml));
+				extractFromDB(buf);
+				buf.close();
+			} catch (IllegalArgumentException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+
+			} catch (IllegalStateException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+
+			}
+		}
+	}
+
+	private void extractFromDB(BufferedOutputStream buf) throws IllegalArgumentException,
+			IllegalStateException, IOException {
+
+		XmlSerializer xmlSerializer = Xml.newSerializer();
+		xmlSerializer.setOutput(buf,"UTF-8");
+		// start DOCUMENT
+		xmlSerializer.startDocument("UTF-8", true);
+
+		// open tag: <root>
+		xmlSerializer.startTag(null, "root");
+
 		
 		c.close();
-		c=DB.getMembers();
-		adapter.swapCursor(c);
+		c = DB.getMembers();
+		c.moveToFirst();
+		c.getInt(0);
+			
 		
-		wijzig.setEnabled(false);
-		verwijder.setEnabled(false);
+		while (c.getPosition() < c.getCount()) {
+			// open tag: <member>
+
+			xmlSerializer.startTag(null, "member");
+
+			xmlSerializer.attribute(null, "GR_ID", "" + c.getInt(1));
+
+			xmlSerializer.attribute(null, "email", "" + c.getInt(2));
+			xmlSerializer.attribute(null, "first_name", c.getString(3));
+			xmlSerializer.attribute(null, "last_name", "" + c.getString(4));
+			xmlSerializer.attribute(null, "account_nr", "" + c.getInt(5));
+			xmlSerializer.attribute(null, "balance", "" + c.getDouble(6));
+
+			xmlSerializer.endTag(null, "member");
+			
+			c.moveToNext();
+
+		}
+		// end DOCUMENT
+		xmlSerializer.endTag(null, "root");
 		
-		wVoornaam.setText("");
-		wAchternaam.setText("");
+		xmlSerializer.endDocument();
+		xmlSerializer.flush();
 		
 	}
 }

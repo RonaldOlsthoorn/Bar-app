@@ -111,7 +111,6 @@ public class LoginActivity extends Activity {
 			f = new File(this.getFilesDir(), "sec/main");
 			if (!f.exists()) {
 				FileOutputStream outputStream;
-				Log.i("hello", "Hier ben ik");
 				try {
 					outputStream = new FileOutputStream(f);
 					String out = creds[0] + "\n" + creds[1];
@@ -134,8 +133,6 @@ public class LoginActivity extends Activity {
 				BufferedReader br = new BufferedReader(in);
 				creds[0] = br.readLine();
 				creds[1] = br.readLine();
-				Log.i("username", creds[0]);
-				Log.i("password", creds[1]);
 			} catch (FileNotFoundException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -273,7 +270,6 @@ public class LoginActivity extends Activity {
 
 			mAuthTask = null;
 			showProgress(false);
-			Log.i("LoginActivity", "onPostExecute");
 			if (success) {
 				Intent intent = new Intent(LoginActivity.this,
 						BeheerActivity.class);

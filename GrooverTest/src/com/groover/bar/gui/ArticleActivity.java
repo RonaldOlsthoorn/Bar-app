@@ -25,100 +25,88 @@ import android.support.v4.app.NavUtils;
 import android.support.v4.widget.CursorAdapter;
 import android.support.v4.widget.SimpleCursorAdapter;
 
-public class ArticleActivity extends Activity implements OnItemClickListener, OnItemSelectedListener{
-	
+public class ArticleActivity extends Activity implements OnItemClickListener,
+		OnItemSelectedListener {
+
 	private DBHelper DB;
 	private ListView artikellijst;
 
-
-	private Button wijzig;
-	private Button verwijder;
-	
-	private EditText vtNaam;
-	private EditText vtPrijs;
-	private EditText vt_new_cat;
-	private Spinner vtCat;
-	private String vt_cat;
-	
-	private EditText wNaam;
-	private EditText wPrijs;
-	private EditText w_new_cat;
-	private Spinner wCat;
-	private String w_cat;
+	private EditText et_naam;
+	private EditText et_prijs;
+	private EditText et_cat;
+	private Spinner sp_cat;
+	private String cat;
+	private View editPane;
+	private Button voegToe;
 	
 	private int current;
-	
+
 	private SimpleCursorAdapter adapter;
 	private Cursor c_articles;
 	private Cursor c_categories;
 	private Cursor extendedCursor;
 	private MatrixCursor extras;
-	
-	private String[] FROM = new String[]{DBHelper.ItemList.COLUMN_NAME_ITEM,
-			DBHelper.ItemList.COLUMN_NAME_PRICE,
-			DBHelper.ItemList.COLUMN_NAME_CAT};
-	
-	private int[] TO = new int[]{R.articlerow.naam, R.articlerow.price,R.articlerow.category};
-	
-	private SimpleCursorAdapter cat_adapter;
 
+	private String[] FROM = new String[] { DBHelper.ItemList.COLUMN_NAME_ITEM,
+			DBHelper.ItemList.COLUMN_NAME_PRICE,
+			DBHelper.ItemList.COLUMN_NAME_CAT };
+
+	private int[] TO = new int[] { R.articlerow.naam, R.articlerow.price,
+			R.articlerow.category };
+
+	private SimpleCursorAdapter cat_adapter;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_article);
 		// Show the Up button in the action bar.
-		//getActionBar().setDisplayHomeAsUpEnabled(true);
-		
+		// getActionBar().setDisplayHomeAsUpEnabled(true);
+
 		DB = DBHelper.getDBHelper(this);
 
 		artikellijst = (ListView) findViewById(R.artikelen.listview);
-			
-		wijzig = (Button) findViewById(R.artikelen.wijzig_button);
-		verwijder = (Button) findViewById(R.artikelen.delete_button);
+
+		et_naam = (EditText) findViewById(R.artikelen.vt_naam);
+		et_prijs = (EditText) findViewById(R.artikelen.vt_prijs);
+		et_cat = (EditText) findViewById(R.artikelen.vt_new_cat);
+		sp_cat = (Spinner) findViewById(R.artikelen.vt_categorie);
+		voegToe = (Button) findViewById(R.artikelen.voegtoe_button);
+		sp_cat.setOnItemSelectedListener(this);
 		
-		vtNaam = (EditText) findViewById(R.artikelen.vt_naam);
-		vtPrijs = (EditText) findViewById(R.artikelen.vt_prijs);
-		vt_new_cat = (EditText) findViewById(R.artikelen.vt_new_cat);
-		vtCat = (Spinner) findViewById(R.artikelen.vt_categorie);
-		vtCat.setOnItemSelectedListener(this);
-		
-		wNaam = (EditText) findViewById(R.artikelen.w_naam);
-		wPrijs = (EditText) findViewById(R.artikelen.w_prijs);
-		w_new_cat = (EditText) findViewById(R.artikelen.w_new_cat);
-		wCat = (Spinner) findViewById(R.artikelen.w_categorie);
-		wCat.setOnItemSelectedListener(this);
-		
-		c_articles=DB.getArticles();
-		
-		adapter = new SimpleCursorAdapter(this,
-				R.layout.article_row, c_articles, FROM,
-				TO,
+		editPane = findViewById(R.artikelen.editPane);
+
+		c_articles = DB.getArticles();
+
+		adapter = new SimpleCursorAdapter(this, R.layout.article_row,
+				c_articles, FROM, TO,
 				CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
 
 		artikellijst.setOnItemClickListener(this);
 		artikellijst.setAdapter(adapter);
-		
-		
-		DB.close();
-		
-		c_categories = DB.getCategories();
-		extras = new MatrixCursor(new String[] { ItemList.COLUMN_ID, ItemList.COLUMN_NAME_CAT });
-		extras.addRow(new String[] { "-1", "Nieuwe Categorie" });
-		Cursor[] cursors = { c_categories , extras };
-		extendedCursor = new MergeCursor(cursors);
-		
-	    cat_adapter = new SimpleCursorAdapter(this, 
-                android.R.layout.simple_spinner_item, 
-                extendedCursor, new String[] { ItemList.COLUMN_NAME_CAT },  
-                new int[] {android.R.id.text1}, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
 
-	    cat_adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-	    
-	    vtCat.setAdapter(cat_adapter);
-	    
-	    DB.close();
-	    		
+		DB.close();
+
+		c_categories = DB.getCategories();
+		extras = new MatrixCursor(new String[] { ItemList.COLUMN_ID,
+				ItemList.COLUMN_NAME_CAT });
+		extras.addRow(new String[] { "-1", "Nieuwe Categorie" });
+		Cursor[] cursors = { c_categories, extras };
+		extendedCursor = new MergeCursor(cursors);
+
+		cat_adapter = new SimpleCursorAdapter(this,
+				android.R.layout.simple_spinner_item, extendedCursor,
+				new String[] { ItemList.COLUMN_NAME_CAT },
+				new int[] { android.R.id.text1 },
+				CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
+
+		cat_adapter
+				.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+		sp_cat.setAdapter(cat_adapter);
+
+		DB.close();
+
 	}
 
 	@Override
@@ -148,148 +136,144 @@ public class ArticleActivity extends Activity implements OnItemClickListener, On
 	@Override
 	public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
 		// TODO Auto-generated method stub
-		
+
 		c_articles.moveToPosition(arg2);
 		current = c_articles.getInt(0);
-		wNaam.setText(c_articles.getString(1));
-		wPrijs.setText(""+c_articles.getDouble(2));
-		w_cat = c_articles.getString(3);
+		et_naam.setText(c_articles.getString(1));
+		et_prijs.setText("" + c_articles.getDouble(2));
+		cat = c_articles.getString(3);
+
 		c_categories.moveToFirst();
-			
-		while(!(c_categories.isLast() || c_categories.getString(1).equals(w_cat))){
+
+		while (!(c_categories.isLast() || c_categories.getString(1).equals(cat))) {
 			c_categories.moveToNext();
 		}
+
+		sp_cat.setClickable(true);
+		sp_cat.setAdapter(cat_adapter);
+		sp_cat.setSelection(c_categories.getPosition(), true);
 		
-		wCat.setClickable(true);
-		wCat.setAdapter(cat_adapter);
-		wCat.setSelection(c_categories.getPosition(), true);
+		voegToe.setVisibility(View.GONE);
+		editPane.setVisibility(View.VISIBLE);
+		
 		c_categories.moveToFirst();
-		
-		wijzig.setEnabled(true);
-		verwijder.setEnabled(true);
-		
-		
+
 	}
-	
-	public void vt_article(View v){
-		
-		String naam = vtNaam.getText().toString();
-		double prijs = Double.parseDouble(vtPrijs.getText().toString());
-		
-		if(vt_cat.equals("Nieuwe Categorie")){
-			vt_cat = vt_new_cat.getText().toString();
+
+	public void vt_article(View v) {
+
+		String naam = et_naam.getText().toString();
+		double prijs = Double.parseDouble(et_prijs.getText().toString());
+
+		if (cat.equals("Nieuwe Categorie")) {
+			cat = et_cat.getText().toString();
 		}
-		
+
 		ContentValues values = new ContentValues();
 		values.put(DBHelper.ItemList.COLUMN_NAME_ITEM, naam);
 		values.put(DBHelper.ItemList.COLUMN_NAME_PRICE, prijs);
-		values.put(DBHelper.ItemList.COLUMN_NAME_CAT, vt_cat);
-		
+		values.put(DBHelper.ItemList.COLUMN_NAME_CAT, cat);
+
 		long b = DB.insertOrIgnore(DBHelper.ItemList.TABLE_NAME, values);
-		
+
 		c_articles.close();
-		c_articles=DB.getArticles();
+		c_articles = DB.getArticles();
 		adapter.swapCursor(c_articles);
-		
+
 		c_categories.close();
 		c_categories = DB.getCategories();
-		Cursor[] cursors = { c_categories , extras };
+		Cursor[] cursors = { c_categories, extras };
 		extendedCursor = new MergeCursor(cursors);
-		
+
 		cat_adapter.swapCursor(extendedCursor);
-		
-		vtNaam.setText("");
-		vtPrijs.setText("");
+
+		setToDefault();
 
 	}
-	
-	public void w_article(View v){
-		
-		String naam = wNaam.getText().toString();
-		double prijs = Double.parseDouble(wPrijs.getText().toString());
-		
-		if(w_cat.equals("Nieuwe Categorie")){
-			w_cat = w_new_cat.getText().toString();
+
+	public void w_article(View v) {
+
+		String naam = et_naam.getText().toString();
+		double prijs = Double.parseDouble(et_prijs.getText().toString());
+
+		if (cat.equals("Nieuwe Categorie")) {
+			cat = et_cat.getText().toString();
 		}
-		
+
 		ContentValues values = new ContentValues();
 		values.put(DBHelper.ItemList.COLUMN_NAME_ITEM, naam);
 		values.put(DBHelper.ItemList.COLUMN_NAME_PRICE, prijs);
-		values.put(DBHelper.ItemList.COLUMN_NAME_CAT, w_cat);
-		
-		boolean b = DB.updateOrIgnore(DBHelper.ItemList.TABLE_NAME,current, values);
-		
-		c_articles.close();
-		c_articles=DB.getArticles();
-		adapter.swapCursor(c_articles);
-		
-		c_categories.close();
-		c_categories = DB.getCategories();
-		Cursor[] cursors = { c_categories , extras };
-		extendedCursor = new MergeCursor(cursors);
-		
-		cat_adapter.swapCursor(extendedCursor);		
-	}
+		values.put(DBHelper.ItemList.COLUMN_NAME_CAT, cat);
 
-	public void v_article(View v){
-		
-		boolean b = DB.deleteOrIgnore(DBHelper.ItemList.TABLE_NAME,current);
-		
+		boolean b = DB.updateOrIgnore(DBHelper.ItemList.TABLE_NAME, current,
+				values);
+
 		c_articles.close();
-		c_articles=DB.getArticles();
+		c_articles = DB.getArticles();
 		adapter.swapCursor(c_articles);
-		
+
 		c_categories.close();
 		c_categories = DB.getCategories();
-		Cursor[] cursors = { c_categories , extras };
+		Cursor[] cursors = { c_categories, extras };
 		extendedCursor = new MergeCursor(cursors);
-		
+
 		cat_adapter.swapCursor(extendedCursor);
-		
-		wNaam.setText("");
-		wPrijs.setText("");
-		wCat.setClickable(false);
-		
-		wijzig.setEnabled(false);
-		verwijder.setEnabled(false);	
 	}
 
+	public void v_article(View v) {
+
+		boolean b = DB.deleteOrIgnore(DBHelper.ItemList.TABLE_NAME, current);
+
+		c_articles.close();
+		c_articles = DB.getArticles();
+		adapter.swapCursor(c_articles);
+
+		c_categories.close();
+		c_categories = DB.getCategories();
+		Cursor[] cursors = { c_categories, extras };
+		extendedCursor = new MergeCursor(cursors);
+
+		cat_adapter.swapCursor(extendedCursor);
+
+		setToDefault();
+
+	}
 	
+	public void annuleren(View v){
+		
+		setToDefault();
+	}
+
 	@Override
 	public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2,
 			long arg3) {
 		// TODO Auto-generated method stub
-		if(arg0.equals(vtCat)){
-			
-			extendedCursor.moveToPosition(arg2);
-			vt_cat = extendedCursor.getString(1);
-			extendedCursor.moveToFirst();
-			
-			if(vt_cat.equals("Nieuwe Categorie")){
-				vt_new_cat.setVisibility(View.VISIBLE);
-			}else{
-				vt_new_cat.setText("");
-				vt_new_cat.setVisibility(View.GONE);
-			}	
+
+		extendedCursor.moveToPosition(arg2);
+		cat = extendedCursor.getString(1);
+		extendedCursor.moveToFirst();
+
+		if (cat.equals("Nieuwe Categorie")) {
+			et_cat.setVisibility(View.VISIBLE);
+		} else {
+			et_cat.setText("");
+			et_cat.setVisibility(View.GONE);
 		}
-		if(arg0.equals(wCat)){
-			
-			extendedCursor.moveToPosition(arg2);
-			w_cat = extendedCursor.getString(1);
-			extendedCursor.moveToFirst();
-			
-			if(w_cat.equals("Nieuwe Categorie")){
-				w_new_cat.setVisibility(View.VISIBLE);
-			}else{
-				w_new_cat.setText("");
-				w_new_cat.setVisibility(View.GONE);
-			}				
-		}	
 	}
 
 	@Override
 	public void onNothingSelected(AdapterView<?> arg0) {
 		// TODO Auto-generated method stub
+
+	}
+	
+	public void setToDefault(){
+		
+		editPane.setVisibility(View.GONE);
+		et_naam.setText("");
+		et_prijs.setText("");
+		current = -1;
+		voegToe.setVisibility(View.VISIBLE);
 		
 	}
 }

@@ -98,27 +98,36 @@ public class TurfSelectCustomerActivity extends Activity implements
 		setContentView(R.layout.activity_turf_select_customer);
 		// Show the Up button in the action bar.
 		setupActionBar();
+		
+		df = new DecimalFormat("0.00");
 
 		nextButton = (Button) findViewById(R.selectCustomer.nextButton);
 		customerNameTV = (TextView) findViewById(R.selectCustomer.customer);
 
 		DB = DBHelper.getDBHelper(this);
+		
+
 		c_leden = DB.getListMembers();
+
 		c_groepen = DB.getListGroups();
 		
-		df = new DecimalFormat("0.00");
 
 		a_leden = new FormatTextAdapter(this, R.layout.ledenlijstrow,
 				c_leden, FROM_LEDEN, TO_LEDEN,
 				CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER, df, R.ledenlijstrow.account);
+
+		
 		a_groepen = new FormatTextAdapter(this, R.layout.grouprow, c_groepen,
 				FROM_GROUPS, TO_GROUPS,
 				CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER, df, R.grouprow1.balance);
+
 
 		l_leden = (ListView) findViewById(R.selectCustomer.listViewleden);
 		l_groepen = (ListView) findViewById(R.selectCustomer.listViewgroepen);
 
 		l_leden.setAdapter(a_leden);
+		
+
 		l_groepen.setAdapter(a_groepen);
 
 		l_leden.setOnItemClickListener(this);
@@ -131,10 +140,10 @@ public class TurfSelectCustomerActivity extends Activity implements
 		// TODO Auto-generated method stub
 		if (arg0.equals(l_leden)) {
 			c_leden.moveToPosition(arg2);
-			customerId = c_leden.getInt(0);
-			customerName = c_leden.getString(1) + " " + c_leden.getString(2);
+			customerId = c_leden.getInt(2);
+			customerName = c_leden.getString(3) + " " + c_leden.getString(4);
 			customerType = "individual";
-			customerAcount = c_leden.getInt(3);
+			customerAcount = c_leden.getInt(5);
 			customerNameTV.setText(customerName);
 			nextButton.setEnabled(true);
 		}

@@ -42,7 +42,7 @@ OnItemClickListener {
 	private String[] FROM1 = new String[] {
 			DBHelper.MemberTable.COLUMN_FIRST_NAME,
 			DBHelper.MemberTable.COLUMN_LAST_NAME,
-			DBHelper.MemberTable.COLUMN_ID };
+			DBHelper.MemberTable.COLUMN_EMAIL };
 	
 	private int[] TO1 = new int[] { R.groupRow2.first,
 			R.groupRow2.last, R.ledenlijstrow.account };
@@ -236,7 +236,6 @@ OnItemClickListener {
 		while(c_groepen2.getPosition()<c_groepen2.getCount()){
 			
 			boolean groupupdate =DB.updateOrIgnore(DBHelper.GroupTable.TABLE_NAME, c_groepen2.getInt(0), c);
-			Log.i("hello",groupupdate+"");
 			c_groepen2.moveToNext();
 			
 		}

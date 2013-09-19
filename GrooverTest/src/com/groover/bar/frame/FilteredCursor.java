@@ -10,7 +10,6 @@ import android.util.Log;
 
 public class FilteredCursor extends CursorWrapper{
 
-	
 	private List<Integer> filterMap;
 	private int mPos = -1;
 	private Cursor base;

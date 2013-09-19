@@ -39,69 +39,99 @@ public class DBHelper extends SQLiteOpenHelper {
 		SQLiteDatabase db;
 		db = getReadableDatabase();
 
-		return db.query(MemberTable.TABLE_NAME, null,
-				null, null, null, null, MemberTable.COLUMN_FIRST_NAME
-						+ " COLLATE NOCASE ASC, "+MemberTable.COLUMN_LAST_NAME+ " COLLATE NOCASE ASC");
+		return db.rawQuery("SELECT rowid AS _id, " + MemberTable.COLUMN_GR_ID
+				+ "," + MemberTable.COLUMN_EMAIL + ","
+				+ MemberTable.COLUMN_FIRST_NAME + ","
+				+ MemberTable.COLUMN_LAST_NAME + ","
+				+ MemberTable.COLUMN_ACCOUNT + "," + MemberTable.COLUMN_BALANCE
+				+ " FROM " + MemberTable.TABLE_NAME
+				+ " ORDER BY "
+				+ MemberTable.COLUMN_FIRST_NAME
+				+ " COLLATE NOCASE ASC, " + MemberTable.COLUMN_LAST_NAME
+				+ " COLLATE NOCASE ASC", null);
+
 	}
-	
+
 	public Cursor getListMembers() {
 
 		SQLiteDatabase db;
 		db = getReadableDatabase();
 
-		return db.query(MemberTable.TABLE_NAME, null,
-				MemberTable.COLUMN_ACTIVE+" = 1", null, null, null, MemberTable.COLUMN_FIRST_NAME
-						+ " COLLATE NOCASE ASC, "+MemberTable.COLUMN_LAST_NAME+ " COLLATE NOCASE ASC");
+		return db.rawQuery("SELECT rowid AS _id, " + MemberTable.COLUMN_GR_ID + ","
+				+ MemberTable.COLUMN_EMAIL + ","
+				+ MemberTable.COLUMN_FIRST_NAME + ","
+				+ MemberTable.COLUMN_LAST_NAME + ","
+				+ MemberTable.COLUMN_ACCOUNT + "," + MemberTable.COLUMN_BALANCE
+				+ " FROM " + MemberTable.TABLE_NAME + " WHERE "
+				+ MemberTable.COLUMN_ACTIVE + " = 1 "
+				+ " ORDER BY "
+				+ MemberTable.COLUMN_FIRST_NAME
+				+ " COLLATE NOCASE ASC, " + MemberTable.COLUMN_LAST_NAME
+				+ " COLLATE NOCASE ASC", null);
+
+
 	}
-	
+
 	public Cursor getGroupsFancy() {
-		
+
 		SQLiteDatabase db;
 		db = getReadableDatabase();
-		String query = "SELECT "+GroupTable._ID+" , "+GroupTable.COLUMN_GROUP_NAME+" , COUNT("+GroupMembers.COLUMN_NAME_MEMBER_ID+") AS COUNT_MEMBERS"
-				+" FROM "+GroupTable.TABLE_NAME+" LEFT OUTER JOIN "+GroupMembers.TABLE_NAME+" ON "+GroupTable.TABLE_NAME+"."+GroupTable._ID+"="+GroupMembers.TABLE_NAME+"."+GroupMembers.COLUMN_NAME_GROUP_ID
-				+" GROUP BY "+GroupTable._ID
-				+" ORDER BY "+GroupTable.COLUMN_GROUP_NAME+" COLLATE NOCASE";
-			
+		String query = "SELECT " + GroupTable._ID + " , "
+				+ GroupTable.COLUMN_GROUP_NAME + " , COUNT("
+				+ GroupMembers.COLUMN_NAME_MEMBER_ID + ") AS COUNT_MEMBERS"
+				+ " FROM " + GroupTable.TABLE_NAME + " LEFT OUTER JOIN "
+				+ GroupMembers.TABLE_NAME + " ON " + GroupTable.TABLE_NAME
+				+ "." + GroupTable._ID + "=" + GroupMembers.TABLE_NAME + "."
+				+ GroupMembers.COLUMN_NAME_GROUP_ID + " GROUP BY "
+				+ GroupTable._ID + " ORDER BY " + GroupTable.COLUMN_GROUP_NAME
+				+ " COLLATE NOCASE";
+
 		return db.rawQuery(query, null);
 	}
-	
-	public Cursor getGroups(){
-		
+
+	public Cursor getGroups() {
+
 		SQLiteDatabase db;
 		db = getReadableDatabase();
 
-		return db.query(GroupTable.TABLE_NAME, null,
-				null, null, null, null, GroupTable.COLUMN_GROUP_NAME
-						+ " COLLATE NOCASE ASC ");
+		return db.query(GroupTable.TABLE_NAME, null, null, null, null, null,
+				GroupTable.COLUMN_GROUP_NAME + " COLLATE NOCASE ASC ");
 	}
-	
-	public Cursor getListGroups(){
-		
+
+	public Cursor getListGroups() {
+
 		SQLiteDatabase db;
 		db = getReadableDatabase();
 
-		return db.query(GroupTable.TABLE_NAME, null,
-				GroupTable.COLUMN_ACTIVE+" = 1", null, null, null, GroupTable.COLUMN_GROUP_NAME
-						+ " COLLATE NOCASE ASC ");
-		
+		return db.query(GroupTable.TABLE_NAME, null, GroupTable.COLUMN_ACTIVE
+				+ " = 1", null, null, null, GroupTable.COLUMN_GROUP_NAME
+				+ " COLLATE NOCASE ASC ");
+
 	}
-	
-	public Cursor getGroupMembers(int grId){
-		
+
+	public Cursor getGroupMembers(int grId) {
+
 		SQLiteDatabase db;
 		db = getReadableDatabase();
 
-		String query = "SELECT "+MemberTable._ID+" , "+MemberTable.COLUMN_FIRST_NAME+" , "+MemberTable.COLUMN_LAST_NAME+" , "+MemberTable.COLUMN_ACCOUNT
-				+" FROM "+GroupMembers.TABLE_NAME+" , "+MemberTable.TABLE_NAME
-				+" WHERE "+GroupMembers.TABLE_NAME+"."+GroupMembers.COLUMN_NAME_MEMBER_ID+"="+MemberTable.TABLE_NAME+"."+MemberTable.COLUMN_ID
-				+" AND "+GroupMembers.COLUMN_NAME_GROUP_ID + " = "+grId
-				+" ORDER BY "+MemberTable.COLUMN_FIRST_NAME+" COLLATE NOCASE ASC, "+MemberTable.COLUMN_LAST_NAME+" COLLATE NOCASE ASC";
-			
+		String query = "SELECT members.rowid AS _id , "
+				+ MemberTable.COLUMN_EMAIL + " , "
+				+ MemberTable.COLUMN_FIRST_NAME + " , "
+				+ MemberTable.COLUMN_LAST_NAME + " , "
+				+ MemberTable.COLUMN_ACCOUNT + " FROM "
+				+ GroupMembers.TABLE_NAME + " , " + MemberTable.TABLE_NAME
+				+ " WHERE " + GroupMembers.TABLE_NAME + "."
+				+ GroupMembers.COLUMN_NAME_MEMBER_ID + "="
+				+ MemberTable.TABLE_NAME + "." + MemberTable.COLUMN_EMAIL
+				+ " AND " + GroupMembers.COLUMN_NAME_GROUP_ID + " = " + grId
+				+ " ORDER BY " + MemberTable.COLUMN_FIRST_NAME
+				+ " COLLATE NOCASE ASC, " + MemberTable.COLUMN_LAST_NAME
+				+ " COLLATE NOCASE ASC";
+
 		return db.rawQuery(query, null);
-		
+
 	}
-		
+
 	public Cursor getAccounts() {
 
 		SQLiteDatabase db;
@@ -110,23 +140,26 @@ public class DBHelper extends SQLiteOpenHelper {
 		return db.query(AccountList.TABLE_NAME, null, null, null, null, null,
 				null);
 	}
-	
+
 	public Cursor getArticles() {
-		
+
 		SQLiteDatabase db;
 		db = getReadableDatabase();
 
 		return db.query(ItemList.TABLE_NAME, null, null, null, null, null,
-				ItemList.COLUMN_NAME_CAT+" COLLATE NOCASE ASC, "+ItemList.COLUMN_NAME_ITEM+" COLLATE NOCASE ASC");
+				ItemList.COLUMN_NAME_CAT + " COLLATE NOCASE ASC, "
+						+ ItemList.COLUMN_NAME_ITEM + " COLLATE NOCASE ASC");
 	}
-	
+
 	public Cursor getCategories() {
-		
+
 		SQLiteDatabase db;
 		db = getReadableDatabase();
 
-		return db.query(ItemList.TABLE_NAME, new String[]{ItemList.COLUMN_ID,ItemList.COLUMN_NAME_CAT}, null, null, ItemList.COLUMN_NAME_CAT, null,
-				ItemList.COLUMN_NAME_CAT+" COLLATE NOCASE ASC");
+		return db.query(ItemList.TABLE_NAME, new String[] { ItemList.COLUMN_ID,
+				ItemList.COLUMN_NAME_CAT }, null, null,
+				ItemList.COLUMN_NAME_CAT, null, ItemList.COLUMN_NAME_CAT
+						+ " COLLATE NOCASE ASC");
 	}
 
 	@SuppressWarnings("finally")
@@ -146,18 +179,18 @@ public class DBHelper extends SQLiteOpenHelper {
 	}
 
 	@SuppressWarnings("finally")
-	public boolean updateOrIgnore(String table, int memberid,
-			ContentValues values) {
+	public boolean updateOrIgnore(String table, int id, ContentValues values) {
 
 		boolean res = false;
-		Log.d(TAG, "updateOrIgnore on "+table+" values" + values + " " + memberid);
+		Log.d(TAG, "updateOrIgnore on " + table + " values" + values + " " + id);
 		SQLiteDatabase db = getWritableDatabase();
 		try {
-			db.update(table, values, MemberTable.COLUMN_ID + "=" + memberid,
-					null);
+			db.update(table, values, "rowid" + "=" + id, null);
 			res = true;
 
 		} catch (SQLException e) {
+			Log.d(TAG, "updateOrIgnore on " + table + " values" + values + " "
+					+ id + " fail");
 			res = false;
 		} finally {
 			db.close();
@@ -165,98 +198,108 @@ public class DBHelper extends SQLiteOpenHelper {
 		}
 	}
 
-	public boolean PayOffGroupOrIgnore(int groupid){
+	public boolean PayOffGroupOrIgnore(int groupid) {
 
 		Cursor members = getGroupMembers(groupid);
 		SQLiteDatabase db;
 		db = getReadableDatabase();
-		Cursor group = db.query(GroupTable.TABLE_NAME, new String[]{GroupTable.COLUMN_GROUP_ACCOUNT , GroupTable.COLUMN_GROUP_BALANCE, GroupTable.COLUMN_GROUP_NAME}, GroupTable._ID+" = "+groupid, null, null, null, null);
+		Cursor group = db.query(GroupTable.TABLE_NAME,
+				new String[] { GroupTable.COLUMN_GROUP_ACCOUNT,
+						GroupTable.COLUMN_GROUP_BALANCE,
+						GroupTable.COLUMN_GROUP_NAME }, GroupTable._ID + " = "
+						+ groupid, null, null, null, null);
 		group.moveToFirst();
 		members.moveToFirst();
-		double avg = group.getDouble(1)/((double)members.getCount());
+		double avg = group.getDouble(1) / ((double) members.getCount());
 
-		while(members.getPosition()<members.getCount()){
-			
+		while (members.getPosition() < members.getCount()) {
+
 			ContentValues v = new ContentValues();
 			v.put(Order.COLUMN_TOTAL, avg);
 			v.put(Order.COLUMN_ACCOUNT, members.getInt(3));
-			v.put(Order.COLUMN_TYPE, "group clearance: "+group.getString(2));
-			
-			long l = insertOrIgnore(Order.TABLE_NAME,v);
-			
-			if(l==-1){return false;}
-			
+			v.put(Order.COLUMN_TYPE, "group clearance: " + group.getString(2));
+
+			long l = insertOrIgnore(Order.TABLE_NAME, v);
+
+			if (l == -1) {
+				return false;
+			}
+
 			members.moveToNext();
 		}
 
 		db.close();
-		
+
 		return true;
 	}
-	
+
 	@SuppressWarnings("finally")
-	public boolean deleteOrIgnore(String table, int memberid) {
+	public boolean deleteOrIgnore(String table, int id) {
 
 		boolean res = false;
-		Log.d(TAG, "deleteOrIgnore on " + memberid);
+		Log.d(TAG, "deleteOrIgnore on " + id);
 		SQLiteDatabase db = getWritableDatabase();
 		try {
-			db.delete(table, MemberTable.COLUMN_ID + "=" + memberid, null);
+			db.delete(table, "rowid" + "=" + id, null);
 			res = true;
 
 		} catch (SQLException e) {
+			Log.d(TAG, "deleteOrIgnore on " + id + " fail");
 			res = false;
 		} finally {
 			db.close();
 			return res;
 		}
 	}
-	
-	public boolean deleteGroupMembers(int groupId){
-		
+
+	public boolean deleteGroupMembers(int groupId) {
+
 		Cursor groupmembers = getGroupMembers(groupId);
 		groupmembers.moveToFirst();
-		
+
 		SQLiteDatabase db = getWritableDatabase();
-		
-		while(groupmembers.getPosition()<groupmembers.getCount()){
-			
+
+		while (groupmembers.getPosition() < groupmembers.getCount()) {
+
 			Log.d(TAG, "deleteOrIgnore on " + groupmembers.getInt(0));
-					
+
 			try {
-				db.delete(GroupMembers.TABLE_NAME, 
-						GroupMembers.COLUMN_NAME_MEMBER_ID + "=" + groupmembers.getInt(0)+" AND "+GroupMembers.COLUMN_NAME_GROUP_ID + "="+groupId, 
-						null);
+				db.delete(
+						GroupMembers.TABLE_NAME,
+						GroupMembers.COLUMN_NAME_MEMBER_ID + "="
+								+ groupmembers.getInt(0) + " AND "
+								+ GroupMembers.COLUMN_NAME_GROUP_ID + "="
+								+ groupId, null);
 
 			} catch (SQLException e) {
 				db.close();
 				return false;
-			} 
-			
+			}
+
 			groupmembers.moveToNext();
 		}
 		db.close();
 		return true;
 	}
-	
-	public boolean deleteGroupOrIgnore(int groupId){		
-		
-		boolean res = true; 
+
+	public boolean deleteGroupOrIgnore(int groupId) {
+
+		boolean res = true;
 		res = deleteGroupMembers(groupId);
-		
-		if(res = false){
+
+		if (res = false) {
 			return false;
 		}
-		
+
 		res = deleteOrIgnore(DBHelper.GroupTable.TABLE_NAME, groupId);
 		return res;
 	}
 
-	public Cursor getMemberOrders(){
-		
+	public Cursor getMemberOrders() {
+
 		return null;
 	}
-	
+
 	@Override
 	public void onCreate(SQLiteDatabase db) {
 		// TODO Auto-generated method stub
@@ -276,7 +319,7 @@ public class DBHelper extends SQLiteOpenHelper {
 		db.execSQL(Order.SQL_TRIGGER_UPDATE_TOTAL_4);
 		db.execSQL(Consumption.SQL_CREATE_TABLE);
 		db.execSQL(GroupClearances.SQL_CREATE_TABLE);
-		
+
 	}
 
 	@Override
@@ -298,7 +341,8 @@ public class DBHelper extends SQLiteOpenHelper {
 	public static abstract class MemberTable implements BaseColumns {
 
 		public static final String TABLE_NAME = "members";
-		public static final String COLUMN_ID = _ID;
+		public static final String COLUMN_GR_ID = "GR_ID";
+		public static final String COLUMN_EMAIL = "email";
 		public static final String COLUMN_FIRST_NAME = "first_name";
 		public static final String COLUMN_LAST_NAME = "last_name";
 		public static final String COLUMN_ACCOUNT = "account";
@@ -308,8 +352,10 @@ public class DBHelper extends SQLiteOpenHelper {
 		public static final String SQL_CREATE_TABLE = "CREATE TABLE IF NOT EXISTS "
 				+ TABLE_NAME
 				+ " ("
-				+ COLUMN_ID
-				+ " INTEGER PRIMARY KEY AUTOINCREMENT,"
+				+ COLUMN_GR_ID
+				+ " INTEGER UNIQUE ,"
+				+ COLUMN_EMAIL
+				+ " TEXT PRIMARY KEY,"
 				+ COLUMN_FIRST_NAME
 				+ " TEXT NOT NULL"
 				+ ","
@@ -323,14 +369,13 @@ public class DBHelper extends SQLiteOpenHelper {
 				+ " DECIMAL(10,2) DEFAULT 0"
 				+ ","
 				+ COLUMN_ACTIVE
-				+ " BOOLEAN DEFAULT 1"
-				+ " )";
+				+ " BOOLEAN DEFAULT 1" + " )";
 
 		public static final String SQL_DELETE_ENTRIES = "DROP TABLE IF EXISTS "
 				+ TABLE_NAME;
 
-		public static final String TRIGGER_NEW_ACCOUNT = "CREATE TRIGGER create_new_account "  
-				
+		public static final String TRIGGER_NEW_ACCOUNT = "CREATE TRIGGER create_new_account "
+
 				+ "AFTER INSERT ON "
 				+ TABLE_NAME
 				+ " FOR EACH ROW "
@@ -352,11 +397,12 @@ public class DBHelper extends SQLiteOpenHelper {
 				+ COLUMN_ACCOUNT
 				+ " = last_insert_rowid() "
 				+ "WHERE "
-				+ COLUMN_ID
+				+ COLUMN_EMAIL
 				+ "= NEW."
-				+ AccountList.COLUMN_ACCOUNT
-				+ ";" + "END";
-		
+				+ COLUMN_EMAIL
+				+ ";"
+				+ "END";
+
 	}
 
 	public static abstract class GroupTable implements BaseColumns {
@@ -379,13 +425,11 @@ public class DBHelper extends SQLiteOpenHelper {
 				+ COLUMN_GROUP_BALANCE
 				+ " DECIMAL(10,2) DEFAULT 0"
 				+ ","
-				+ COLUMN_ACTIVE
-				+ " BOOLEAN DEFAULT 1 "
-				+ ");";
+				+ COLUMN_ACTIVE + " BOOLEAN DEFAULT 1 " + ");";
 
 		public static final String SQL_DELETE_ENTRIES = "DROP TABLE IF EXISTS "
 				+ TABLE_NAME;
-		
+
 		public static final String TRIGGER_NEW_ACCOUNT = "CREATE TRIGGER create_new_account2 "
 				+ "AFTER INSERT ON "
 				+ TABLE_NAME
@@ -411,8 +455,9 @@ public class DBHelper extends SQLiteOpenHelper {
 				+ _ID
 				+ "= NEW."
 				+ AccountList.COLUMN_ACCOUNT
-				+ ";" + "END";
-		
+				+ ";"
+				+ "END";
+
 	}
 
 	public static abstract class GroupMembers implements BaseColumns {
@@ -428,13 +473,10 @@ public class DBHelper extends SQLiteOpenHelper {
 				+ " INT"
 				+ ","
 				+ COLUMN_NAME_MEMBER_ID
-				+ " INT"
+				+ " TEXT"
 				+ ","
 				+ "PRIMARY KEY("
-				+ COLUMN_NAME_GROUP_ID
-				+ ","
-				+ COLUMN_NAME_MEMBER_ID
-				+ "))";
+				+ COLUMN_NAME_GROUP_ID + "," + COLUMN_NAME_MEMBER_ID + "))";
 
 		public static final String SQL_DELETE_ENTRIES = "DROP TABLE IF EXISTS "
 				+ TABLE_NAME;
@@ -480,35 +522,44 @@ public class DBHelper extends SQLiteOpenHelper {
 
 		public static final String SQL_DELETE_ENTRIES = "DROP TABLE IF EXISTS "
 				+ TABLE_NAME;
-		
-		public static final String SQL_TRIGGER_UPDATE_BALANCE1 = "CREATE TRIGGER update_balance1 "  
-			
+
+		public static final String SQL_TRIGGER_UPDATE_BALANCE1 = "CREATE TRIGGER update_balance1 "
+
 				+ "AFTER UPDATE ON "
 				+ TABLE_NAME
-				+ " WHEN( OLD."+COLUMN_TYPE+"='individual')"
+				+ " WHEN( OLD."
+				+ COLUMN_TYPE
+				+ "='individual')"
 				+ " BEGIN "
 				+ " UPDATE "
 				+ MemberTable.TABLE_NAME
 				+ " SET "
-				+ MemberTable.COLUMN_BALANCE +" = NEW."+COLUMN_BALANCE
+				+ MemberTable.COLUMN_BALANCE
+				+ " = NEW."
+				+ COLUMN_BALANCE
 				+ " WHERE "
-				+ MemberTable.COLUMN_ACCOUNT+" = NEW."+COLUMN_ACCOUNT
+				+ MemberTable.COLUMN_ACCOUNT
+				+ " = NEW."
+				+ COLUMN_ACCOUNT
 				+ " ; " + "END";
-		
-		public static final String SQL_TRIGGER_UPDATE_BALANCE2 = "CREATE TRIGGER update_balance2 "  
-				
+
+		public static final String SQL_TRIGGER_UPDATE_BALANCE2 = "CREATE TRIGGER update_balance2 "
+
 				+ "AFTER UPDATE ON "
 				+ TABLE_NAME
-				+ " WHEN( OLD."+COLUMN_TYPE+"='group')"
+				+ " WHEN( OLD."
+				+ COLUMN_TYPE
+				+ "='group')"
 				+ " BEGIN "
 				+ " UPDATE "
 				+ GroupTable.TABLE_NAME
 				+ " SET "
-				+ GroupTable.COLUMN_GROUP_BALANCE +" = NEW."+COLUMN_BALANCE
+				+ GroupTable.COLUMN_GROUP_BALANCE
+				+ " = NEW."
+				+ COLUMN_BALANCE
 				+ " WHERE "
-				+ GroupTable.COLUMN_GROUP_ACCOUNT+" = NEW."+COLUMN_ACCOUNT
-				+ " ; " + "END";
-
+				+ GroupTable.COLUMN_GROUP_ACCOUNT
+				+ " = NEW." + COLUMN_ACCOUNT + " ; " + "END";
 
 	}
 
@@ -538,67 +589,86 @@ public class DBHelper extends SQLiteOpenHelper {
 				+ " DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL"
 				+ ","
 				+ COLUMN_TS_SETTLED
-				+ " DATETIME" 
-				+","
+				+ " DATETIME"
+				+ ","
 				+ COLUMN_TYPE
-				+" TEXT NOT NULL"
-				+")";
+				+ " TEXT NOT NULL" + ")";
 
 		public static final String SQL_DELETE_ENTRIES = "DROP TABLE IF EXISTS "
 				+ TABLE_NAME;
-		
-		public static final String SQL_TRIGGER_UPDATE_TOTAL_1 =  "CREATE TRIGGER update_total_1 "  
-				
+
+		public static final String SQL_TRIGGER_UPDATE_TOTAL_1 = "CREATE TRIGGER update_total_1 "
+
 				+ "AFTER INSERT ON "
 				+ TABLE_NAME
 				+ " BEGIN "
 				+ " UPDATE "
 				+ AccountList.TABLE_NAME
 				+ " SET "
-				+ AccountList.COLUMN_BALANCE +" = NEW."+COLUMN_TOTAL+" + "+AccountList.COLUMN_BALANCE
+				+ AccountList.COLUMN_BALANCE
+				+ " = NEW."
+				+ COLUMN_TOTAL
+				+ " + "
+				+ AccountList.COLUMN_BALANCE
 				+ " WHERE "
-				+ AccountList.COLUMN_ACCOUNT+" = NEW."+COLUMN_ACCOUNT
-				+ ";" + "END";
-		
-	public static final String SQL_TRIGGER_UPDATE_TOTAL_2 =  "CREATE TRIGGER update_total_2 "  
-				
+				+ AccountList.COLUMN_ACCOUNT
+				+ " = NEW."
+				+ COLUMN_ACCOUNT + ";" + "END";
+
+		public static final String SQL_TRIGGER_UPDATE_TOTAL_2 = "CREATE TRIGGER update_total_2 "
+
 				+ "AFTER DELETE ON "
 				+ TABLE_NAME
 				+ " BEGIN "
 				+ " UPDATE "
 				+ AccountList.TABLE_NAME
 				+ " SET "
-				+ AccountList.COLUMN_BALANCE +" = OLD."+COLUMN_TOTAL+" - "+AccountList.COLUMN_BALANCE
+				+ AccountList.COLUMN_BALANCE
+				+ " = OLD."
+				+ COLUMN_TOTAL
+				+ " - "
+				+ AccountList.COLUMN_BALANCE
 				+ " WHERE "
-				+ AccountList.COLUMN_ACCOUNT+" = OLD."+COLUMN_ACCOUNT
-				+ ";" + "END";
-	
-	public static final String SQL_TRIGGER_UPDATE_TOTAL_3 =  "CREATE TRIGGER update_total_3 "  
-			
+				+ AccountList.COLUMN_ACCOUNT
+				+ " = OLD."
+				+ COLUMN_ACCOUNT + ";" + "END";
+
+		public static final String SQL_TRIGGER_UPDATE_TOTAL_3 = "CREATE TRIGGER update_total_3 "
+
 				+ "AFTER UPDATE ON "
 				+ TABLE_NAME
 				+ " BEGIN "
 				+ " UPDATE "
 				+ AccountList.TABLE_NAME
 				+ " SET "
-				+ AccountList.COLUMN_BALANCE +" = OLD."+COLUMN_TOTAL+" - "+AccountList.COLUMN_BALANCE
+				+ AccountList.COLUMN_BALANCE
+				+ " = OLD."
+				+ COLUMN_TOTAL
+				+ " - "
+				+ AccountList.COLUMN_BALANCE
 				+ " WHERE "
-				+ AccountList.COLUMN_ACCOUNT+" = OLD."+COLUMN_ACCOUNT
-				+ ";" + "END";
-		
-	public static final String SQL_TRIGGER_UPDATE_TOTAL_4 =  "CREATE TRIGGER update_total_4 "  
-			
+				+ AccountList.COLUMN_ACCOUNT
+				+ " = OLD."
+				+ COLUMN_ACCOUNT + ";" + "END";
+
+		public static final String SQL_TRIGGER_UPDATE_TOTAL_4 = "CREATE TRIGGER update_total_4 "
+
 				+ "AFTER UPDATE ON "
 				+ TABLE_NAME
 				+ " BEGIN "
 				+ " UPDATE "
 				+ AccountList.TABLE_NAME
 				+ " SET "
-				+ AccountList.COLUMN_BALANCE +" = NEW."+COLUMN_TOTAL+" + "+AccountList.COLUMN_BALANCE
+				+ AccountList.COLUMN_BALANCE
+				+ " = NEW."
+				+ COLUMN_TOTAL
+				+ " + "
+				+ AccountList.COLUMN_BALANCE
 				+ " WHERE "
-				+ AccountList.COLUMN_ACCOUNT+" = NEW."+COLUMN_ACCOUNT
-				+ ";" + "END";
-	
+				+ AccountList.COLUMN_ACCOUNT
+				+ " = NEW."
+				+ COLUMN_ACCOUNT + ";" + "END";
+
 	}
 
 	public static abstract class Consumption implements BaseColumns {
@@ -618,12 +688,11 @@ public class DBHelper extends SQLiteOpenHelper {
 				+ " INTEGER"
 				+ ","
 				+ COLUMN_AMMOUNT
-				+ " INTEGER"
-				+ ")";
+				+ " INTEGER" + ")";
 
 		public static final String SQL_DELETE_ENTRIES = "DROP TABLE IF EXISTS "
 				+ TABLE_NAME;
-				
+
 	}
 
 	public static abstract class GroupClearances implements BaseColumns {

@@ -5,21 +5,15 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
 import java.nio.channels.FileChannel;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Currency;
-import java.util.Date;
-import java.util.TimeZone;
-import java.text.DateFormat;
 import com.groover.bar.R;
 import com.groover.bar.frame.DBHelper;
 
 import android.os.Bundle;
 import android.os.Environment;
 import android.app.Activity;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -98,9 +92,6 @@ public class PenningActivity extends Activity {
 			mExternalStorageAvailable = mExternalStorageWriteable = false;
 		}
 
-		Log.i("available", "available: " + mExternalStorageAvailable
-				+ " writable: " + mExternalStorageWriteable);
-
 		if (mExternalStorageAvailable && mExternalStorageWriteable) {
 
 			Calendar c = Calendar.getInstance();
@@ -110,7 +101,7 @@ public class PenningActivity extends Activity {
 			File mainFolder = new File(sdRoot,
 					"Groover Bar/Afrekeningen/Afrekening "
 							+ df1.format(c.getTime()));
-			boolean res1 = mainFolder.mkdirs();
+			mainFolder.mkdirs();
 
 			try {
 
