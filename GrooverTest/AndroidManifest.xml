@@ -7,10 +7,10 @@
     <uses-sdk
         android:minSdkVersion="7"
         android:targetSdkVersion="17" />
-    
+
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
-    
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+
     <application
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
@@ -134,6 +134,11 @@
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.groovertest.BeheerActivity" />
+        </activity>
+        <activity
+            android:name="com.groover.bar.frame.FileDialog"
+            android:label="@string/dialog_name"
+            android:screenOrientation="landscape" >     
         </activity>
     </application>
 

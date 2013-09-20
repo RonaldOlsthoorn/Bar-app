@@ -15,11 +15,17 @@ import org.xmlpull.v1.XmlSerializer;
 
 import com.groover.bar.R;
 import com.groover.bar.frame.DBHelper;
+import com.groover.bar.frame.FileDialog;
 
+import com.groover.bar.frame.SelectionMode;
+
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.ContentValues;
+import android.content.Intent;
 
 import android.database.Cursor;
 import android.util.Log;
@@ -60,6 +66,8 @@ public class LedenMainActivity extends Activity implements OnItemClickListener {
 			R.ledenlijstrow.achternaam, R.ledenlijstrow.account };
 
 	private View editPane;
+	private int REQUEST_FILE = 1;
+	private String targetPath;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -316,4 +324,61 @@ public class LedenMainActivity extends Activity implements OnItemClickListener {
 		xmlSerializer.flush();
 		
 	}
+	
+	public void importMembers(View v){
+		
+		Intent intent = new Intent(this,FileDialog.class);
+
+		intent.putExtra(FileDialog.SELECTION_MODE, SelectionMode.MODE_OPEN);
+		intent.putExtra(FileDialog.FORMAT_FILTER, new String[] {"xml"});
+		intent.putExtra(FileDialog.START_PATH, Environment.getExternalStorageDirectory().getPath());
+
+		startActivityForResult(intent, REQUEST_FILE);
+		
+		
+		
+		
+	}
+	
+	protected void onActivityResult(int requestCode, int resultCode,
+            Intent data){
+		
+		if(requestCode ==REQUEST_FILE && resultCode ==FileDialog.RESULT_OK){
+			
+			targetPath = data.getStringExtra(FileDialog.RESULT_PATH);
+		}
+		
+	}
+	
+	public class LoadData extends AsyncTask<File, Void, Void> {
+	    ProgressDialog progressDialog;
+	    MemberImporter importer;
+	    //declare other objects as per your need
+	    
+	    public LoadData(){
+	    	importer = new MemberImporter();
+	    }
+	    @Override
+	    protected void onPreExecute()
+	    {
+	        progressDialog= ProgressDialog.show(LedenMainActivity.this, "importing...","Process Description Text", true);
+
+	        //do initialization of required objects objects here                
+	    };      
+	       
+	    @Override
+	    protected void onPostExecute(Void result)
+	    {
+	        super.onPostExecute(result);
+	        progressDialog.dismiss();
+	    }
+		@Override
+		protected Void doInBackground(File... params) {
+			// TODO Auto-generated method stub
+			File f = params[0];
+			importer.importMembers(f);
+			
+			return null;
+		};
+	 }
 }

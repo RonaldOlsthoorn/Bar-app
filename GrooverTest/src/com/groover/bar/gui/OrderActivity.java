@@ -10,6 +10,7 @@ import com.groover.bar.frame.ArticleFactory;
 import com.groover.bar.frame.Customer;
 import com.groover.bar.frame.DBHelper;
 import com.groover.bar.frame.Order;
+import com.groover.bar.frame.OrderListAdapter;
 
 import android.os.Bundle;
 import android.app.Activity;
