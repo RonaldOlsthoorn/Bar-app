@@ -239,7 +239,6 @@ public class GroupMainActivity extends Activity implements OnItemClickListener{
 			Cursor c = DB.getGroupMembers(c_groups.getInt(0));
 			c.moveToFirst();
 
-			
 			while(c.getPosition()<c.getCount()){
 
 				c_group_members.addId(c.getInt(0));	

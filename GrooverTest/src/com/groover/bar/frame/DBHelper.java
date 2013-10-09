@@ -76,12 +76,12 @@ public class DBHelper extends SQLiteOpenHelper {
 
 		SQLiteDatabase db;
 		db = getReadableDatabase();
-		String query = "SELECT " + GroupTable._ID + " , "
+		String query = "SELECT " + GroupTable.COLUMN_GROUP_ID + " , "
 				+ GroupTable.COLUMN_GROUP_NAME + " , COUNT("
 				+ GroupMembers.COLUMN_NAME_MEMBER_ID + ") AS COUNT_MEMBERS"
 				+ " FROM " + GroupTable.TABLE_NAME + " LEFT OUTER JOIN "
 				+ GroupMembers.TABLE_NAME + " ON " + GroupTable.TABLE_NAME
-				+ "." + GroupTable._ID + "=" + GroupMembers.TABLE_NAME + "."
+				+ "." + GroupTable.COLUMN_GROUP_ID + "=" + GroupMembers.TABLE_NAME + "."
 				+ GroupMembers.COLUMN_NAME_GROUP_ID + " GROUP BY "
 				+ GroupTable._ID + " ORDER BY " + GroupTable.COLUMN_GROUP_NAME
 				+ " COLLATE NOCASE";
@@ -98,23 +98,13 @@ public class DBHelper extends SQLiteOpenHelper {
 				GroupTable.COLUMN_GROUP_NAME + " COLLATE NOCASE ASC ");
 	}
 
-	public Cursor getListGroups() {
-
-		SQLiteDatabase db;
-		db = getReadableDatabase();
-
-		return db.query(GroupTable.TABLE_NAME, null, GroupTable.COLUMN_ACTIVE
-				+ " = 1", null, null, null, GroupTable.COLUMN_GROUP_NAME
-				+ " COLLATE NOCASE ASC ");
-
-	}
-
 	public Cursor getGroupMembers(int grId) {
 
 		SQLiteDatabase db;
 		db = getReadableDatabase();
 
 		String query = "SELECT members.rowid AS _id , "
+				+ MemberTable.COLUMN_GR_ID + " , "
 				+ MemberTable.COLUMN_EMAIL + " , "
 				+ MemberTable.COLUMN_FIRST_NAME + " , "
 				+ MemberTable.COLUMN_LAST_NAME + " , "
@@ -132,6 +122,17 @@ public class DBHelper extends SQLiteOpenHelper {
 
 	}
 
+	public Cursor getListGroups() {
+
+		SQLiteDatabase db;
+		db = getReadableDatabase();
+
+		return db.query(GroupTable.TABLE_NAME, null, GroupTable.COLUMN_ACTIVE
+				+ " = 1", null, null, null, GroupTable.COLUMN_GROUP_NAME
+				+ " COLLATE NOCASE ASC ");
+
+	}
+
 	public Cursor getAccounts() {
 
 		SQLiteDatabase db;
@@ -141,6 +142,11 @@ public class DBHelper extends SQLiteOpenHelper {
 				null);
 	}
 
+	public Cursor getMemberOrders() {
+
+		return null;
+	}
+	
 	public Cursor getArticles() {
 
 		SQLiteDatabase db;
@@ -181,21 +187,45 @@ public class DBHelper extends SQLiteOpenHelper {
 	@SuppressWarnings("finally")
 	public boolean updateOrIgnore(String table, int id, ContentValues values) {
 
+
 		boolean res = false;
-		Log.d(TAG, "updateOrIgnore on " + table + " values" + values + " " + id);
+		Log.d(TAG, "updateOrIgnore on " + table + " values " + values + " " + id);
 		SQLiteDatabase db = getWritableDatabase();
 		try {
-			db.update(table, values, "rowid" + "=" + id, null);
+			db.update(table, values, getIdColumnName(table) + "=" + id, null);
 			res = true;
 
 		} catch (SQLException e) {
-			Log.d(TAG, "updateOrIgnore on " + table + " values" + values + " "
+			Log.d(TAG, "updateOrIgnore on " + table + " values " + values + " "
 					+ id + " fail");
 			res = false;
 		} finally {
 			db.close();
 			return res;
 		}
+	}
+	
+	@SuppressWarnings("finally")
+	public boolean updateOrIgnore(String tableName, String id,
+			ContentValues v) {
+		
+		boolean res = false;
+		Log.d(TAG, "updateOrIgnore on " + tableName + " values " + v + " " + id);
+		SQLiteDatabase db = getWritableDatabase();
+		try {
+			db.update(tableName, v, getIdColumnName(tableName) + "="+"'" + id+"'", null);
+			res = true;
+
+		} catch (SQLException e) {
+			Log.d(TAG, "updateOrIgnore on " + tableName + " values " + v + " "
+					+ id + " fail");
+			res = false;
+		} finally {
+			db.close();
+			return res;
+		}
+		// TODO Auto-generated method stub
+		
 	}
 
 	public boolean PayOffGroupOrIgnore(int groupid) {
@@ -240,7 +270,7 @@ public class DBHelper extends SQLiteOpenHelper {
 		Log.d(TAG, "deleteOrIgnore on " + id);
 		SQLiteDatabase db = getWritableDatabase();
 		try {
-			db.delete(table, "rowid" + "=" + id, null);
+			db.delete(table, getIdColumnName(table) + "=" + id, null);
 			res = true;
 
 		} catch (SQLException e) {
@@ -252,6 +282,27 @@ public class DBHelper extends SQLiteOpenHelper {
 		}
 	}
 
+	@SuppressWarnings("finally")
+	public boolean deleteOrIgnore(String tableName, String id) {
+		// TODO Auto-generated method stub
+		boolean res = false;
+		Log.d(TAG, "deleteOrIgnore on " + id+"  "+getIdColumnName(tableName));
+		SQLiteDatabase db = getWritableDatabase();
+		try {
+			
+			db.delete(tableName, getIdColumnName(tableName) + "="+"'" + id+"'", null);
+			res = true;
+
+		} catch (SQLException e) {
+			Log.e("YOUR_APP_LOG_TAG", "I got an error", e);
+			Log.d(TAG, "deleteOrIgnore on " + id + " fail");
+			res = false;
+		} finally {
+			db.close();
+			return res;
+		}
+	}
+	
 	public boolean deleteGroupMembers(int groupId) {
 
 		Cursor groupmembers = getGroupMembers(groupId);
@@ -267,7 +318,7 @@ public class DBHelper extends SQLiteOpenHelper {
 				db.delete(
 						GroupMembers.TABLE_NAME,
 						GroupMembers.COLUMN_NAME_MEMBER_ID + "="
-								+ groupmembers.getInt(0) + " AND "
+								+ groupmembers.getInt(2) + " AND "
 								+ GroupMembers.COLUMN_NAME_GROUP_ID + "="
 								+ groupId, null);
 
@@ -295,11 +346,19 @@ public class DBHelper extends SQLiteOpenHelper {
 		return res;
 	}
 
-	public Cursor getMemberOrders() {
-
+	public String getIdColumnName(String tableName){
+		
+		if(tableName.equals(MemberTable.TABLE_NAME)){return MemberTable.getIdColumnName();}
+		if(tableName.equals(GroupTable.TABLE_NAME)){return GroupTable.getIdColumnName();}
+		if(tableName.equals(AccountList.TABLE_NAME)){return AccountList.getIdColumnName();}
+		if(tableName.equals(ItemList.TABLE_NAME)){return ItemList.getIdColumnName();}
+		if(tableName.equals(Order.TABLE_NAME)){return Order.getIdColumnName();}
+		if(tableName.equals(Consumption.TABLE_NAME)){return Consumption.getIdColumnName();}
+		if(tableName.equals(GroupClearances.TABLE_NAME)){return GroupClearances.getIdColumnName();}
+		
 		return null;
 	}
-
+	
 	@Override
 	public void onCreate(SQLiteDatabase db) {
 		// TODO Auto-generated method stub
@@ -403,11 +462,15 @@ public class DBHelper extends SQLiteOpenHelper {
 				+ ";"
 				+ "END";
 
+		private static String getIdColumnName(){
+			return COLUMN_EMAIL;
+		}
 	}
 
 	public static abstract class GroupTable implements BaseColumns {
 
 		public static final String TABLE_NAME = "groups";
+		public static final String COLUMN_GROUP_ID = _ID;
 		public static final String COLUMN_GROUP_NAME = "group_name";
 		public static final String COLUMN_GROUP_ACCOUNT = "group_account";
 		public static final String COLUMN_GROUP_BALANCE = "group_balance";
@@ -416,7 +479,7 @@ public class DBHelper extends SQLiteOpenHelper {
 		public static final String SQL_CREATE_TABLE = "CREATE TABLE IF NOT EXISTS "
 				+ TABLE_NAME
 				+ " ("
-				+ _ID
+				+ COLUMN_GROUP_ID
 				+ " INTEGER PRIMARY KEY AUTOINCREMENT,"
 				+ COLUMN_GROUP_NAME
 				+ " TEXT NOT NULL ,"
@@ -457,6 +520,11 @@ public class DBHelper extends SQLiteOpenHelper {
 				+ AccountList.COLUMN_ACCOUNT
 				+ ";"
 				+ "END";
+
+		public static String getIdColumnName() {
+			// TODO Auto-generated method stub
+			return COLUMN_GROUP_ID;
+		}
 
 	}
 
@@ -502,6 +570,10 @@ public class DBHelper extends SQLiteOpenHelper {
 				+ COLUMN_NAME_CAT + " TEXT DEFAULT 'overig' )";
 		public static final String SQL_DELETE_ENTRIES = "DROP TABLE IF EXISTS "
 				+ TABLE_NAME;
+		public static String getIdColumnName() {
+			// TODO Auto-generated method stub
+			return null;
+		}
 
 	}
 
@@ -560,6 +632,11 @@ public class DBHelper extends SQLiteOpenHelper {
 				+ " WHERE "
 				+ GroupTable.COLUMN_GROUP_ACCOUNT
 				+ " = NEW." + COLUMN_ACCOUNT + " ; " + "END";
+
+		public static String getIdColumnName() {
+			// TODO Auto-generated method stub
+			return COLUMN_ACCOUNT;
+		}
 
 	}
 
@@ -669,6 +746,11 @@ public class DBHelper extends SQLiteOpenHelper {
 				+ " = NEW."
 				+ COLUMN_ACCOUNT + ";" + "END";
 
+		public static String getIdColumnName() {
+			// TODO Auto-generated method stub
+			return COLUMN_ID;
+		}
+
 	}
 
 	public static abstract class Consumption implements BaseColumns {
@@ -692,6 +774,11 @@ public class DBHelper extends SQLiteOpenHelper {
 
 		public static final String SQL_DELETE_ENTRIES = "DROP TABLE IF EXISTS "
 				+ TABLE_NAME;
+
+		public static String getIdColumnName() {
+			// TODO Auto-generated method stub
+			return COLUMN_ID;
+		}
 
 	}
 
@@ -717,5 +804,14 @@ public class DBHelper extends SQLiteOpenHelper {
 
 		public static final String SQL_DELETE_ENTRIES = "DROP TABLE IF EXISTS "
 				+ TABLE_NAME;
+
+		public static String getIdColumnName() {
+			// TODO Auto-generated method stub
+			return COLUMN_ID;
+		}
 	}
+
+	
+
+	
 }

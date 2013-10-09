@@ -1,21 +1,15 @@
 package com.groover.bar.gui;
 
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.StringWriter;
-import java.nio.channels.FileChannel;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.lang.IllegalStateException;
 
-import org.xmlpull.v1.XmlSerializer;
+
+import java.io.File;
+import java.io.IOException;
 
 import com.groover.bar.R;
 import com.groover.bar.frame.DBHelper;
 import com.groover.bar.frame.FileDialog;
+import com.groover.bar.frame.MemberExporter;
+import com.groover.bar.frame.MemberImporter;
 
 import com.groover.bar.frame.SelectionMode;
 
@@ -55,6 +49,7 @@ public class LedenMainActivity extends Activity implements OnItemClickListener {
 	private EditText vtEmail;
 
 	private int current;
+	private String current_email;
 
 	private SimpleCursorAdapter adapter;
 	private Cursor c;
@@ -147,7 +142,8 @@ public class LedenMainActivity extends Activity implements OnItemClickListener {
 		// TODO Auto-generated method stub
 
 		c.moveToPosition(arg2);
-		current = c.getInt(0);
+		current = arg2;
+		current_email = c.getString(2);
 		vtEmail.setText("" + c.getString(2));
 		vtVoornaam.setText(c.getString(3));
 		vtAchternaam.setText(c.getString(4));
@@ -169,7 +165,7 @@ public class LedenMainActivity extends Activity implements OnItemClickListener {
 		v.put(DBHelper.MemberTable.COLUMN_FIRST_NAME, voornaam);
 		v.put(DBHelper.MemberTable.COLUMN_LAST_NAME, achternaam);
 
-		DB.updateOrIgnore(DBHelper.MemberTable.TABLE_NAME, current, v);
+		DB.updateOrIgnore(DBHelper.MemberTable.TABLE_NAME, c.getString(2), v);
 
 		c.close();
 		c = DB.getMembers();
@@ -181,7 +177,10 @@ public class LedenMainActivity extends Activity implements OnItemClickListener {
 
 		c.moveToPosition(current);
 
-		DB.deleteOrIgnore(DBHelper.MemberTable.TABLE_NAME, current);
+		System.out.println("hello");
+		System.out.println("hello"+c.getPosition()+" "+c.getCount()+" "+c.getColumnNames()[0]+c.getColumnNames()[1]+c.getString(2));
+		
+		DB.deleteOrIgnore(DBHelper.MemberTable.TABLE_NAME, c.getString(2));
 
 		c.close();
 		c = DB.getMembers();
@@ -207,122 +206,15 @@ public class LedenMainActivity extends Activity implements OnItemClickListener {
 	}
 
 	public void exportMembers(View v) {
-
-		boolean mExternalStorageAvailable = false;
-		boolean mExternalStorageWriteable = false;
-		String state = Environment.getExternalStorageState();
-
-		if (Environment.MEDIA_MOUNTED.equals(state)) {
-			// We can read and write the media
-			mExternalStorageAvailable = mExternalStorageWriteable = true;
-		} else if (Environment.MEDIA_MOUNTED_READ_ONLY.equals(state)) {
-			// We can only read the media
-			mExternalStorageAvailable = true;
-			mExternalStorageWriteable = false;
-		} else {
-			// Something else is wrong. It may be one of many other states, but
-			// all we need
-			// to know is we can neither read nor write
-			mExternalStorageAvailable = mExternalStorageWriteable = false;
+		
+		MemberExporter ex = new MemberExporter(this);
+		
+		try {
+			ex.export();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-
-		if (mExternalStorageAvailable && mExternalStorageWriteable) {
-
-			File sdRoot = Environment.getExternalStorageDirectory();
-			File mainFolder = new File(sdRoot,
-					"Groover Bar/import export leden");
-			mainFolder.mkdirs();
-
-			try {
-
-				File currentDB = this.getDatabasePath(DBHelper.DATABASE_NAME);
-				File backupDB = new File(mainFolder, "DB.db");
-				backupDB.createNewFile();
-				FileChannel src = new FileInputStream(currentDB).getChannel();
-				FileChannel dst = new FileOutputStream(backupDB).getChannel();
-				dst.transferFrom(src, 0, src.size());
-				src.close();
-				dst.close();
-				Toast.makeText(getBaseContext(), backupDB.toString(),
-						Toast.LENGTH_LONG).show();
-
-			} catch (Exception e) {
-
-				Toast.makeText(getBaseContext(), e.toString(),
-						Toast.LENGTH_LONG).show();
-
-			}
-
-			Calendar c = Calendar.getInstance();
-			SimpleDateFormat df1 = new SimpleDateFormat("dd-MM-yy hh.mm.ss");
-
-			File xml = new File(mainFolder, "ledenbestand "
-					+ df1.format(c.getTime()) + ".xml");
-
-			try {
-				
-				BufferedOutputStream buf = new BufferedOutputStream(
-						new FileOutputStream(xml));
-				extractFromDB(buf);
-				buf.close();
-			} catch (IllegalArgumentException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-
-			} catch (IllegalStateException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-
-			}
-		}
-	}
-
-	private void extractFromDB(BufferedOutputStream buf) throws IllegalArgumentException,
-			IllegalStateException, IOException {
-
-		XmlSerializer xmlSerializer = Xml.newSerializer();
-		xmlSerializer.setOutput(buf,"UTF-8");
-		// start DOCUMENT
-		xmlSerializer.startDocument("UTF-8", true);
-
-		// open tag: <root>
-		xmlSerializer.startTag(null, "root");
-
-		
-		c.close();
-		c = DB.getMembers();
-		c.moveToFirst();
-		c.getInt(0);
-			
-		
-		while (c.getPosition() < c.getCount()) {
-			// open tag: <member>
-
-			xmlSerializer.startTag(null, "member");
-
-			xmlSerializer.attribute(null, "GR_ID", "" + c.getInt(1));
-
-			xmlSerializer.attribute(null, "email", "" + c.getInt(2));
-			xmlSerializer.attribute(null, "first_name", c.getString(3));
-			xmlSerializer.attribute(null, "last_name", "" + c.getString(4));
-			xmlSerializer.attribute(null, "account_nr", "" + c.getInt(5));
-			xmlSerializer.attribute(null, "balance", "" + c.getDouble(6));
-
-			xmlSerializer.endTag(null, "member");
-			
-			c.moveToNext();
-
-		}
-		// end DOCUMENT
-		xmlSerializer.endTag(null, "root");
-		
-		xmlSerializer.endDocument();
-		xmlSerializer.flush();
-		
 	}
 	
 	public void importMembers(View v){
@@ -333,11 +225,7 @@ public class LedenMainActivity extends Activity implements OnItemClickListener {
 		intent.putExtra(FileDialog.FORMAT_FILTER, new String[] {"xml"});
 		intent.putExtra(FileDialog.START_PATH, Environment.getExternalStorageDirectory().getPath());
 
-		startActivityForResult(intent, REQUEST_FILE);
-		
-		
-		
-		
+		startActivityForResult(intent, REQUEST_FILE);	
 	}
 	
 	protected void onActivityResult(int requestCode, int resultCode,
@@ -350,35 +238,32 @@ public class LedenMainActivity extends Activity implements OnItemClickListener {
 		
 	}
 	
-	public class LoadData extends AsyncTask<File, Void, Void> {
+	public class LoadData extends AsyncTask<File, Void, Boolean> {
 	    ProgressDialog progressDialog;
 	    MemberImporter importer;
 	    //declare other objects as per your need
 	    
 	    public LoadData(){
-	    	importer = new MemberImporter();
+	    	importer = new MemberImporter(LedenMainActivity.this);
 	    }
 	    @Override
 	    protected void onPreExecute()
 	    {
 	        progressDialog= ProgressDialog.show(LedenMainActivity.this, "importing...","Process Description Text", true);
-
-	        //do initialization of required objects objects here                
+              
 	    };      
 	       
 	    @Override
-	    protected void onPostExecute(Void result)
+	    protected void onPostExecute(Boolean result)
 	    {
 	        super.onPostExecute(result);
 	        progressDialog.dismiss();
 	    }
 		@Override
-		protected Void doInBackground(File... params) {
+		protected Boolean doInBackground(File... params) {
 			// TODO Auto-generated method stub
 			File f = params[0];
-			importer.importMembers(f);
-			
-			return null;
+			return importer.importMembers(f);	
 		};
 	 }
 }
