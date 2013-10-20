@@ -42,7 +42,6 @@ public class MemberImporter {
 	public boolean importMembers() {
 
 		boolean res = false;
-
 		Document doc = getDomElement(file.getAbsolutePath());
 
 		if (doc == null) {
@@ -50,6 +49,8 @@ public class MemberImporter {
 			return res;
 		}
 
+		res = true ; 
+		
 		NodeList updateList = doc.getElementById(UPDATE_LIST)
 				.getElementsByTagName("update");
 		Element n;
@@ -58,21 +59,18 @@ public class MemberImporter {
 		for (int i = 0; i < updateList.getLength(); i++) {
 
 			n = (Element) updateList.item(i);
-			Element old = (Element) n.getElementsByTagName("old");
-			Element new1 = (Element) n.getElementsByTagName("new");
 			v.clear();
-			v.put(DBHelper.MemberTable.COLUMN_GR_ID, new1.getAttribute("gr_id"));
-			v.put(DBHelper.MemberTable.COLUMN_EMAIL, new1.getAttribute("email"));
+			v.put(DBHelper.MemberTable.COLUMN_GR_ID, n.getAttribute("gr_id"));
 			v.put(DBHelper.MemberTable.COLUMN_FIRST_NAME,
-					new1.getAttribute("first_name"));
+					n.getAttribute("first_name"));
 			v.put(DBHelper.MemberTable.COLUMN_LAST_NAME,
-					new1.getAttribute("last_name"));
+					n.getAttribute("last_name"));
 
 			boolean check = DB.updateOrIgnore(DBHelper.MemberTable.TABLE_NAME,
-					(String) old.getAttribute("email"), v);
+					(String) n.getAttribute("gr_id"), v);
 
 			if (!check) {
-				return false;
+				res =  false;
 			}
 		}
 
@@ -83,9 +81,9 @@ public class MemberImporter {
 
 			n = (Element) deleteList.item(i);
 			boolean check = DB.deleteOrIgnore(DBHelper.MemberTable.TABLE_NAME,
-					n.getAttribute("email"));
+					n.getAttribute("gr_id"));
 			if (!check) {
-				return false;
+				res = false;
 			}
 		}
 
@@ -96,8 +94,8 @@ public class MemberImporter {
 
 			n = (Element) createList.item(i);
 			v.clear();
-			v.put(DBHelper.MemberTable.COLUMN_GR_ID, n.getAttribute("GR_ID"));
-			v.put(DBHelper.MemberTable.COLUMN_EMAIL, n.getAttribute("email"));
+			v.put(DBHelper.MemberTable.COLUMN_GR_ID, n.getAttribute("gr_id"));
+
 			v.put(DBHelper.MemberTable.COLUMN_FIRST_NAME,
 					n.getAttribute("first_name"));
 			v.put(DBHelper.MemberTable.COLUMN_LAST_NAME,
@@ -105,7 +103,7 @@ public class MemberImporter {
 
 			long check = DB.insertOrIgnore(DBHelper.MemberTable.TABLE_NAME, v);
 			if (check == -1) {
-				return false;
+				res = false;
 			}
 		}
 

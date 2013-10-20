@@ -92,13 +92,8 @@ public class GroupMainActivity extends Activity implements OnItemClickListener{
 		leden.setOnItemClickListener(this);
 		
 		c_groups = DB.getGroupsFancy();
-		
-		Cursor m = DB.getMembers();
-
 		c_members = new FilteredCursor(DB.getMembers());
-
 		c_group_members = new FilteredCursor(DB.getMembers());
-
 		c_group_members.clearAllRows();
 		
 		mainAdapter = new SimpleCursorAdapter(this,
@@ -185,7 +180,7 @@ public class GroupMainActivity extends Activity implements OnItemClickListener{
 			while(c_group_members.getPosition() < c_group_members.getCount() ){
 				
 				v.put(DBHelper.GroupMembers.COLUMN_NAME_GROUP_ID, (int) b );
-				v.put(DBHelper.GroupMembers.COLUMN_NAME_MEMBER_ID, c_group_members.getString(2));
+				v.put(DBHelper.GroupMembers.COLUMN_NAME_MEMBER_ID, c_group_members.getInt(0));
 				DB.insertOrIgnore(DBHelper.GroupMembers.TABLE_NAME, v);
 				
 				c_group_members.moveToNext();
@@ -206,7 +201,7 @@ public class GroupMainActivity extends Activity implements OnItemClickListener{
 			while(c_group_members.getPosition() < c_group_members.getCount() ){
 				
 				v.put(DBHelper.GroupMembers.COLUMN_NAME_GROUP_ID, current );
-				v.put(DBHelper.GroupMembers.COLUMN_NAME_MEMBER_ID, c_group_members.getString(2));
+				v.put(DBHelper.GroupMembers.COLUMN_NAME_MEMBER_ID, c_group_members.getString(0));
 				DB.insertOrIgnore(DBHelper.GroupMembers.TABLE_NAME, v);
 				c_group_members.moveToNext();
 				
@@ -244,8 +239,7 @@ public class GroupMainActivity extends Activity implements OnItemClickListener{
 				c_group_members.addId(c.getInt(0));	
 				c_members.filterId(c.getInt(0));
 				
-				c.moveToNext();
-				
+				c.moveToNext();			
 			}
 
 			c.close();
@@ -261,7 +255,7 @@ public class GroupMainActivity extends Activity implements OnItemClickListener{
 			
 			c_members.moveToPosition(arg2);
 			
-			int res = c_members.getUnfilteredPosition();
+			c_members.getUnfilteredPosition();
 			
 			c_group_members.addPos(c_members.getUnfilteredPosition());
 			c_members.filter(arg2);
@@ -315,8 +309,7 @@ public class GroupMainActivity extends Activity implements OnItemClickListener{
 	}
 	
 	public void setToDefault(){
-		
-		
+				
 		c_groups.close();
 		
 		c_groups = DB.getGroupsFancy();

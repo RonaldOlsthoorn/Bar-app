@@ -10,6 +10,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import com.groover.bar.R;
 import com.groover.bar.frame.DBHelper;
+import com.groover.bar.frame.OrderExporter;
 
 import android.os.Bundle;
 import android.os.Environment;
@@ -74,77 +75,14 @@ public class PenningActivity extends Activity {
 
 	public void processDB(View v) {
 
-		boolean mExternalStorageAvailable = false;
-		boolean mExternalStorageWriteable = false;
-		String state = Environment.getExternalStorageState();
-
-		if (Environment.MEDIA_MOUNTED.equals(state)) {
-			// We can read and write the media
-			mExternalStorageAvailable = mExternalStorageWriteable = true;
-		} else if (Environment.MEDIA_MOUNTED_READ_ONLY.equals(state)) {
-			// We can only read the media
-			mExternalStorageAvailable = true;
-			mExternalStorageWriteable = false;
-		} else {
-			// Something else is wrong. It may be one of many other states, but
-			// all we need
-			// to know is we can neither read nor write
-			mExternalStorageAvailable = mExternalStorageWriteable = false;
+		OrderExporter ex = new OrderExporter(this);
+		try {
+			ex.export();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 
-		if (mExternalStorageAvailable && mExternalStorageWriteable) {
-
-			Calendar c = Calendar.getInstance();
-			SimpleDateFormat df1 = new SimpleDateFormat("dd-MM-yy hh.mm.ss");
-
-			File sdRoot = Environment.getExternalStorageDirectory();
-			File mainFolder = new File(sdRoot,
-					"Groover Bar/Afrekeningen/Afrekening "
-							+ df1.format(c.getTime()));
-			mainFolder.mkdirs();
-
-			try {
-
-				File currentDB = this.getDatabasePath(DBHelper.DATABASE_NAME);
-				File backupDB = new File(mainFolder, "DB.db");
-				backupDB.createNewFile();
-				FileChannel src = new FileInputStream(currentDB).getChannel();
-				FileChannel dst = new FileOutputStream(backupDB).getChannel();
-				dst.transferFrom(src, 0, src.size());
-				src.close();
-				dst.close();
-				Toast.makeText(getBaseContext(), backupDB.toString(),
-						Toast.LENGTH_LONG).show();
-
-			} catch (Exception e) {
-
-				Toast.makeText(getBaseContext(), e.toString(),
-						Toast.LENGTH_LONG).show();
-
-			}
-
-			File cvs = new File(mainFolder, "afrekening.csv");
-
-			CSVWriter writer;
-			try {
-				writer = new CSVWriter(new FileWriter(cvs.getAbsolutePath()));
-				writer.writeNext(new String[] {"Afrekening"});
-				writer.close();
-
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-
-		}
-
-	}
-	
-	public String[] memberOrders(){
-		
-		Cursor c = DB.getMemberOrders();
-		
-		return null;
 	}
 
 	public void toStatistics(View view) {

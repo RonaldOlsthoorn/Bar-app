@@ -174,7 +174,7 @@ public class ArticleActivity extends Activity implements OnItemClickListener,
 		values.put(DBHelper.ItemList.COLUMN_NAME_PRICE, prijs);
 		values.put(DBHelper.ItemList.COLUMN_NAME_CAT, cat);
 
-		long b = DB.insertOrIgnore(DBHelper.ItemList.TABLE_NAME, values);
+		DB.insertOrIgnore(DBHelper.ItemList.TABLE_NAME, values);
 
 		c_articles.close();
 		c_articles = DB.getArticles();
@@ -205,7 +205,7 @@ public class ArticleActivity extends Activity implements OnItemClickListener,
 		values.put(DBHelper.ItemList.COLUMN_NAME_PRICE, prijs);
 		values.put(DBHelper.ItemList.COLUMN_NAME_CAT, cat);
 
-		boolean b = DB.updateOrIgnore(DBHelper.ItemList.TABLE_NAME, current,
+		DB.updateOrIgnore(DBHelper.ItemList.TABLE_NAME, current,
 				values);
 
 		c_articles.close();
@@ -222,7 +222,8 @@ public class ArticleActivity extends Activity implements OnItemClickListener,
 
 	public void v_article(View v) {
 
-		boolean b = DB.deleteOrIgnore(DBHelper.ItemList.TABLE_NAME, current);
+
+		DB.deleteOrIgnore(DBHelper.ItemList.TABLE_NAME, current);
 
 		c_articles.close();
 		c_articles = DB.getArticles();

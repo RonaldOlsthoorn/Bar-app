@@ -1,7 +1,5 @@
 package com.groover.bar.gui;
 
-
-
 import java.io.File;
 import java.io.IOException;
 
@@ -46,17 +44,16 @@ public class LedenMainActivity extends Activity implements OnItemClickListener {
 
 	private EditText vtVoornaam;
 	private EditText vtAchternaam;
-	private EditText vtEmail;
+	private EditText vtId;
 
 	private int current;
-	private String current_email;
 
 	private SimpleCursorAdapter adapter;
 	private Cursor c;
 	private String[] FROM = new String[] {
 			DBHelper.MemberTable.COLUMN_FIRST_NAME,
 			DBHelper.MemberTable.COLUMN_LAST_NAME,
-			DBHelper.MemberTable.COLUMN_EMAIL };
+			DBHelper.MemberTable.COLUMN_GR_ID };
 	private int[] TO = new int[] { R.ledenlijstrow.voornaam,
 			R.ledenlijstrow.achternaam, R.ledenlijstrow.account };
 
@@ -80,7 +77,7 @@ public class LedenMainActivity extends Activity implements OnItemClickListener {
 
 		vtVoornaam = (EditText) findViewById(R.leden.voegtoe_voornaam);
 		vtAchternaam = (EditText) findViewById(R.leden.voegtoe_achternaam);
-		vtEmail = (EditText) findViewById(R.leden.email);
+		vtId = (EditText) findViewById(R.leden.id);
 
 		c = DB.getMembers();
 
@@ -119,12 +116,12 @@ public class LedenMainActivity extends Activity implements OnItemClickListener {
 
 	public void voegToeLid(View view) {
 
-		String email = vtEmail.getText().toString();
+		int id = Integer.parseInt(vtId.getText().toString());
 		String voornaam = vtVoornaam.getText().toString();
 		String achternaam = vtAchternaam.getText().toString();
 
 		ContentValues v = new ContentValues();
-		v.put(DBHelper.MemberTable.COLUMN_EMAIL, email);
+		v.put(DBHelper.MemberTable.COLUMN_GR_ID, id);
 		v.put(DBHelper.MemberTable.COLUMN_FIRST_NAME, voornaam);
 		v.put(DBHelper.MemberTable.COLUMN_LAST_NAME, achternaam);
 		v.put(DBHelper.MemberTable.COLUMN_BALANCE, 0);
@@ -142,45 +139,48 @@ public class LedenMainActivity extends Activity implements OnItemClickListener {
 		// TODO Auto-generated method stub
 
 		c.moveToPosition(arg2);
-		current = arg2;
-		current_email = c.getString(2);
-		vtEmail.setText("" + c.getString(2));
-		vtVoornaam.setText(c.getString(3));
-		vtAchternaam.setText(c.getString(4));
+		current = (int) arg3;
 
+		vtVoornaam.setText(c.getString(1));
+		vtAchternaam.setText(c.getString(2));
+		vtId.setText(current+"");
+		
 		editPane.setVisibility(View.VISIBLE);
 		voegtoe.setVisibility(View.GONE);
+		
 	}
 
 	public void wijzigLid(View view) {
 
 		c.moveToPosition(current);
-
+		
 		String voornaam = vtVoornaam.getText().toString();
 		String achternaam = vtAchternaam.getText().toString();
-		String email = vtEmail.getText().toString();
-
+		int id = Integer.parseInt(vtId.getText().toString());
+		
 		ContentValues v = new ContentValues();
-		v.put(DBHelper.MemberTable.COLUMN_EMAIL, email);
+		v.put(DBHelper.MemberTable.COLUMN_GR_ID, id);
 		v.put(DBHelper.MemberTable.COLUMN_FIRST_NAME, voornaam);
 		v.put(DBHelper.MemberTable.COLUMN_LAST_NAME, achternaam);
+		
+		System.out.println("hello 1"+current);
 
-		DB.updateOrIgnore(DBHelper.MemberTable.TABLE_NAME, c.getString(2), v);
+		DB.updateOrIgnore(DBHelper.MemberTable.TABLE_NAME, current, v);
 
+		System.out.println("hello 2"+current);
+		
 		c.close();
 		c = DB.getMembers();
+		
+		System.out.println("hello 3"+current);
+		
 		adapter.swapCursor(c);
 
 	}
 
 	public void verwijderLid(View view) {
-
-		c.moveToPosition(current);
-
-		System.out.println("hello");
-		System.out.println("hello"+c.getPosition()+" "+c.getCount()+" "+c.getColumnNames()[0]+c.getColumnNames()[1]+c.getString(2));
-		
-		DB.deleteOrIgnore(DBHelper.MemberTable.TABLE_NAME, c.getString(2));
+	
+		DB.deleteOrIgnore(DBHelper.MemberTable.TABLE_NAME, current);
 
 		c.close();
 		c = DB.getMembers();
@@ -199,7 +199,7 @@ public class LedenMainActivity extends Activity implements OnItemClickListener {
 		editPane.setVisibility(View.GONE);
 		voegtoe.setVisibility(View.VISIBLE);
 
-		vtEmail.setText("");
+		vtId.setText("");
 		vtVoornaam.setText("");
 		vtAchternaam.setText("");
 
