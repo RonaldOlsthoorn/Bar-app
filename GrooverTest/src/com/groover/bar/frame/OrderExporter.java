@@ -55,6 +55,9 @@ public class OrderExporter {
 			// to know is we can neither read nor write
 			mExternalStorageAvailable = mExternalStorageWriteable = false;
 		}
+		
+		Log.d("sd",mExternalStorageAvailable+" "+mExternalStorageWriteable);
+
 
 		if (mExternalStorageAvailable && mExternalStorageWriteable) {
 			
@@ -97,6 +100,10 @@ public class OrderExporter {
 		xmlSerializer.startTag(null, "afrekening");
 		xmlSerializer.attribute(null, "datum_afrekening", ts_settled);
 		
+		
+		xmlSerializer.startTag(null, "list");
+		xmlSerializer.attribute(null, "id", "members");
+		
 		Cursor c = DB.getMembers();
 		c.moveToFirst();
 
@@ -121,8 +128,8 @@ public class OrderExporter {
 				xmlSerializer.attribute(null, "ts_created", orders.getString(1));
 				xmlSerializer.attribute(null, "ts_settled", ts_settled);
 				xmlSerializer.attribute(null, "article", orders.getString(3));
-				xmlSerializer.attribute(null, "amount", "" + orders.getInt(5));
-				xmlSerializer.attribute(null, "price", "" + orders.getDouble(4));
+				xmlSerializer.attribute(null, "amount", "" + orders.getInt(4));
+				xmlSerializer.attribute(null, "price", "" + orders.getDouble(5));
 
 				xmlSerializer.attribute(null, "total", new DecimalFormat("#.00").format(orders.getDouble(0)));
 
@@ -132,13 +139,16 @@ public class OrderExporter {
 				
 			}
 
+			orders.close();
 			xmlSerializer.endTag(null, "member");
 
 			c.moveToNext();
 
 		}
 		
+		xmlSerializer.endTag(null,"list");
 		// end DOCUMENT
+		
 		xmlSerializer.endTag(null, "afrekening");
 
 		xmlSerializer.endDocument();

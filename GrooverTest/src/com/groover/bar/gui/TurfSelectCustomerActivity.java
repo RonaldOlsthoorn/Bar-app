@@ -7,10 +7,13 @@ import com.groover.bar.frame.DBHelper;
 
 import android.os.Bundle;
 import android.app.Activity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -20,6 +23,7 @@ import android.support.v4.widget.CursorAdapter;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.annotation.TargetApi;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.os.Build;
 
@@ -30,7 +34,7 @@ public class TurfSelectCustomerActivity extends Activity implements
 
 	private DBHelper DB;
 	private Cursor c_leden;
-//	private Cursor c_groepen;
+	// private Cursor c_groepen;
 	private SimpleCursorAdapter a_leden;
 	private SimpleCursorAdapter a_groepen;
 	private DecimalFormat df;
@@ -40,16 +44,17 @@ public class TurfSelectCustomerActivity extends Activity implements
 			DBHelper.MemberTable.COLUMN_LAST_NAME,
 			DBHelper.MemberTable.COLUMN_BALANCE };
 
-//	private String[] FROM_GROUPS = new String[] {
-//			DBHelper.GroupTable.COLUMN_GROUP_NAME,
-//			DBHelper.GroupTable.COLUMN_GROUP_BALANCE };
+	// private String[] FROM_GROUPS = new String[] {
+	// DBHelper.GroupTable.COLUMN_GROUP_NAME,
+	// DBHelper.GroupTable.COLUMN_GROUP_BALANCE };
 
 	private int[] TO_LEDEN = new int[] { R.ledenlijstrow.voornaam,
 			R.ledenlijstrow.achternaam, R.ledenlijstrow.account };
-//	private int[] TO_GROUPS = new int[] { R.grouprow1.naam, R.grouprow1.balance };
+	// private int[] TO_GROUPS = new int[] { R.grouprow1.naam,
+	// R.grouprow1.balance };
 
 	private ListView l_leden;
-//	private ListView l_groepen;
+	// private ListView l_groepen;
 
 	private TextView customerNameTV;
 	private int customerId;
@@ -57,6 +62,8 @@ public class TurfSelectCustomerActivity extends Activity implements
 	private String customerType;
 	private int customerAcount;
 	private Button nextButton;
+
+	private AutoCompleteTextView search;
 
 	/**
 	 * Set up the {@link android.app.ActionBar}, if the API is available.
@@ -98,7 +105,7 @@ public class TurfSelectCustomerActivity extends Activity implements
 		setContentView(R.layout.activity_turf_select_customer);
 		// Show the Up button in the action bar.
 		setupActionBar();
-		
+
 		df = new DecimalFormat("0.00");
 
 		nextButton = (Button) findViewById(R.selectCustomer.nextButton);
@@ -107,33 +114,47 @@ public class TurfSelectCustomerActivity extends Activity implements
 		DB = DBHelper.getDBHelper(this);
 		c_leden = DB.getListMembers();
 
-//		c_groepen = DB.getListGroups();
-		
+		// c_groepen = DB.getListGroups();
 
-		a_leden = new FormatTextAdapter(this, R.layout.ledenlijstrow,
-				c_leden, FROM_LEDEN, TO_LEDEN,
-				CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER, df, R.ledenlijstrow.account);
+		a_leden = new FormatTextAdapter(this, R.layout.ledenlijstrow, c_leden,
+				FROM_LEDEN, TO_LEDEN,
+				CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER, df,
+				R.ledenlijstrow.account);
 
-		
-//		a_groepen = new FormatTextAdapter(this, R.layout.grouprow, c_groepen,
-//				FROM_GROUPS, TO_GROUPS,
-//				CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER, df, R.grouprow1.balance);
-
+		// a_groepen = new FormatTextAdapter(this, R.layout.grouprow, c_groepen,
+		// FROM_GROUPS, TO_GROUPS,
+		// CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER, df,
+		// R.grouprow1.balance);
 
 		l_leden = (ListView) findViewById(R.selectCustomer.listViewleden);
-	
-		//TO PUT GOUPS BACK UNCOMMENT THIS LIN
+
+		// TO PUT GOUPS BACK UNCOMMENT THIS LIN
 		findViewById(R.selectCustomer.listViewgroepen).setVisibility(View.GONE);
 
 		l_leden.setAdapter(a_leden);
-		
 
-//		l_groepen.setAdapter(a_groepen);
+		// l_groepen.setAdapter(a_groepen);
 
 		l_leden.setOnItemClickListener(this);
-//		l_groepen.setOnItemClickListener(this);
+		// l_groepen.setOnItemClickListener(this);
+
+		search = (AutoCompleteTextView) findViewById(R.selectCustomer.search);
+		search.setThreshold(2);
+		search.setAdapter(new SimpleCursorAdapter(this, R.layout.group_row2,
+				c_leden, 
+				new String[] { DBHelper.MemberTable.COLUMN_FIRST_NAME,
+				DBHelper.MemberTable.COLUMN_LAST_NAME }, 
+				new int[] {R.groupRow2.first, R.groupRow2.last },
+				CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER));
+		
+		Resources res = getResources();
+		int color = res.getColor(android.R.color.black);
+		search.setTextColor(color);
+		
+		search.setOnItemClickListener(this);
 
 	}
+
 
 	@Override
 	public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
@@ -147,16 +168,30 @@ public class TurfSelectCustomerActivity extends Activity implements
 			customerNameTV.setText(customerName);
 			nextButton.setEnabled(true);
 		}
-//		if (arg0.equals(l_groepen)) {
-//			c_groepen.moveToPosition(arg2);
-//			customerId = c_groepen.getInt(0);
-//			customerName = c_groepen.getString(1);
-//			customerType = "group";
-//			customerAcount = c_groepen.getInt(2);
-//			customerNameTV.setText(customerName);
-//			nextButton.setEnabled(true);
-//
-//		}
+		// if (arg0.equals(l_groepen)) {
+		// c_groepen.moveToPosition(arg2);
+		// customerId = c_groepen.getInt(0);
+		// customerName = c_groepen.getString(1);
+		// customerType = "group";
+		// customerAcount = c_groepen.getInt(2);
+		// customerNameTV.setText(customerName);
+		// nextButton.setEnabled(true);
+		//
+		// }
+		
+		
+		else{
+			
+			c_leden.moveToPosition(arg2);
+			customerId = c_leden.getInt(0);
+			customerName = c_leden.getString(1) + " " + c_leden.getString(2);
+			customerType = "individual";
+			customerAcount = c_leden.getInt(3);
+			customerNameTV.setText(customerName);
+			nextButton.setEnabled(true);	
+			
+			search.setText(c_leden.getString(1) + " " + c_leden.getString(2));
+		}
 	}
 
 	public void annuleren(View view) {

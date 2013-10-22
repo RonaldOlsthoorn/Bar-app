@@ -1,6 +1,6 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/LinearLayout1"
+    android:id="@+id/RelativeLayout1"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
@@ -10,106 +10,98 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context=".TurfSelectCustomerActivity" >
 
-    <LinearLayout
+    <AutoCompleteTextView
+        android:id="@+selectCustomer/search"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/textView1"
+        android:layout_below="@+id/textView1"
+        android:layout_marginTop="5dp"
+        android:layout_weight="1"
+        android:ems="10"
+        android:inputType="textPersonName" >
+
+        <requestFocus />
+    </AutoCompleteTextView>
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/textView1"
+        android:layout_below="@+selectCustomer/search"
+        android:layout_weight="0"
+        android:text="Leden"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <ListView
+        android:id="@+selectCustomer/listViewleden"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="5dp"
-        android:layout_weight="0" >
-
-        <TextView
-            android:id="@+id/textView1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Kies lid/groep:  "
-            android:textAppearance="?android:attr/textAppearanceLarge" />
-
-        <TextView
-            android:id="@+selectCustomer/customer"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
-            android:textAppearance="?android:attr/textAppearanceLarge" />
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_above="@+id/button1"
+        android:layout_alignLeft="@+id/textView1"
+        android:layout_below="@+id/textView2"
         android:layout_weight="1" >
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:orientation="vertical" >
+    </ListView>
 
-            <TextView
-                android:id="@+id/textView2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_weight="0"
-                android:text="Leden"
-                android:textAppearance="?android:attr/textAppearanceMedium" />
+    <TextView
+        android:id="@+id/textView3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_weight="0"
+        android:text="Groepen"
+        android:visibility="gone" />
 
-            <ListView
-                android:id="@+selectCustomer/listViewleden"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1" >
-            </ListView>
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:orientation="vertical" >
-
-            <TextView
-                android:id="@+id/textView3"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_weight="0"
-                android:text="Groepen" />
-
-            <ListView
-                android:id="@+selectCustomer/listViewgroepen"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1" >
-            </ListView>
-
-        </LinearLayout>
-
-    </LinearLayout>
-
-    <LinearLayout
+    <ListView
+        android:id="@+selectCustomer/listViewgroepen"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center" >
+        android:layout_above="@+id/button1"
+        android:layout_below="@+id/textView3"
+        android:layout_weight="1"
+        android:visibility="gone" >
 
-        <Button
-            android:id="@+id/button1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_weight="0.5"
-            android:onClick="annuleren"
-            android:text="Annuleren" />
+    </ListView>
 
-        <Button
-            android:id="@+selectCustomer/nextButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_weight="0.5"
-            android:enabled="false"
-            android:onClick="next"
-            android:text="Door naar bestelling" />
+    <TextView
+        android:id="@+id/textView1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:text="Kies lid/groep:  "
+        android:textAppearance="?android:attr/textAppearanceLarge" />
 
-    </LinearLayout>
+    <Button
+        android:id="@+id/button1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_weight="0.5"
+        android:onClick="annuleren"
+        android:text="    Annuleren    " />
 
-</LinearLayout>
+    <Button
+        android:id="@+selectCustomer/nextButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_weight="0.5"
+        android:enabled="false"
+        android:onClick="next"
+        android:text="    Door naar bestelling    " />
+
+    <TextView
+        android:id="@+selectCustomer/customer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_marginLeft="10dp"
+        android:layout_toRightOf="@+id/textView1"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
+
+</RelativeLayout>

@@ -14,6 +14,7 @@ import org.xmlpull.v1.XmlSerializer;
 import android.content.Context;
 import android.database.Cursor;
 import android.os.Environment;
+import android.util.Log;
 import android.util.Xml;
 
 public class MemberExporter {
@@ -47,6 +48,8 @@ public class MemberExporter {
 			mExternalStorageAvailable = mExternalStorageWriteable = false;
 		}
 
+		Log.d("sd",mExternalStorageAvailable+" "+mExternalStorageWriteable);
+		
 		if (mExternalStorageAvailable && mExternalStorageWriteable) {
 
 			File sdRoot = Environment.getExternalStorageDirectory();
