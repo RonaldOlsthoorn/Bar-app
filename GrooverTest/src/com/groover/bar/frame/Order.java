@@ -27,6 +27,7 @@ public class Order {
 	}
 	
 	public void addOrderUnit(OrderUnit u){
+		
 		map.put(Integer.valueOf(u.getArticle().getId()), u);
 		stack.push(Integer.valueOf(u.getArticle().getId()));
 	}
@@ -109,6 +110,12 @@ public class Order {
 	public OrderUnit getUnitById(int id){
 		
 		return map.get(Integer.valueOf(id));
+	}
+	
+	public boolean contains(int i){
+		
+		return stack.contains(Integer.valueOf(i));
+			
 	}
 }
 

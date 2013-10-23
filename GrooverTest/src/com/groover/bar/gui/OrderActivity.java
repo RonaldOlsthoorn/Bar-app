@@ -54,10 +54,7 @@ public class OrderActivity extends Activity implements OnItemClickListener, Prop
 	
 	private String[] FROM_A = new String[]{DBHelper.ItemList.COLUMN_NAME_ITEM, DBHelper.ItemList.COLUMN_NAME_PRICE};
 	private int[] TO_A = new int[]{R.articlerow2.naam,R.articlerow2.price};
-	
-	private String[] FROM_O = new String[]{DBHelper.ItemList.COLUMN_NAME_ITEM};
-	private int[] TO_O = new int[]{R.orderRow.article};
-	
+		
 	private DBHelper DB;
 	
 	private Cursor c_Articles;
@@ -67,7 +64,7 @@ public class OrderActivity extends Activity implements OnItemClickListener, Prop
 	private NumPadAdapter numPadAdapter;
 	private TextView totaal_output;
 	
-	
+	private ArrayList<String> order_Map;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -191,9 +188,13 @@ public class OrderActivity extends Activity implements OnItemClickListener, Prop
 	public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
 		// TODO Auto-generated method stub
 		if(arg0.equals(l_artikelen)){
-			c_Order.addUnspecified((int) arg3);
-			a_order.notifyDataSetChanged();	
-			setCurrentArticle(arg3);
+			
+			if(!c_Order.contains((int) arg3)){
+				c_Order.addUnspecified((int) arg3);
+				a_order.notifyDataSetChanged();	
+				setCurrentArticle(arg3);
+			}
+			
 			
 		}
 		if(arg0.equals(l_order)){
@@ -232,7 +233,10 @@ public class OrderActivity extends Activity implements OnItemClickListener, Prop
 			
 		}	
 		
-		if(event.getNewValue().equals("clicked")){
+		if(event.getNewValue().equals("TRUE")){
+			current_article = -1;
+			current_amount = 0;
+			order_amount.setText("");
 			updateTotal();
 		}
 	}

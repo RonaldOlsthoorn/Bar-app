@@ -68,7 +68,7 @@ public class OrderListAdapter extends BaseAdapter{
 			
 		OrderUnit s = source.getUnit(position);
 		LayoutInflater mInflater = (LayoutInflater)
-                context.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
+        context.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
 		
 		ViewHolder holder;
 		
@@ -109,7 +109,7 @@ public class OrderListAdapter extends BaseAdapter{
 			// TODO Auto-generated method stub
 			source.deleteOrderKey(id);
             OrderListAdapter.this.notifyDataSetChanged();
-            PropertyChangeEvent e = new PropertyChangeEvent(arg0, "Type", "unclicked", "clicked");
+            PropertyChangeEvent e = new PropertyChangeEvent(arg0, "DELETE", "FALSE", "TRUE");
             l.propertyChange(e);
 		}		
 	}
