@@ -21,7 +21,6 @@
         android:ems="10"
         android:inputType="textPersonName" >
 
-        <requestFocus />
     </AutoCompleteTextView>
 
     <TextView

@@ -1,12 +1,16 @@
 package com.groover.bar.gui;
-
-
-
 import com.groover.bar.R;
+import com.groover.bar.frame.BackupReceiver;
+import com.groover.bar.frame.BackupService;
 
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.app.Activity;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -14,12 +18,29 @@ import android.support.v4.app.NavUtils;
 
 public class MainActivity extends Activity {
 
+	private AlarmManager alarmMgr;
+	private PendingIntent alarmIntent;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		// Show the Up button in the action bar.
 		//getActionBar().setDisplayHomeAsUpEnabled(true);
+		
+		setupBackupService();
+	}
+
+	private void setupBackupService() {
+		// TODO Auto-generated method stub
+			
+		alarmMgr = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
+		Intent intent = new Intent(this, BackupService.class);
+		PendingIntent pIntent = PendingIntent.getService(this, 0, intent, 0);
+		alarmMgr.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() +
+		        20 * 1000, AlarmManager.INTERVAL_HOUR , pIntent);
+		
+		Log.i("main","hello");
 		
 	}
 

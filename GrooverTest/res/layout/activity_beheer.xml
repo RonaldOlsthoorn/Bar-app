@@ -22,15 +22,6 @@
             android:text="Leden" />
 
         <Button
-            android:id="@+beheer/Groepen"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_margin="5dp"
-            android:onClick="toGroepen"
-            android:text="Groepen" />
-
-        <Button
             android:id="@+beheer/Artikelen"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

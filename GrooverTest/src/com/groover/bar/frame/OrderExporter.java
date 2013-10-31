@@ -25,6 +25,7 @@ public class OrderExporter {
 	private DBHelper DB;
 	private Context context;
 	private String ts_settled;
+	
 	public OrderExporter(Context c) {
 
 		context = c;
@@ -82,14 +83,14 @@ public class OrderExporter {
 					new FileOutputStream(xml));
 			extractFromDB(buf);
 			buf.close();
+			
+			DB.deleteAllOrders();
 
 		}
 	}
 
 	private void extractFromDB(BufferedOutputStream buf)
 			throws IllegalArgumentException, IllegalStateException, IOException {
-
-		
 		
 		XmlSerializer xmlSerializer = Xml.newSerializer();
 		xmlSerializer.setOutput(buf, "UTF-8");
@@ -118,6 +119,7 @@ public class OrderExporter {
 			xmlSerializer.attribute(null, "GR_ID", "" + c.getInt(0));
 			xmlSerializer.attribute(null, "first_name", c.getString(1));
 			xmlSerializer.attribute(null, "last_name", "" + c.getString(2));
+			xmlSerializer.attribute(null, "total", ""+c.getDouble(4));
 			
 			orders.moveToFirst();
 			

@@ -138,8 +138,16 @@
         <activity
             android:name="com.groover.bar.frame.FileDialog"
             android:label="@string/dialog_name"
-            android:screenOrientation="landscape" >     
+            android:screenOrientation="landscape" >
         </activity>
+
+        <receiver
+            android:name="com.groover.bar.frame.BackupReceiver"
+            android:enabled="true" >
+        </receiver>
+
+        <service android:name="com.groover.bar.frame.BackupService" >
+        </service>
     </application>
 
 </manifest>

@@ -7,6 +7,8 @@ import com.groover.bar.frame.DBHelper;
 
 import android.os.Bundle;
 import android.app.Activity;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -15,6 +17,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.FilterQueryProvider;
 import android.widget.TextView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
@@ -34,6 +37,7 @@ public class TurfSelectCustomerActivity extends Activity implements
 
 	private DBHelper DB;
 	private Cursor c_leden;
+	private Cursor c_filter_leden;
 	// private Cursor c_groepen;
 	private SimpleCursorAdapter a_leden;
 	private SimpleCursorAdapter a_groepen;
@@ -43,6 +47,8 @@ public class TurfSelectCustomerActivity extends Activity implements
 			DBHelper.MemberTable.COLUMN_FIRST_NAME,
 			DBHelper.MemberTable.COLUMN_LAST_NAME,
 			DBHelper.MemberTable.COLUMN_BALANCE };
+	
+	
 
 	// private String[] FROM_GROUPS = new String[] {
 	// DBHelper.GroupTable.COLUMN_GROUP_NAME,
@@ -64,6 +70,8 @@ public class TurfSelectCustomerActivity extends Activity implements
 	private Button nextButton;
 
 	private AutoCompleteTextView search;
+
+	private SimpleCursorAdapter autoCompleteAdapter;
 
 	/**
 	 * Set up the {@link android.app.ActionBar}, if the API is available.
@@ -138,23 +146,27 @@ public class TurfSelectCustomerActivity extends Activity implements
 		l_leden.setOnItemClickListener(this);
 		// l_groepen.setOnItemClickListener(this);
 
+		autoCompleteAdapter = new SimpleCursorAdapter(this,
+				R.layout.group_row2, c_filter_leden, new String[] {
+						DBHelper.MemberTable.COLUMN_FIRST_NAME,
+						DBHelper.MemberTable.COLUMN_LAST_NAME }, new int[] {
+						R.groupRow2.first, R.groupRow2.last },
+				CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
+
 		search = (AutoCompleteTextView) findViewById(R.selectCustomer.search);
 		search.setThreshold(2);
-		search.setAdapter(new SimpleCursorAdapter(this, R.layout.group_row2,
-				c_leden, 
-				new String[] { DBHelper.MemberTable.COLUMN_FIRST_NAME,
-				DBHelper.MemberTable.COLUMN_LAST_NAME }, 
-				new int[] {R.groupRow2.first, R.groupRow2.last },
-				CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER));
+		search.setAdapter(autoCompleteAdapter);
+		autoCompleteAdapter.setFilterQueryProvider(filterQueryProvider);
 		
 		Resources res = getResources();
 		int color = res.getColor(android.R.color.black);
 		search.setTextColor(color);
-		
+
 		search.setOnItemClickListener(this);
+		
+		DB.getFilteredMember("hello");
 
 	}
-
 
 	@Override
 	public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
@@ -178,18 +190,17 @@ public class TurfSelectCustomerActivity extends Activity implements
 		// nextButton.setEnabled(true);
 		//
 		// }
-		
-		
-		else{
-			
+
+		else {
+
 			c_leden.moveToPosition(arg2);
 			customerId = c_leden.getInt(0);
 			customerName = c_leden.getString(1) + " " + c_leden.getString(2);
 			customerType = "individual";
 			customerAcount = c_leden.getInt(3);
 			customerNameTV.setText(customerName);
-			nextButton.setEnabled(true);	
-			
+			nextButton.setEnabled(true);
+
 			search.setText(c_leden.getString(1) + " " + c_leden.getString(2));
 		}
 	}
@@ -220,4 +231,13 @@ public class TurfSelectCustomerActivity extends Activity implements
 			}
 		}
 	}
+	
+	private FilterQueryProvider filterQueryProvider = new FilterQueryProvider() {
+	    public Cursor runQuery(CharSequence constraint) {
+	        // assuming you have your custom DBHelper instance 
+	        // ready to execute the DB request
+	        return DB.getFilteredMember(constraint.toString());
+	        		
+	    }
+	};
 }

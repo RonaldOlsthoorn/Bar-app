@@ -78,7 +78,8 @@ public class Order {
 			v.clear();
 			v.put(DBHelper.Consumption.COLUMN_ID, id);
 			v.put(DBHelper.Consumption.COLUMN_AMMOUNT, map.get(stack.get(i)).getAmount());
-			v.put(DBHelper.Consumption.COLUMN_ARTICLE, map.get(stack.get(i)).getArticle().getId());
+			v.put(DBHelper.Consumption.COLUMN_ARTICLE_NAME, map.get(stack.get(i)).getArticle().getName());
+			v.put(DBHelper.Consumption.COLUMN_ARTICLE_PRICE, map.get(stack.get(i)).getArticle().getPrice());
 				
 			id =  db.insertOrIgnore(DBHelper.Consumption.TABLE_NAME, v);
 			

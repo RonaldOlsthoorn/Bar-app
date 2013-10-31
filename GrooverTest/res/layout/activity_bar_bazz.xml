@@ -22,15 +22,6 @@
             android:text="Turven" />
 
         <Button
-            android:id="@+BarBazz/Groepen"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_margin="5dp"
-            android:onClick="toGroups"
-            android:text="Groepen" />
-
-        <Button
             android:id="@+BarBazz/turfLijst"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
