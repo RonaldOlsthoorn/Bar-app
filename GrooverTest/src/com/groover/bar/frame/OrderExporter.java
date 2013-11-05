@@ -109,7 +109,7 @@ public class OrderExporter {
 		mainFolder.mkdirs();
 		
 		File currentDB = context.getDatabasePath(DBHelper.DATABASE_NAME);
-		File backupDB = new File(mainFolder, "backupDB.db");
+		File backupDB = new File(mainFolder, "backup "+ts_settled+".db");
 		backupDB.createNewFile();
 		FileChannel src = new FileInputStream(currentDB).getChannel();
 		FileChannel dst = new FileOutputStream(backupDB).getChannel();
