@@ -1,30 +1,20 @@
 package com.groover.bar.frame;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
+
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
+
 
 import com.groover.bar.frame.DBHelper.BackupLog;
 
 import android.app.IntentService;
-import android.app.Service;
 import android.content.ContentValues;
 import android.content.Intent;
-import android.os.AsyncTask;
-import android.os.IBinder;
-import android.text.format.DateFormat;
+
 import android.util.Log;
 
 public class BackupService extends IntentService {
 
 	private DBHelper DB;
-	private String TAG = "BackupService";
 	private OrderExporter ex;
 	
 	public BackupService() {
