@@ -33,7 +33,7 @@ public class OrderExporter {
 		
 	}
 
-	public void export() throws IOException {
+	public void exportSD() throws IOException {
 
 		boolean mExternalStorageAvailable = false;
 		boolean mExternalStorageWriteable = false;
@@ -87,6 +87,43 @@ public class OrderExporter {
 			DB.deleteAllOrders();
 
 		}
+	}
+	
+	public void exportLocal() throws IOException{
+		
+		Calendar c = Calendar.getInstance();
+		SimpleDateFormat df1 = new SimpleDateFormat("dd-MM-yy hh.mm.ss");
+		ts_settled = df1.format(c.getTime());
+		
+		File internalRoot = context.getFilesDir();
+		File dir = new File(internalRoot,"backups");
+		
+		if (dir.isDirectory()){
+			for (File child : dir.listFiles()){
+				DeleteRecursive(child);
+			}
+		}
+		
+		File mainFolder = new File(internalRoot,
+				"backups/backup "+ts_settled);
+		mainFolder.mkdirs();
+		
+		File currentDB = context.getDatabasePath(DBHelper.DATABASE_NAME);
+		File backupDB = new File(mainFolder, "backupDB.db");
+		backupDB.createNewFile();
+		FileChannel src = new FileInputStream(currentDB).getChannel();
+		FileChannel dst = new FileOutputStream(backupDB).getChannel();
+		dst.transferFrom(src, 0, src.size());
+		src.close();
+		dst.close();
+
+		File xml = new File(mainFolder, "backup "
+				+ ts_settled + ".xml");
+
+		BufferedOutputStream buf = new BufferedOutputStream(
+				new FileOutputStream(xml));
+		extractFromDB(buf);
+		buf.close();
 	}
 
 	private void extractFromDB(BufferedOutputStream buf)
@@ -156,5 +193,13 @@ public class OrderExporter {
 		xmlSerializer.endDocument();
 		xmlSerializer.flush();
 
+	}
+	
+	void DeleteRecursive(File fileOrDirectory) {
+	    if (fileOrDirectory.isDirectory())
+	        for (File child : fileOrDirectory.listFiles())
+	            DeleteRecursive(child);
+
+	    fileOrDirectory.delete();
 	}
 }

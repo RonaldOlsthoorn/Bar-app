@@ -77,7 +77,7 @@ public class PenningActivity extends Activity {
 
 		OrderExporter ex = new OrderExporter(this);
 		try {
-			ex.export();
+			ex.exportSD();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

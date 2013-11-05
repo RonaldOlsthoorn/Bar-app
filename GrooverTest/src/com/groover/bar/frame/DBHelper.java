@@ -171,12 +171,11 @@ public class DBHelper extends SQLiteOpenHelper {
 				+ Consumption.COLUMN_ARTICLE_NAME + ","
 				+ Consumption.COLUMN_AMMOUNT + ","
 				+ Consumption.COLUMN_ARTICLE_PRICE + " FROM "
-				+ Order.TABLE_NAME + " , " + Consumption.TABLE_NAME 
-				+ " WHERE " + Order.TABLE_NAME + "." + Order.COLUMN_ACCOUNT
-				+ "=" + memberId + " AND " + Order.TABLE_NAME + "."
-				+ Order.COLUMN_ID + "=" + Consumption.TABLE_NAME + "."
-				+ Consumption.COLUMN_ID + " ORDER BY "
-				+ Order.COLUMN_TS_CREATED;
+				+ Order.TABLE_NAME + " , " + Consumption.TABLE_NAME + " WHERE "
+				+ Order.TABLE_NAME + "." + Order.COLUMN_ACCOUNT + "="
+				+ memberId + " AND " + Order.TABLE_NAME + "." + Order.COLUMN_ID
+				+ "=" + Consumption.TABLE_NAME + "." + Consumption.COLUMN_ID
+				+ " ORDER BY " + Order.COLUMN_TS_CREATED;
 
 		return db.rawQuery(query, null);
 	}
@@ -419,12 +418,42 @@ public class DBHelper extends SQLiteOpenHelper {
 		return null;
 	}
 
-	public boolean checkNeedToUpdate(String ts_now) {
+	// veel verbetering mogelijk qua performance.
+	public boolean checkNeedToUpdate() {
 
 		SQLiteDatabase db = getReadableDatabase();
-		String query = "SELECT * FROM "+Order.TABLE_NAME+" WHERE ";
+		
+		Cursor c = db.query(Order.TABLE_NAME, new String[]{Order.COLUMN_ID}, null, null, null, null, null);
+		
+		if(c.getCount()==0){
+			return false;
+		}
 
-		return false;
+		c = db.query(BackupLog.TABLE_NAME, new String[]{BackupLog.COLUMN_ID}, null, null, null, null, null);
+		
+		if(c.getCount()==0){
+			return true;
+		}
+		
+		String inner = "SELECT "+ "MAX("+ BackupLog.COLUMN_TIME_STAMP + ") AS "+BackupLog.COLUMN_TIME_STAMP 
+				+ " FROM "+ BackupLog.TABLE_NAME 
+				+ " WHERE " + BackupLog.COLUMN_TYPE
+				+ "=\"upload\"" + " AND " + BackupLog.COLUMN_SUCCESS + "=1";
+		
+		String query = "SELECT * " 
+				+" FROM " + Order.TABLE_NAME
+				+ " WHERE "+ "("
+				+ inner +")"
+				+ " < " + Order.COLUMN_TS_CREATED;
+
+		c = db.rawQuery(query, null);
+
+		Log.i(TAG,""+c.getCount());
+
+		if (c.getCount() > 0) {
+			return true;
+		}
+		return false; 
 
 	}
 
@@ -448,11 +477,7 @@ public class DBHelper extends SQLiteOpenHelper {
 		db.execSQL(Order.SQL_TRIGGER_UPDATE_TOTAL_4);
 		db.execSQL(Consumption.SQL_CREATE_TABLE);
 		db.execSQL(GroupClearances.SQL_CREATE_TABLE);
-		
-		Log.i(TAG,Order.SQL_TRIGGER_UPDATE_TOTAL_1);
-		Log.i(TAG,Order.SQL_TRIGGER_UPDATE_TOTAL_2);
-		Log.i(TAG,Order.SQL_TRIGGER_UPDATE_TOTAL_3);
-		Log.i(TAG,Order.SQL_TRIGGER_UPDATE_TOTAL_4);
+		db.execSQL(BackupLog.SQL_CREATE_TABLE);
 
 	}
 
@@ -467,7 +492,7 @@ public class DBHelper extends SQLiteOpenHelper {
 		db.execSQL(Order.SQL_DELETE_ENTRIES);
 		db.execSQL(Consumption.SQL_DELETE_ENTRIES);
 		db.execSQL(GroupClearances.SQL_DELETE_ENTRIES);
-
+		db.execSQL(BackupLog.SQL_DELETE_ENTRIES);
 		onCreate(db);
 		DATABASE_VERSION = newVersion;
 	}
@@ -721,7 +746,7 @@ public class DBHelper extends SQLiteOpenHelper {
 				+ " WHERE "
 				+ GroupTable.COLUMN_GROUP_ACCOUNT
 				+ " = NEW." + COLUMN_ACCOUNT + " ; " + "END";
-			
+
 		public static String getIdColumnName() {
 			// TODO Auto-generated method stub
 			return COLUMN_ACCOUNT;
@@ -793,12 +818,11 @@ public class DBHelper extends SQLiteOpenHelper {
 				+ " = "
 				+ AccountList.COLUMN_BALANCE
 				+ " - "
-				+" OLD."
+				+ " OLD."
 				+ COLUMN_TOTAL
 				+ " WHERE "
 				+ AccountList.COLUMN_ACCOUNT
-				+ " = OLD."
-				+ COLUMN_ACCOUNT + ";" + "END";
+				+ " = OLD." + COLUMN_ACCOUNT + ";" + "END";
 
 		public static final String SQL_TRIGGER_UPDATE_TOTAL_3 = "CREATE TRIGGER update_total_3 "
 
@@ -812,12 +836,11 @@ public class DBHelper extends SQLiteOpenHelper {
 				+ " = "
 				+ AccountList.COLUMN_BALANCE
 				+ " - "
-				+" OLD."
+				+ " OLD."
 				+ COLUMN_TOTAL
 				+ " WHERE "
 				+ AccountList.COLUMN_ACCOUNT
-				+ " = OLD."
-				+ COLUMN_ACCOUNT + ";" + "END";
+				+ " = OLD." + COLUMN_ACCOUNT + ";" + "END";
 
 		public static final String SQL_TRIGGER_UPDATE_TOTAL_4 = "CREATE TRIGGER update_total_4 "
 
@@ -902,4 +925,38 @@ public class DBHelper extends SQLiteOpenHelper {
 			return COLUMN_ID;
 		}
 	}
+
+	public static abstract class BackupLog implements BaseColumns {
+
+		public static final String TABLE_NAME = "backup_logs";
+		public static final String COLUMN_ID = _ID;
+		public static final String COLUMN_TIME_STAMP = "ts";
+		public static final String COLUMN_TYPE = "type";
+		public static final String COLUMN_SUCCESS = "success";
+		public static final String COLUMN_COMMENT = "comment";
+
+		public static final String SQL_CREATE_TABLE = "CREATE TABLE  IF NOT EXISTS "
+				+ TABLE_NAME
+				+ " ("
+				+ COLUMN_ID
+				+ " INTEGER PRIMARY KEY AUTOINCREMENT"
+				+ ","
+				+ COLUMN_TIME_STAMP
+				+ " DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL"
+				+ ","
+				+ COLUMN_TYPE
+				+ " TEXT NOT NULL"
+				+ ","
+				+ COLUMN_SUCCESS
+				+ " BOOLEAN" + "," + COLUMN_COMMENT + " TEXT" + ")";
+
+		public static final String SQL_DELETE_ENTRIES = "DROP TABLE IF EXISTS "
+				+ TABLE_NAME;
+
+		public static String getIdColumnName() {
+			// TODO Auto-generated method stub
+			return COLUMN_ID;
+		}
+	}
+
 }

@@ -1,6 +1,5 @@
 package com.groover.bar.gui;
 import com.groover.bar.R;
-import com.groover.bar.frame.BackupReceiver;
 import com.groover.bar.frame.BackupService;
 
 import android.os.Bundle;
@@ -39,9 +38,7 @@ public class MainActivity extends Activity {
 		PendingIntent pIntent = PendingIntent.getService(this, 0, intent, 0);
 		alarmMgr.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() +
 		        20 * 1000, AlarmManager.INTERVAL_HOUR , pIntent);
-		
-		Log.i("main","hello");
-		
+				
 	}
 
 	@Override

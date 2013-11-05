@@ -10,6 +10,7 @@
 
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.INTERNET"/>
 
     <application
         android:allowBackup="true"
@@ -141,12 +142,9 @@
             android:screenOrientation="landscape" >
         </activity>
 
-        <receiver
-            android:name="com.groover.bar.frame.BackupReceiver"
-            android:enabled="true" >
-        </receiver>
-
         <service android:name="com.groover.bar.frame.BackupService" >
+        </service>
+        <service android:name="com.groover.bar.frame.UploadService" >
         </service>
     </application>
 
