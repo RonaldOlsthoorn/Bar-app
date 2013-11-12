@@ -19,6 +19,7 @@ public class MainActivity extends Activity {
 
 	private AlarmManager alarmMgr;
 	private PendingIntent alarmIntent;
+	private int REQUEST_CODE=123;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -68,12 +69,25 @@ public class MainActivity extends Activity {
 	public void toBeheer(View view){
 		
 		Intent intent = new Intent(this, LoginActivity.class);
-		startActivity(intent);
+		startActivityForResult(intent,REQUEST_CODE);
 	}
 	
 	public void toBarBazz(View view){
 		
 		Intent intent = new Intent(this, BarBazzActivity.class);
 		startActivity(intent);
+	}
+	
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		
+		Log.i("main","hello");
+		
+		if (requestCode == 123) {
+			if (resultCode == RESULT_OK) {
+				Intent intent = new Intent(this, BeheerActivity.class);
+				startActivity(intent);
+			}
+		}
 	}
 }

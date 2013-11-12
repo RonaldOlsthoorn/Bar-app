@@ -170,7 +170,7 @@ public class OrderExporter {
 				xmlSerializer.attribute(null, "amount", "" + orders.getInt(4));
 				xmlSerializer.attribute(null, "price", "" + orders.getDouble(5));
 
-				xmlSerializer.attribute(null, "total", new DecimalFormat("#.00").format(orders.getDouble(0)));
+				xmlSerializer.attribute(null, "subtotal", new DecimalFormat("#.00").format(orders.getDouble(0)));
 
 				xmlSerializer.endTag(null, "consumption");
 				

@@ -8,15 +8,21 @@ import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPClientConfig;
 import org.apache.commons.net.ftp.FTPReply;
 
+import com.groover.bar.frame.DBHelper.BackupLog;
+
 import android.app.IntentService;
+import android.content.ContentValues;
 import android.content.Intent;
 import android.util.Log;
 
 public class UploadService extends IntentService {
 
+	private DBHelper DB;
+	
 	public UploadService() {
 		super("UploadService");
 		// TODO Auto-generated constructor stub
+		DB = DBHelper.getDBHelper(this);
 	}
 
 	@Override
@@ -73,9 +79,22 @@ public class UploadService extends IntentService {
 			}
 			
 			client.logout();
+			
+			ContentValues v = new ContentValues();
+			v.put(BackupLog.COLUMN_TYPE, "upload");
+			v.put(BackupLog.COLUMN_SUCCESS, true);
+			
+			DB.insertOrIgnore(BackupLog.TABLE_NAME, v);
+			
 		            
 		}catch(IOException e){
 			e.printStackTrace();
+			
+			ContentValues v = new ContentValues();
+			v.put(BackupLog.COLUMN_TYPE, "upload");
+			v.put(BackupLog.COLUMN_SUCCESS, false);
+			DB.insertOrIgnore(BackupLog.TABLE_NAME, v);
+			
 		}finally{
 			
 			try{

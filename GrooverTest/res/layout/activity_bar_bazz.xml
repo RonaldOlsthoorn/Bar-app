@@ -28,7 +28,6 @@
             android:layout_margin="5dp"
             android:onClick="editTurflijst"
             android:text="Turflijst aanpassen" />
-
     </LinearLayout>
 
 </RelativeLayout>

@@ -118,6 +118,19 @@ public class Order {
 		return stack.contains(Integer.valueOf(i));
 			
 	}
+	
+	public String toString(){
+		
+		String res="";
+		Iterator<OrderUnit> it = map.values().iterator();
+		while(it.hasNext()){
+			OrderUnit unit = it.next();
+			res = res + unit.getAmount()+" "+unit.getArticle().getName()+",";
+		}
+		
+		return res.substring(0, res.length()-1)+" totaal: "+calculateTotal();
+		
+	}
 }
 
 

@@ -248,36 +248,59 @@ public class LoginActivity extends Activity {
 	 * Represents an asynchronous login/registration task used to authenticate
 	 * the user.
 	 */
-	public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
+	public class UserLoginTask extends AsyncTask<Void, Void, Boolean[]> {
 		@Override
-		protected Boolean doInBackground(Void... params) {
+		protected Boolean[] doInBackground(Void... params) {
 			// TODO: attempt authentication against a network service.
 			/*
 			 * try { // Simulate network access. Thread.sleep(0); } catch
 			 * (InterruptedException e) { return false; }
 			 */
+			Boolean[] res = new Boolean[2];
+			res[0] = res[1] = false;
 
 			if (creds[0].equals(mUsername)) {
 				// Account exists, return true if the password matches.
-				return creds[1].equals(mPassword);
+				res[0] = true;
 			}
-			// TODO: register the new account here.
-			return false;
+			if (creds[1].equals(mPassword)) {
+
+				res[1] = true;
+			}
+
+			return res;
 		}
 
 		@Override
-		protected void onPostExecute(final Boolean success) {
+		protected void onPostExecute(final Boolean[] success) {
 
 			mAuthTask = null;
 			showProgress(false);
-			if (success) {
+			if (success[0] && success[1]) {
+
 				Intent intent = new Intent(LoginActivity.this,
-						BeheerActivity.class);
-				startActivity(intent);
+						MainActivity.class);
+
+				if (getParent() == null) {
+					setResult(Activity.RESULT_OK, intent);
+				} else {
+					getParent().setResult(Activity.RESULT_OK, intent);
+				}
+				finish();
 			} else {
-				mPasswordView
-						.setError(getString(R.string.error_incorrect_password));
-				mPasswordView.requestFocus();
+
+				if (!success[0]) {
+					mUsernameView.setError("incorrect username");
+					mUsernameView.requestFocus();
+
+				}
+
+				if (!success[1]) {
+					mPasswordView
+							.setError(getString(R.string.error_incorrect_password));
+					mPasswordView.requestFocus();
+				}
+
 			}
 		}
 

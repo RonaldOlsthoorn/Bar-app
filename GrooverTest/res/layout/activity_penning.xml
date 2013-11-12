@@ -17,13 +17,6 @@
         android:orientation="vertical" >
 
         <Button
-            android:id="@+penning/statistics"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:onClick="toStatistics"
-            android:text="Statistieken" />
-
-        <Button
             android:id="@+penning/process"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

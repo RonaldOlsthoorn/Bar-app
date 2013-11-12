@@ -111,38 +111,101 @@ public class ArticleActivity extends Activity implements OnItemClickListener {
 
 	public void vt_article(View v) {
 
-		String naam = et_naam.getText().toString();
-		double prijs = Double.parseDouble(et_prijs.getText().toString());
+		boolean checks = true;
+		// CHECKS
 
-		ContentValues values = new ContentValues();
-		values.put(DBHelper.ItemList.COLUMN_NAME_ITEM, naam);
-		values.put(DBHelper.ItemList.COLUMN_NAME_PRICE, prijs);
-		values.put(DBHelper.ItemList.COLUMN_NAME_CAT, "all");
+		if (et_prijs.getText().toString().trim().equals("")) {
 
-		DB.insertOrIgnore(DBHelper.ItemList.TABLE_NAME, values);
+			et_prijs.setError(getString(R.string.err_field_empty));
+			et_prijs.requestFocus();
+			checks = false;
+		} else {
+			try {
+				double prijs = Double
+						.parseDouble(et_prijs.getText().toString());
+			} catch (NumberFormatException e) {
+				et_prijs.setError("Field must be a number!");
+				et_prijs.requestFocus();
+				checks = false;
+			}
+		}
+		
+		if (et_naam.getText().toString().trim().equals("")) {
 
-		c_articles.close();
-		c_articles = DB.getArticles();
-		adapter.swapCursor(c_articles);
+			et_naam.setError(getString(R.string.err_field_empty));
+			et_naam.requestFocus();
+			checks = false;
+		}
 
-		setToDefault();
+		if(checks){
+			
+			String naam = et_naam.getText().toString();
+			double prijs = Double.parseDouble(et_prijs.getText().toString());
 
+			ContentValues values = new ContentValues();
+			values.put(DBHelper.ItemList.COLUMN_NAME_ITEM, naam);
+			values.put(DBHelper.ItemList.COLUMN_NAME_PRICE, prijs);
+			values.put(DBHelper.ItemList.COLUMN_NAME_CAT, "all");
+
+			DB.insertOrIgnore(DBHelper.ItemList.TABLE_NAME, values);
+
+			c_articles.close();
+			c_articles = DB.getArticles();
+			adapter.swapCursor(c_articles);
+
+			setToDefault();
+		}
 	}
 
 	public void w_article(View v) {
+		
+		boolean checks = true;
+		// CHECKS
 
-		String naam = et_naam.getText().toString();
-		double prijs = Double.parseDouble(et_prijs.getText().toString());
+		if (et_prijs.getText().toString() == null) {
 
-		ContentValues values = new ContentValues();
-		values.put(DBHelper.ItemList.COLUMN_NAME_ITEM, naam);
-		values.put(DBHelper.ItemList.COLUMN_NAME_PRICE, prijs);
+			et_prijs.setError(getString(R.string.err_field_empty));
+			et_prijs.requestFocus();
+			checks = false;
+		} else {
+			try {
+				double prijs = Double
+						.parseDouble(et_prijs.getText().toString());
+			} catch (NumberFormatException e) {
+				et_prijs.setError("Field must be a number!");
+				et_prijs.requestFocus();
+				checks = false;
+			}
+		}
+		
+		if (et_naam.getText().toString().trim().equals("")) {
 
-		DB.updateOrIgnore(DBHelper.ItemList.TABLE_NAME, current, values);
+			et_naam.setError(getString(R.string.err_field_empty));
+			
+			et_naam.requestFocus();
+			checks = false;
+		}
 
-		c_articles.close();
-		c_articles = DB.getArticles();
-		adapter.swapCursor(c_articles);
+		if(checks){
+			
+			String naam = et_naam.getText().toString();
+			double prijs = Double.parseDouble(et_prijs.getText().toString());
+
+			ContentValues values = new ContentValues();
+			values.put(DBHelper.ItemList.COLUMN_NAME_ITEM, naam);
+			values.put(DBHelper.ItemList.COLUMN_NAME_PRICE, prijs);
+
+			DB.updateOrIgnore(DBHelper.ItemList.TABLE_NAME, current, values);
+
+			et_naam.setError(null);
+			et_prijs.setError(null);
+			
+			c_articles.close();
+			c_articles = DB.getArticles();
+			adapter.swapCursor(c_articles);
+			
+			
+		}
 
 	}
 
@@ -170,6 +233,9 @@ public class ArticleActivity extends Activity implements OnItemClickListener {
 		et_prijs.setText("");
 		current = -1;
 		voegToe.setVisibility(View.VISIBLE);
+		
+		et_naam.setError(null);
+		et_prijs.setError(null);
 
 	}
 }

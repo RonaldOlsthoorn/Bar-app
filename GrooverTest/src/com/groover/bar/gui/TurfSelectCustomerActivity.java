@@ -44,6 +44,7 @@ public class TurfSelectCustomerActivity extends Activity implements
 	private DecimalFormat df;
 
 	private String[] FROM_LEDEN = new String[] {
+			
 			DBHelper.MemberTable.COLUMN_FIRST_NAME,
 			DBHelper.MemberTable.COLUMN_LAST_NAME,
 			DBHelper.MemberTable.COLUMN_BALANCE };
@@ -70,7 +71,6 @@ public class TurfSelectCustomerActivity extends Activity implements
 	private Button nextButton;
 
 	private AutoCompleteTextView search;
-
 	private SimpleCursorAdapter autoCompleteAdapter;
 
 	/**
@@ -113,6 +113,8 @@ public class TurfSelectCustomerActivity extends Activity implements
 		setContentView(R.layout.activity_turf_select_customer);
 		// Show the Up button in the action bar.
 		setupActionBar();
+		
+		Log.i("selectCustomer","create");
 
 		df = new DecimalFormat("0.00");
 

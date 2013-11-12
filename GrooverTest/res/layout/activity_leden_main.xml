@@ -38,7 +38,6 @@
             android:layout_height="wrap_content"
             android:inputType="textPersonName" >
 
-            <requestFocus />
         </EditText>
 
         <TextView
@@ -105,15 +104,6 @@
             android:layout_marginTop="5dp"
             android:onClick="importMembers"
             android:text="Import leden" />
-
-        <Button
-            android:id="@+id/Button01"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
-            android:layout_marginTop="0dp"
-            android:onClick="exportMembers"
-            android:text="Export leden" />
 
     </LinearLayout>
 

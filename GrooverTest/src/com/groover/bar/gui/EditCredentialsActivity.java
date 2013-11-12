@@ -91,18 +91,30 @@ public class EditCredentialsActivity extends Activity {
 
 		String credentials[] = getCreds();
 
-		if (!newUsername.equals(null) && !newPassword.equals(null)
-				&& newPasswordRepeat.equals(newPassword)) {
-
-			if (credentials[0].equals(oldUsername)
-					&& credentials[1].equals(oldPassword)) {
-				saveNewCredentials(newUsername, newPassword);
-			}
+		boolean checks = true;
+		
+		if(!oldUsername.equals(credentials[0]) || !oldPassword.equals(credentials[1])){
+			
+			oldP.setError("Wrong username/password");
+			checks = false;
+			
 		}
+		
+		if(!newPassword.equals(newPasswordRepeat)){
+			
+		newPRepeat.setError("no match");
+			checks = false;
+		}
+		
+		
 	}
 
 	private boolean saveNewCredentials(String newUsername, String newPassword) {
 		// TODO Auto-generated method stub
+		
+		oldP.setError(null);
+		newPRepeat.setError(null);
+		
 		File f = new File(this.getFilesDir(), "sec");
 
 		if (!f.exists()) {

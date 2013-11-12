@@ -24,10 +24,8 @@ import android.util.Log;
 
 public class MemberImporter {
 
-	private final String DOCUMENT_ROOT = "dbupdate";
-	private final String UPDATE_LIST = "updatelist";
-	private final String CREATE_LIST = "createlist";
-	private final String DELETE_LIST = "deletelist";
+	private final String DOCUMENT_ROOT = "memberimport";
+	private final String LIST = "memberlist";
 
 	private DBHelper DB;
 	private File file;
@@ -41,6 +39,8 @@ public class MemberImporter {
 
 	public boolean importMembers() {
 
+		DB.deleteAllMembers();
+		
 		boolean res = false;
 		Document doc = getDomElement(file.getAbsolutePath());
 
@@ -51,60 +51,27 @@ public class MemberImporter {
 
 		res = true ; 
 		
-		NodeList updateList = doc.getElementById(UPDATE_LIST)
-				.getElementsByTagName("update");
+		NodeList createList = doc.getElementById(LIST)
+				.getElementsByTagName("member");
 		Element n;
 		ContentValues v = new ContentValues();
-
-		for (int i = 0; i < updateList.getLength(); i++) {
-
-			n = (Element) updateList.item(i);
-			v.clear();
-			v.put(DBHelper.MemberTable.COLUMN_GR_ID, n.getAttribute("gr_id"));
-			v.put(DBHelper.MemberTable.COLUMN_FIRST_NAME,
-					n.getAttribute("first_name"));
-			v.put(DBHelper.MemberTable.COLUMN_LAST_NAME,
-					n.getAttribute("last_name"));
-
-			boolean check = DB.updateOrIgnore(DBHelper.MemberTable.TABLE_NAME,
-					(String) n.getAttribute("gr_id"), v);
-
-			if (!check) {
-				res =  false;
-			}
-		}
-
-		NodeList deleteList = doc.getElementById(DELETE_LIST)
-				.getElementsByTagName("member");
-
-		for (int i = 0; i < deleteList.getLength(); i++) {
-
-			n = (Element) deleteList.item(i);
-			boolean check = DB.deleteOrIgnore(DBHelper.MemberTable.TABLE_NAME,
-					n.getAttribute("gr_id"));
-			if (!check) {
-				res = false;
-			}
-		}
-
-		NodeList createList = doc.getElementById(CREATE_LIST)
-				.getElementsByTagName("member");
 
 		for (int i = 0; i < createList.getLength(); i++) {
 
 			n = (Element) createList.item(i);
 			v.clear();
 			v.put(DBHelper.MemberTable.COLUMN_GR_ID, n.getAttribute("gr_id"));
-
 			v.put(DBHelper.MemberTable.COLUMN_FIRST_NAME,
-					n.getAttribute("first_name"));
+					n.getAttribute("firstname"));
 			v.put(DBHelper.MemberTable.COLUMN_LAST_NAME,
-					n.getAttribute("last_name"));
+					n.getAttribute("lastname"));
 
-			long check = DB.insertOrIgnore(DBHelper.MemberTable.TABLE_NAME, v);
-			if (check == -1) {
-				res = false;
+			long result = DB.insertOrIgnore(DBHelper.MemberTable.TABLE_NAME, v);
+			
+			if(result==-1){
+				return false;
 			}
+
 		}
 
 		return res;

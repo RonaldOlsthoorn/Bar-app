@@ -24,6 +24,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.support.v4.app.NavUtils;
 import android.support.v4.widget.CursorAdapter;
 import android.support.v4.widget.SimpleCursorAdapter;
@@ -222,8 +223,15 @@ public class OrderActivity extends Activity implements OnItemClickListener,
 
 	public void saveOrder(View view) {
 
-		c_Order.writeToDB(this);
-
+		boolean res = c_Order.writeToDB(this);
+		if(res){
+			Toast toast = Toast.makeText(this, c_Order.toString(), Toast.LENGTH_SHORT);
+			toast.show();
+		}else{
+			Toast toast = Toast.makeText(this, "failed to order", Toast.LENGTH_SHORT);
+			toast.show();
+		}
+		
 		Intent intent = new Intent(this, TurfSelectCustomerActivity.class);
 
 		if (getParent() == null) {

@@ -8,6 +8,7 @@ import com.groover.bar.frame.DBHelper;
 import com.groover.bar.frame.FileDialog;
 import com.groover.bar.frame.MemberExporter;
 import com.groover.bar.frame.MemberImporter;
+import com.groover.bar.frame.OrderExporter;
 
 import com.groover.bar.frame.SelectionMode;
 
@@ -21,7 +22,6 @@ import android.content.Intent;
 
 import android.database.Cursor;
 import android.util.Log;
-import android.util.Xml;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -30,7 +30,6 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.Toast;
 import android.support.v4.app.NavUtils;
 import android.support.v4.widget.CursorAdapter;
 import android.support.v4.widget.SimpleCursorAdapter;
@@ -87,7 +86,6 @@ public class LedenMainActivity extends Activity implements OnItemClickListener {
 		ledenlijst.setOnItemClickListener(this);
 		ledenlijst.setAdapter(adapter);
 
-
 	}
 
 	@Override
@@ -116,22 +114,77 @@ public class LedenMainActivity extends Activity implements OnItemClickListener {
 
 	public void voegToeLid(View view) {
 
-		int id = Integer.parseInt(vtId.getText().toString());
-		String voornaam = vtVoornaam.getText().toString();
-		String achternaam = vtAchternaam.getText().toString();
+		boolean checks = true;
+		// CHECKS
 
-		ContentValues v = new ContentValues();
-		v.put(DBHelper.MemberTable.COLUMN_GR_ID, id);
-		v.put(DBHelper.MemberTable.COLUMN_FIRST_NAME, voornaam);
-		v.put(DBHelper.MemberTable.COLUMN_LAST_NAME, achternaam);
-		v.put(DBHelper.MemberTable.COLUMN_BALANCE, 0);
+		if (vtId.getText().toString() == null) {
 
-		DB.insertOrIgnore(DBHelper.MemberTable.TABLE_NAME, v);
+			vtId.setError(getString(R.string.err_field_empty));
+			vtId.requestFocus();
+			checks = false;
+		} else {
+			
+			try {
+				int id = Integer.parseInt(vtId.getText().toString());
+				if (id < 1) {
+					vtId.setError("Field must be a non-negative number!");
+					vtId.requestFocus();
+					checks = false;
+				} else {
 
-		c.close();
-		c = DB.getMembers();
-		adapter.swapCursor(c);
+					if (DB.checkIdInTable(DBHelper.MemberTable.TABLE_NAME, id)) {
 
+						vtId.setError("ID already in use!");
+						vtId.requestFocus();
+						checks = false;
+					}
+
+				}
+
+			} catch (NumberFormatException e) {
+				vtId.setError("Field must be a non-negative number!");
+				vtId.requestFocus();
+				checks = false;
+			}
+		}
+
+		if (vtVoornaam.getText().toString().trim().equals("")) {
+
+			vtVoornaam.setError(getString(R.string.err_field_empty));
+			vtVoornaam.requestFocus();
+			checks = false;
+		}
+
+		if (vtAchternaam.getText().toString().trim().equals("")) {
+
+			vtAchternaam.setError(getString(R.string.err_field_empty));
+			vtAchternaam.requestFocus();
+			checks = false;
+		}
+
+
+		if (checks) {
+
+			int id = Integer.parseInt(vtId.getText().toString());
+			String voornaam = vtVoornaam.getText().toString();
+			String achternaam = vtAchternaam.getText().toString();
+			
+			vtVoornaam.setError(null);
+			vtAchternaam.setError(null);
+			vtId.setError(null);
+
+			ContentValues v = new ContentValues();
+			v.put(DBHelper.MemberTable.COLUMN_GR_ID, id);
+			v.put(DBHelper.MemberTable.COLUMN_FIRST_NAME, voornaam);
+			v.put(DBHelper.MemberTable.COLUMN_LAST_NAME, achternaam);
+			v.put(DBHelper.MemberTable.COLUMN_BALANCE, 0);
+
+			DB.insertOrIgnore(DBHelper.MemberTable.TABLE_NAME, v);
+
+			c.close();
+			c = DB.getMembers();
+			adapter.swapCursor(c);
+		}
 	}
 
 	@Override
@@ -143,43 +196,99 @@ public class LedenMainActivity extends Activity implements OnItemClickListener {
 
 		vtVoornaam.setText(c.getString(1));
 		vtAchternaam.setText(c.getString(2));
-		vtId.setText(current+"");
-		
+		vtId.setText(current + "");
+
 		editPane.setVisibility(View.VISIBLE);
 		voegtoe.setVisibility(View.GONE);
 		
+		vtVoornaam.setError(null);
+		vtAchternaam.setError(null);
+		vtId.setError(null);
+
+
 	}
 
 	public void wijzigLid(View view) {
 
-		c.moveToPosition(current);
-		
-		String voornaam = vtVoornaam.getText().toString();
-		String achternaam = vtAchternaam.getText().toString();
-		int id = Integer.parseInt(vtId.getText().toString());
-		
-		ContentValues v = new ContentValues();
-		v.put(DBHelper.MemberTable.COLUMN_GR_ID, id);
-		v.put(DBHelper.MemberTable.COLUMN_FIRST_NAME, voornaam);
-		v.put(DBHelper.MemberTable.COLUMN_LAST_NAME, achternaam);
-		
-		System.out.println("hello 1"+current);
+		boolean checks = true;
+		// CHECKS
+		if (vtId.getText().toString() == null) {
 
-		DB.updateOrIgnore(DBHelper.MemberTable.TABLE_NAME, current, v);
+			vtId.setError(getString(R.string.err_field_empty));
+			vtId.requestFocus();
+			checks = false;
+		} else {
+			
+			try {
+				int id = Integer.parseInt(vtId.getText().toString());
+				if (id < 1) {
+					vtId.setError("Field must be a non-negative number!");
+					vtId.requestFocus();
+					checks = false;
+				} else {
 
-		System.out.println("hello 2"+current);
+					// check whether the id already exists
+					if (id != current
+							&& DB.checkIdInTable(
+									DBHelper.MemberTable.TABLE_NAME, id)) {
+
+						vtId.setError("ID Already in use!");
+						vtId.requestFocus();
+						checks = false;
+					}
+				}
+
+			} catch (NumberFormatException e) {
+				vtId.setError("Field must be a non-negative number!");
+				vtId.requestFocus();
+				checks = false;
+			}
+		}
 		
-		c.close();
-		c = DB.getMembers();
 		
-		System.out.println("hello 3"+current);
-		
-		adapter.swapCursor(c);
+		if (vtVoornaam.getText().toString().trim().equals("")) {
+
+			vtVoornaam.setError(getString(R.string.err_field_empty));
+			vtVoornaam.requestFocus();
+			checks = false;
+		}
+
+		if (vtAchternaam.getText().toString().trim().equals("")) {
+
+			vtAchternaam.setError(getString(R.string.err_field_empty));
+			vtAchternaam.requestFocus();
+			checks = false;
+		}
+
+		if (checks) {
+
+			c.moveToPosition(current);
+
+			String voornaam = vtVoornaam.getText().toString();
+			String achternaam = vtAchternaam.getText().toString();
+			int id = Integer.parseInt(vtId.getText().toString());
+
+			vtVoornaam.setError(null);
+			vtAchternaam.setError(null);
+			vtId.setError(null);
+			
+			ContentValues v = new ContentValues();
+			v.put(DBHelper.MemberTable.COLUMN_GR_ID, id);
+			v.put(DBHelper.MemberTable.COLUMN_FIRST_NAME, voornaam);
+			v.put(DBHelper.MemberTable.COLUMN_LAST_NAME, achternaam);
+
+			DB.updateOrIgnore(DBHelper.MemberTable.TABLE_NAME, current, v);
+
+			c.close();
+			c = DB.getMembers();
+
+			adapter.swapCursor(c);
+		}
 
 	}
 
 	public void verwijderLid(View view) {
-	
+
 		DB.deleteOrIgnore(DBHelper.MemberTable.TABLE_NAME, current);
 
 		c.close();
@@ -202,68 +311,75 @@ public class LedenMainActivity extends Activity implements OnItemClickListener {
 		vtId.setText("");
 		vtVoornaam.setText("");
 		vtAchternaam.setText("");
+		
+		vtVoornaam.setError(null);
+		vtAchternaam.setError(null);
+		vtId.setError(null);
 
 	}
 
-	public void exportMembers(View v) {
-		
-		MemberExporter ex = new MemberExporter(this);
-		
-		try {
-			ex.export();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-	
-	public void importMembers(View v){
-		
-		Intent intent = new Intent(this,FileDialog.class);
+	// IMPORT
+	public void importMembers(View v) {
+
+		Intent intent = new Intent(this, FileDialog.class);
 
 		intent.putExtra(FileDialog.SELECTION_MODE, SelectionMode.MODE_OPEN);
-		intent.putExtra(FileDialog.FORMAT_FILTER, new String[] {"xml"});
-		intent.putExtra(FileDialog.START_PATH, Environment.getExternalStorageDirectory().getPath());
+		intent.putExtra(FileDialog.FORMAT_FILTER, new String[] { "xml" });
+		intent.putExtra(FileDialog.START_PATH, Environment
+				.getExternalStorageDirectory().getPath());
 
-		startActivityForResult(intent, REQUEST_FILE);	
+		startActivityForResult(intent, REQUEST_FILE);
 	}
-	
-	protected void onActivityResult(int requestCode, int resultCode,
-            Intent data){
-		
-		if(requestCode ==REQUEST_FILE && resultCode ==FileDialog.RESULT_OK){
-			
+
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+		if (requestCode == REQUEST_FILE && resultCode == FileDialog.RESULT_OK) {
+
 			targetPath = data.getStringExtra(FileDialog.RESULT_PATH);
 		}
-		
+
+		LoadData memberLoader = new LoadData();
+		memberLoader.doInBackground(new File(targetPath));
+
 	}
-	
+
 	public class LoadData extends AsyncTask<File, Void, Boolean> {
-	    ProgressDialog progressDialog;
-	    MemberImporter importer;
-	    //declare other objects as per your need
-	    
-	    public LoadData(){
-	    	importer = new MemberImporter(LedenMainActivity.this);
-	    }
-	    @Override
-	    protected void onPreExecute()
-	    {
-	        progressDialog= ProgressDialog.show(LedenMainActivity.this, "importing...","Process Description Text", true);
-              
-	    };      
-	       
-	    @Override
-	    protected void onPostExecute(Boolean result)
-	    {
-	        super.onPostExecute(result);
-	        progressDialog.dismiss();
-	    }
+		ProgressDialog progressDialog;
+		MemberImporter importer;
+		OrderExporter exporter;
+
+		// declare other objects as per your need
+
+		public LoadData() {
+			importer = new MemberImporter(LedenMainActivity.this);
+			exporter = new OrderExporter(LedenMainActivity.this);
+		}
+
+		@Override
+		protected void onPreExecute() {
+			progressDialog = ProgressDialog.show(LedenMainActivity.this,
+					"importing...", "Process Description Text", true);
+
+		}
+
+		@Override
+		protected void onPostExecute(Boolean result) {
+			super.onPostExecute(result);
+			progressDialog.dismiss();
+		}
+
 		@Override
 		protected Boolean doInBackground(File... params) {
 			// TODO Auto-generated method stub
+
+			try {
+				exporter.exportSD();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			File f = params[0];
-			return importer.importMembers(f);	
-		};
-	 }
+			return importer.importMembers(f);
+		}
+	}
 }

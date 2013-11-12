@@ -71,7 +71,6 @@
                     android:layout_height="wrap_content"
                     android:onClick="annuleren"
                     android:text="Annuleren" />
-
             </LinearLayout>
 
             <Button
@@ -80,7 +79,6 @@
                 android:layout_height="wrap_content"
                 android:onClick="v_article"
                 android:text="Verwijder" />
-
         </LinearLayout>
 
         <Button
@@ -90,7 +88,6 @@
             android:layout_margin="0dp"
             android:onClick="vt_article"
             android:text="Voeg artikel toe" />
-
     </LinearLayout>
 
     <ListView
@@ -99,7 +96,6 @@
         android:layout_height="wrap_content"
         android:layout_margin="10dp"
         android:layout_weight="1" >
-
     </ListView>
 
 </LinearLayout>

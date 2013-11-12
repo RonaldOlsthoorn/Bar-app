@@ -46,7 +46,6 @@
             android:layout_margin="5dp"
             android:onClick="editCredentials"
             android:text="Gebruikersnaam wachtwoord wijzigen" />
-
     </LinearLayout>
 
 </RelativeLayout>

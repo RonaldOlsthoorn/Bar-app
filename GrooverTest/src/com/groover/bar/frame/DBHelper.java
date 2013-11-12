@@ -390,6 +390,12 @@ public class DBHelper extends SQLiteOpenHelper {
 		db.delete(GroupClearances.TABLE_NAME, null, null);
 
 	}
+	
+	public void deleteAllMembers(){
+		
+		SQLiteDatabase db = getWritableDatabase();
+		db.delete(MemberTable.TABLE_NAME, null, null);
+	}
 
 	public String getIdColumnName(String tableName) {
 
@@ -454,6 +460,21 @@ public class DBHelper extends SQLiteOpenHelper {
 			return true;
 		}
 		return false; 
+
+	}
+	
+	public boolean checkIdInTable(String table,int id){
+		
+		SQLiteDatabase db = getReadableDatabase();
+		
+		Cursor c = db.query(table,new String[]{ getIdColumnName(table)}, getIdColumnName(table)+"="+id, null, null, null, null);
+		
+		if(c.getCount()==0){
+			
+			return false;
+		}
+		
+		return true;
 
 	}
 
