@@ -6,7 +6,6 @@ import java.util.List;
 
 import android.database.Cursor;
 import android.database.CursorWrapper;
-import android.util.Log;
 
 public class FilteredCursor extends CursorWrapper{
 

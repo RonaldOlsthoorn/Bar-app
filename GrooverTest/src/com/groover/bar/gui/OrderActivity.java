@@ -63,7 +63,7 @@ public class OrderActivity extends Activity implements OnItemClickListener,
 
 	private NumPadAdapter numPadAdapter;
 	private TextView totaal_output;
-
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);

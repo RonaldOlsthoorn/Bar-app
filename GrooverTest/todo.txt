@@ -1,0 +1,19 @@
+TODO app:
+
+checks:
+Voor beheer wellicht ftp instellingen
+Voor beheer overzicht van bestellingen leden
+
+
+Afrekenen:
+SD niet aanwezig warning.
+Keuze: via internet, of niet.
+Niks deleten als er geen afrekening is gemaakt.
+
+
+Leden:
+Niet verwijderen als saldo niet op nul.
+Uitslag massa import
+
+
+Afrondingsfoutjes oplossen

@@ -4,6 +4,7 @@ import java.text.DecimalFormat;
 
 import com.groover.bar.R;
 import com.groover.bar.frame.DBHelper;
+import com.groover.bar.frame.SearchCursor;
 
 import android.os.Bundle;
 import android.app.Activity;
@@ -36,7 +37,7 @@ public class TurfSelectCustomerActivity extends Activity implements
 	private int REQUEST_CODE = 123;
 
 	private DBHelper DB;
-	private Cursor c_leden;
+	private SearchCursor c_leden;
 	private Cursor c_filter_leden;
 	// private Cursor c_groepen;
 	private SimpleCursorAdapter a_leden;
@@ -49,8 +50,6 @@ public class TurfSelectCustomerActivity extends Activity implements
 			DBHelper.MemberTable.COLUMN_LAST_NAME,
 			DBHelper.MemberTable.COLUMN_BALANCE };
 	
-	
-
 	// private String[] FROM_GROUPS = new String[] {
 	// DBHelper.GroupTable.COLUMN_GROUP_NAME,
 	// DBHelper.GroupTable.COLUMN_GROUP_BALANCE };
@@ -122,7 +121,8 @@ public class TurfSelectCustomerActivity extends Activity implements
 		customerNameTV = (TextView) findViewById(R.selectCustomer.customer);
 
 		DB = DBHelper.getDBHelper(this);
-		c_leden = DB.getListMembers();
+		c_leden = new SearchCursor( DB.getListMembers());
+
 
 		// c_groepen = DB.getListGroups();
 
@@ -172,6 +172,7 @@ public class TurfSelectCustomerActivity extends Activity implements
 
 	@Override
 	public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
+		
 		// TODO Auto-generated method stub
 		if (arg0.equals(l_leden)) {
 			c_leden.moveToPosition(arg2);
@@ -194,8 +195,8 @@ public class TurfSelectCustomerActivity extends Activity implements
 		// }
 
 		else {
-
-			c_leden.moveToPosition(arg2);
+						
+			c_leden.moveToId((int) arg3);
 			customerId = c_leden.getInt(0);
 			customerName = c_leden.getString(1) + " " + c_leden.getString(2);
 			customerType = "individual";

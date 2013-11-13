@@ -1,5 +1,7 @@
 package com.groover.bar.gui;
 
+import java.text.DecimalFormat;
+
 import com.groover.bar.R;
 import com.groover.bar.frame.DBHelper;
 
@@ -41,6 +43,7 @@ public class ArticleActivity extends Activity implements OnItemClickListener {
 	private int[] TO = new int[] { R.articlerow.naam, R.articlerow.price,
 			R.articlerow.category };
 
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -68,6 +71,7 @@ public class ArticleActivity extends Activity implements OnItemClickListener {
 		artikellijst.setAdapter(adapter);
 
 		DB.close();
+		
 
 	}
 
