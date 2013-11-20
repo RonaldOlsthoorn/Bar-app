@@ -1,5 +1,6 @@
 package com.groover.bar.frame;
 
+//Used as proxy class for articles in database
 public class Article {
 	
 	private int art_id;

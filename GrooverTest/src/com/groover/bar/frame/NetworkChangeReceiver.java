@@ -5,8 +5,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
-public class NetworkChangeReceiver extends BroadcastReceiver {
 
+public class NetworkChangeReceiver extends BroadcastReceiver {
+	
+	/*
+	 * Called whenever a change of status occurs in the network.
+	 * Try to upload backups if there are any.
+	 */
 	@Override
 	public void onReceive(Context context, Intent intent) {
 		Log.i("Bar","Noticed network change");

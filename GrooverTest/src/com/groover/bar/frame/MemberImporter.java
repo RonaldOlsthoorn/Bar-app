@@ -22,6 +22,9 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.util.Log;
 
+/*
+ * Used to import members from an xml file
+ */
 public class MemberImporter {
 
 	private final String DOCUMENT_ROOT = "memberimport";
@@ -31,12 +34,19 @@ public class MemberImporter {
 	private File file;
 	private Context context;
 
+	/*
+	 * Constructs importer object. Context c used for access database.
+	 */
 	public MemberImporter(Context c) {
 
 		context = c;
 		DB = DBHelper.getDBHelper(context);
 	}
 
+	/*
+	 * Imports members returns true if all succeeded. Otherwise false.
+	 * DELETES ALL ORDERS IN THE PROCESS
+	 */
 	public boolean importMembers() {
 
 		DB.deleteAllMembers();
@@ -75,14 +85,16 @@ public class MemberImporter {
 		}
 		
 		DB.deleteAllOrders();
-
 		return res;
 	}
 
+	/* Imports members in xml file f. returns true if all succeeded. Otherwise false.
+	 * DELETES ALL ORDERS IN THE PROCESS
+	 * 
+	 */
 	public boolean importMembers(File f) {
 
 		file = f;
-
 		return importMembers();
 	}
 

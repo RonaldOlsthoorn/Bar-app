@@ -149,7 +149,7 @@ public class TurfSelectCustomerActivity extends Activity implements
 		// l_groepen.setOnItemClickListener(this);
 
 		autoCompleteAdapter = new SimpleCursorAdapter(this,
-				R.layout.group_row2, c_filter_leden, new String[] {
+				R.layout.autocomplete, c_filter_leden, new String[] {
 						DBHelper.MemberTable.COLUMN_FIRST_NAME,
 						DBHelper.MemberTable.COLUMN_LAST_NAME }, new int[] {
 						R.groupRow2.first, R.groupRow2.last },

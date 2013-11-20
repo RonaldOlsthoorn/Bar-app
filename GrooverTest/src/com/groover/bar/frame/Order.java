@@ -9,6 +9,9 @@ import java.util.Stack;
 import android.content.ContentValues;
 import android.content.Context;
 
+/*
+ * proxy class representing consumptions.
+ */
 public class Order {
 	
 	private Customer customer;
@@ -129,8 +132,7 @@ public class Order {
 			res = res + unit.getAmount()+" "+unit.getArticle().getName()+",";
 		}
 		
-		return res.substring(0, res.length()-1)+" totaal: "+df.format(calculateTotal());
-		
+		return res.substring(0, res.length()-1)+" totaal: "+df.format(calculateTotal());	
 	}
 }
 

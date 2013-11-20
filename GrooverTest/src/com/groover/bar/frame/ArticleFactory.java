@@ -1,19 +1,22 @@
 package com.groover.bar.frame;
 
-
 import android.database.Cursor;
 import android.util.Log;
 
+//Creates articles as proxy objects from the database
 public class ArticleFactory {
 
 	private Cursor source;
 	
-	
+	//pre: Cursor c contains all the articles stored in the database.
+	//returns factory which is able to produce all articles in the database
 	public ArticleFactory(Cursor c){
 		
 		source = c;
 	}
 	
+	//pre: id is the identifier (same id as stored in the database) of the article
+	//returns the article
 	public Article getArticle(int id){
 
 		source.moveToFirst();

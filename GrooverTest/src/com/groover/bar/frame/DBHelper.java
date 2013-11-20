@@ -5,35 +5,50 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
-
 import android.provider.BaseColumns;
 import android.util.Log;
 
+/*
+ * DBHelper is the applications connection to the database.
+ * All the queries are stored as functions of this class.
+ * These functions are called by all the classes of the application
+ * that need information from the database, or need to updat/insert/delete.
+ * 
+ * Also, all the information about the databases' layout are stored in the inner classes
+ * each inner class represents a table.
+ * 
+ * To secure thread safety, singleton pattern is used. Only ONE instance of this class exists.
+ */
 public class DBHelper extends SQLiteOpenHelper {
 
 	public static final String TAG = "DB";
 	public static int DATABASE_VERSION = 1;
 	public static final String DATABASE_NAME = "GrooverMembers.db";
-
 	private static DBHelper singleton;
-
+	
+	//Returns the DBHelper object. Singleton pattern is used.
 	public static DBHelper getDBHelper(Context context) {
-
 		if (singleton == null) {
 			singleton = new DBHelper(context);
-
 		}
 		return singleton;
-
 	}
 
+	//Constructor for new DBHelper object. 
 	private DBHelper(Context context) {
 		super(context, DATABASE_NAME, null, DATABASE_VERSION);
-		// TODO Auto-generated constructor stub
 	}
 
+	/*
+	 * This first bunch of functions are all queries of some sort.
+	 */
+	
+	/* Used by the autocompleteTextView in the select customer activity to
+	 * 
+	 * Returns a cursor with all the members which have constraint in
+	 * their respective first or last name
+	 */
 	public Cursor getFilteredMember(String constraint) {
 		SQLiteDatabase db = getReadableDatabase();
 
@@ -44,6 +59,9 @@ public class DBHelper extends SQLiteOpenHelper {
 
 	}
 
+	/*
+	 * Returns a cursor containing all members, Ordered by firstname lastname
+	 */
 	public Cursor getMembers() {
 
 		SQLiteDatabase db;
@@ -55,6 +73,11 @@ public class DBHelper extends SQLiteOpenHelper {
 
 	}
 
+	/*
+	 * Returns a cursor containing all members which are active and can be
+	 * displayed on the list (alle leden die actif op de turflijst staan)
+	 */
+	
 	public Cursor getListMembers() {
 
 		SQLiteDatabase db;
@@ -67,6 +90,10 @@ public class DBHelper extends SQLiteOpenHelper {
 
 	}
 
+	/*
+	 * Returns a cursor containing all groups with some extra information:
+	 * It will contain how many members the group has as well
+	 */
 	public Cursor getGroupsFancy() {
 
 		SQLiteDatabase db;
@@ -85,6 +112,10 @@ public class DBHelper extends SQLiteOpenHelper {
 		return db.rawQuery(query, null);
 	}
 
+	/*
+	 * Returns a cursor containing all the groups.
+	 * 
+	 */
 	public Cursor getGroups() {
 
 		SQLiteDatabase db;
@@ -94,6 +125,10 @@ public class DBHelper extends SQLiteOpenHelper {
 				GroupTable.COLUMN_GROUP_NAME + " COLLATE NOCASE ASC ");
 	}
 
+	/*
+	 * Returns a cursor containing all the members of the group with 
+	 * identifier grId 
+	 */
 	public Cursor getGroupMembers(int grId) {
 
 		SQLiteDatabase db;
@@ -116,6 +151,9 @@ public class DBHelper extends SQLiteOpenHelper {
 
 	}
 
+	/*
+	 * Returns a cursor with all the groups that are on the list ("turflijst")
+	 */
 	public Cursor getListGroups() {
 
 		SQLiteDatabase db;
@@ -127,6 +165,9 @@ public class DBHelper extends SQLiteOpenHelper {
 
 	}
 
+	/*
+	 * Not used yet. Returns all accounts. Accounts can belong to both groups as members.
+	 */
 	public Cursor getAccounts() {
 
 		SQLiteDatabase db;
@@ -136,11 +177,11 @@ public class DBHelper extends SQLiteOpenHelper {
 				null);
 	}
 
-	public Cursor getMemberOrders() {
-
-		return null;
-	}
-
+	
+	/*
+	 * Returns a cursor containing all articles that are stored in the database
+	 */
+	
 	public Cursor getArticles() {
 
 		SQLiteDatabase db;
@@ -151,6 +192,10 @@ public class DBHelper extends SQLiteOpenHelper {
 						+ ItemList.COLUMN_NAME_ITEM + " COLLATE NOCASE ASC");
 	}
 
+	/*
+	 * Returns all the categories at which the articles are ordered (ie food, liquor, whisky etc)
+	 * Currently NOT used
+	 */
 	public Cursor getCategories() {
 
 		SQLiteDatabase db;
@@ -162,6 +207,11 @@ public class DBHelper extends SQLiteOpenHelper {
 						+ " COLLATE NOCASE ASC");
 	}
 
+	/*
+	 * Returns a cursor containing all consumptions. Note that group clearances ("groeps afrekeningen")
+	 * are stored in another table. In this version the groups version is disabled so it does not matter.
+	 * 
+	 */
 	public Cursor getConsumptions(int memberId) {
 
 		SQLiteDatabase db = getReadableDatabase();
@@ -180,6 +230,11 @@ public class DBHelper extends SQLiteOpenHelper {
 		return db.rawQuery(query, null);
 	}
 
+	/*
+	 * Returns a cursor containing all the groupclearances ("groep afrekeningen").
+	 * Not used since the groups feature is disabled 
+	 */
+	
 	public Cursor getGroupClearances(int memberId) {
 
 		SQLiteDatabase db = getReadableDatabase();
@@ -199,6 +254,12 @@ public class DBHelper extends SQLiteOpenHelper {
 		return db.rawQuery(query, null);
 	}
 
+	
+	/*
+	 * inserts a row in a table denoted by String table. The contentvalues are inserted.
+	 * Any Error is ignored. 
+	 * Returns the inserted row id (_id in most cases) or -1 if the operation failed.
+	 */
 	@SuppressWarnings("finally")
 	public long insertOrIgnore(String table, ContentValues values) {
 
@@ -215,6 +276,12 @@ public class DBHelper extends SQLiteOpenHelper {
 		}
 	}
 
+	/*
+	 * Processes an update on a table of row "table" with identifier "id". The 
+	 * new values are stored in the ContentValues.
+	 * 
+	 * Returns true if operation succeeded and false if not
+	 */
 	@SuppressWarnings("finally")
 	public boolean updateOrIgnore(String table, int id, ContentValues values) {
 
@@ -236,29 +303,13 @@ public class DBHelper extends SQLiteOpenHelper {
 		}
 	}
 
-	@SuppressWarnings("finally")
-	public boolean updateOrIgnore(String tableName, String id, ContentValues v) {
-
-		boolean res = false;
-		Log.d(TAG, "updateOrIgnore on " + tableName + " values " + v + " " + id);
-		SQLiteDatabase db = getWritableDatabase();
-		try {
-			db.update(tableName, v, getIdColumnName(tableName) + "=" + "'" + id
-					+ "'", null);
-			res = true;
-
-		} catch (SQLException e) {
-			Log.d(TAG, "updateOrIgnore on " + tableName + " values " + v + " "
-					+ id + " fail");
-			res = false;
-		} finally {
-			db.close();
-			return res;
-		}
-		// TODO Auto-generated method stub
-
-	}
-
+	/*
+	 * Used when a group is adjusted or deleted or when the balance is made.
+	 * Since the group feature is disabled it is not used at all. 
+	 * 
+	 * Makes group clearances for each of the group members.
+	 * Returns true if succeeded otherwise false.
+	 */
 	public boolean PayOffGroupOrIgnore(int groupid) {
 
 		Cursor members = getGroupMembers(groupid);
@@ -294,6 +345,11 @@ public class DBHelper extends SQLiteOpenHelper {
 		return true;
 	}
 
+	/*
+	 * Deletes row from table with identifier id
+	 * 
+	 * Returns true if the operation succeeded otherwise false
+	 */
 	@SuppressWarnings("finally")
 	public boolean deleteOrIgnore(String table, int id) {
 
@@ -313,32 +369,12 @@ public class DBHelper extends SQLiteOpenHelper {
 			return res;
 		}
 	}
-
-	@SuppressWarnings("finally")
-	public boolean deleteOrIgnore(String tableName, String id) {
-		// TODO Auto-generated method stub
-		boolean res = false;
-		Log.d(TAG, "deleteOrIgnore on " + id + "  "
-				+ getIdColumnName(tableName));
-		SQLiteDatabase db = getWritableDatabase();
-		try {
-			int i = db.delete(tableName, getIdColumnName(tableName) + "=" + "'"
-					+ id + "'", null);
-
-			res = true;
-
-		} catch (SQLException e) {
-
-			Log.d(TAG, MemberTable.TRIGGER_DEL_FROM_GROUPS);
-			Log.e(TAG, "error", e);
-
-			res = false;
-		} finally {
-			db.close();
-			return res;
-		}
-	}
-
+	
+	/*
+	 * Deletes all members from a group with identifier groupId
+	 * 
+	 * Returns true if the operation succeeded, false otherwise
+	 */
 	public boolean deleteGroupMembers(int groupId) {
 
 		Cursor groupmembers = getGroupMembers(groupId);
@@ -368,6 +404,10 @@ public class DBHelper extends SQLiteOpenHelper {
 		db.close();
 		return true;
 	}
+	
+	/*
+	 * Deletes a group id groupId from the database.
+	 */
 
 	public boolean deleteGroupOrIgnore(int groupId) {
 
@@ -382,6 +422,10 @@ public class DBHelper extends SQLiteOpenHelper {
 		return res;
 	}
 
+	/*
+	 * Deletes all orders in the database. Both consumptions as groupclearances are
+	 * deleted. Usually done after making the balance.
+	 */
 	public void deleteAllOrders() {
 		// TODO Auto-generated method stub
 		SQLiteDatabase db = getWritableDatabase();
@@ -391,12 +435,18 @@ public class DBHelper extends SQLiteOpenHelper {
 
 	}
 	
+	/*
+	 * Deletes all members from the database
+	 */
 	public void deleteAllMembers(){
 		
 		SQLiteDatabase db = getWritableDatabase();
 		db.delete(MemberTable.TABLE_NAME, null, null);
 	}
 
+	/*
+	 * Returns a string which represents the identifier column for a given table tableName
+	 */
 	public String getIdColumnName(String tableName) {
 
 		if (tableName.equals(MemberTable.TABLE_NAME)) {
@@ -424,7 +474,11 @@ public class DBHelper extends SQLiteOpenHelper {
 		return null;
 	}
 
-	// veel verbetering mogelijk qua performance.
+	/* Returns whether on not a backup needs to be made based on the number of
+	 * orders since the last update. 
+	 * Returns true if an update needs to be made
+	 * otherwise false
+	 */
 	public boolean checkNeedToBackup() {
 
 		SQLiteDatabase db = getReadableDatabase();
@@ -464,7 +518,12 @@ public class DBHelper extends SQLiteOpenHelper {
 
 	}
 	
-	// veel verbetering mogelijk qua performance.
+	/*
+	 * Returns whether on not a backup needs to be made based on the number of
+	 * orders since the last update. Only SD balances are considered.
+	 * Returns true if an update needs to be made
+	 * otherwise false.
+	 */
 	public boolean checkNeedToBackupSD() {
 
 		SQLiteDatabase db = getReadableDatabase();
@@ -510,6 +569,10 @@ public class DBHelper extends SQLiteOpenHelper {
 
 	}
 	
+	/*
+	 * Returns whether a certain id is present in a table.
+	 * Useful for checking valid updates on for instance members.
+	 */
 	
 	public boolean checkIdInTable(String table,int id){
 		
@@ -526,6 +589,11 @@ public class DBHelper extends SQLiteOpenHelper {
 
 	}
 
+	/* Called when the database is first created. Creates all the tables and triggers.
+	 * 
+	 * (non-Javadoc)
+	 * @see android.database.sqlite.SQLiteOpenHelper#onCreate(android.database.sqlite.SQLiteDatabase)
+	 */
 	@Override
 	public void onCreate(SQLiteDatabase db) {
 		// TODO Auto-generated method stub
@@ -550,6 +618,11 @@ public class DBHelper extends SQLiteOpenHelper {
 
 	}
 
+	/* Called when the database is updated. Simply removes all the tables and recreates them
+	 * 
+	 * (non-Javadoc)
+	 * @see android.database.sqlite.SQLiteOpenHelper#onUpgrade(android.database.sqlite.SQLiteDatabase, int, int)
+	 */
 	@Override
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 		// TODO Auto-generated method stub
@@ -566,6 +639,9 @@ public class DBHelper extends SQLiteOpenHelper {
 		DATABASE_VERSION = newVersion;
 	}
 
+	/*
+	 * Inner class representing the table containing all the members
+	 */
 	public static abstract class MemberTable implements BaseColumns {
 
 		public static final String TABLE_NAME = "members";
@@ -649,6 +725,9 @@ public class DBHelper extends SQLiteOpenHelper {
 		}
 	}
 
+	/*
+	 * Inner class representing the table containing all the groups
+	 */
 	public static abstract class GroupTable implements BaseColumns {
 
 		public static final String TABLE_NAME = "groups";
@@ -710,6 +789,10 @@ public class DBHelper extends SQLiteOpenHelper {
 
 	}
 
+	/*
+	 * Inner class representing the table containing all the members which
+	 * are in groups
+	 */
 	public static abstract class GroupMembers implements BaseColumns {
 
 		public static final String TABLE_NAME = "group_members";
@@ -732,6 +815,9 @@ public class DBHelper extends SQLiteOpenHelper {
 				+ TABLE_NAME;
 	}
 
+	/*
+	 * Inner class representing the table containing all the articles
+	 */
 	public static abstract class ItemList implements BaseColumns {
 
 		public static final String TABLE_NAME = "item_list";
@@ -760,6 +846,10 @@ public class DBHelper extends SQLiteOpenHelper {
 
 	}
 
+	/*
+	 * Inner class representing the table containing all the accounts
+	 * belonging to both members and groups
+	 */
 	public static abstract class AccountList implements BaseColumns {
 
 		public static final String TABLE_NAME = "account_list";
@@ -823,6 +913,10 @@ public class DBHelper extends SQLiteOpenHelper {
 
 	}
 
+	/*
+	 * Inner class representing the table containing all the orders
+	 * An order can be a consumption or a groupclearance
+	 */
 	public static abstract class Order implements BaseColumns {
 
 		public static final String TABLE_NAME = "orders";
@@ -936,6 +1030,9 @@ public class DBHelper extends SQLiteOpenHelper {
 
 	}
 
+	/*
+	 * Inner class representing the table containing all the consumptions
+	 */
 	public static abstract class Consumption implements BaseColumns {
 
 		public static final String TABLE_NAME = "consumptions";
@@ -966,6 +1063,9 @@ public class DBHelper extends SQLiteOpenHelper {
 
 	}
 
+	/*
+	 * Inner class representing the table containing all the groupclearances
+	 */
 	public static abstract class GroupClearances implements BaseColumns {
 
 		public static final String TABLE_NAME = "clearance";
@@ -995,6 +1095,9 @@ public class DBHelper extends SQLiteOpenHelper {
 		}
 	}
 
+	/*
+	 * Inner class representing the table containing a log of all the backups
+	 */
 	public static abstract class BackupLog implements BaseColumns {
 
 		public static final String TABLE_NAME = "backup_logs";

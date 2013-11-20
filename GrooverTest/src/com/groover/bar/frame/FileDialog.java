@@ -25,7 +25,7 @@ import com.groover.bar.R;
 
 /**
  * Activity for choosing files/directories
- * 
+ * Code is stolen from some poor portuguese soul
  * @author android
  * 
  */
