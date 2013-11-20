@@ -1,12 +1,11 @@
 package com.groover.bar.gui;
 
 import java.io.File;
-import java.io.IOException;
 
 import com.groover.bar.R;
 import com.groover.bar.frame.DBHelper;
 import com.groover.bar.frame.FileDialog;
-import com.groover.bar.frame.MemberExporter;
+
 import com.groover.bar.frame.MemberImporter;
 import com.groover.bar.frame.OrderExporter;
 
@@ -15,7 +14,7 @@ import com.groover.bar.frame.SelectionMode;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
-import android.app.Activity;
+
 import android.app.ProgressDialog;
 import android.content.ContentValues;
 import android.content.Intent;
@@ -30,11 +29,14 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.NavUtils;
 import android.support.v4.widget.CursorAdapter;
 import android.support.v4.widget.SimpleCursorAdapter;
 
-public class LedenMainActivity extends Activity implements OnItemClickListener {
+public class LedenMainActivity extends FragmentActivity implements
+		OnItemClickListener, ContinueDialogFragment.NoticeDialogListener {
 
 	private DBHelper DB;
 	private ListView ledenlijst;
@@ -59,6 +61,8 @@ public class LedenMainActivity extends Activity implements OnItemClickListener {
 	private View editPane;
 	private int REQUEST_FILE = 1;
 	private String targetPath;
+	private boolean mShowDialog;
+	private String PROG_DIALOG_TAG = "continueornot";
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -123,7 +127,7 @@ public class LedenMainActivity extends Activity implements OnItemClickListener {
 			vtId.requestFocus();
 			checks = false;
 		} else {
-			
+
 			try {
 				int id = Integer.parseInt(vtId.getText().toString());
 				if (id < 1) {
@@ -162,13 +166,12 @@ public class LedenMainActivity extends Activity implements OnItemClickListener {
 			checks = false;
 		}
 
-
 		if (checks) {
 
 			int id = Integer.parseInt(vtId.getText().toString());
 			String voornaam = vtVoornaam.getText().toString();
 			String achternaam = vtAchternaam.getText().toString();
-			
+
 			vtVoornaam.setError(null);
 			vtAchternaam.setError(null);
 			vtId.setError(null);
@@ -200,11 +203,10 @@ public class LedenMainActivity extends Activity implements OnItemClickListener {
 
 		editPane.setVisibility(View.VISIBLE);
 		voegtoe.setVisibility(View.GONE);
-		
+
 		vtVoornaam.setError(null);
 		vtAchternaam.setError(null);
 		vtId.setError(null);
-
 
 	}
 
@@ -218,7 +220,7 @@ public class LedenMainActivity extends Activity implements OnItemClickListener {
 			vtId.requestFocus();
 			checks = false;
 		} else {
-			
+
 			try {
 				int id = Integer.parseInt(vtId.getText().toString());
 				if (id < 1) {
@@ -244,8 +246,7 @@ public class LedenMainActivity extends Activity implements OnItemClickListener {
 				checks = false;
 			}
 		}
-		
-		
+
 		if (vtVoornaam.getText().toString().trim().equals("")) {
 
 			vtVoornaam.setError(getString(R.string.err_field_empty));
@@ -271,7 +272,7 @@ public class LedenMainActivity extends Activity implements OnItemClickListener {
 			vtVoornaam.setError(null);
 			vtAchternaam.setError(null);
 			vtId.setError(null);
-			
+
 			ContentValues v = new ContentValues();
 			v.put(DBHelper.MemberTable.COLUMN_GR_ID, id);
 			v.put(DBHelper.MemberTable.COLUMN_FIRST_NAME, voornaam);
@@ -311,7 +312,7 @@ public class LedenMainActivity extends Activity implements OnItemClickListener {
 		vtId.setText("");
 		vtVoornaam.setText("");
 		vtAchternaam.setText("");
-		
+
 		vtVoornaam.setError(null);
 		vtAchternaam.setError(null);
 		vtId.setError(null);
@@ -336,19 +337,51 @@ public class LedenMainActivity extends Activity implements OnItemClickListener {
 		if (requestCode == REQUEST_FILE && resultCode == FileDialog.RESULT_OK) {
 
 			targetPath = data.getStringExtra(FileDialog.RESULT_PATH);
-		}
 
-		LoadData memberLoader = new LoadData();
-		memberLoader.doInBackground(new File(targetPath));
+			Log.i("result", ""+DB.checkNeedToBackupSD());
+			
+			if (DB.checkNeedToBackupSD()) {
+				mShowDialog = true;
+
+			} else {
+				LoadData memberLoader = new LoadData();
+				memberLoader.doInBackground(new File(targetPath));
+				
+				c.close();
+				c = DB.getMembers();
+				adapter.swapCursor(c);
+			}
+
+		} else {
+			targetPath = null;
+			mShowDialog = false;
+		}
 
 	}
 
+	@Override
+	protected void onResumeFragments() {
+		super.onResumeFragments();
+
+		// play with fragments here
+		if (mShowDialog) {
+			mShowDialog = false;
+
+			// Show only if is necessary, otherwise FragmentManager will take
+			// care
+			if (getSupportFragmentManager().findFragmentByTag(PROG_DIALOG_TAG) == null) {
+				new ContinueDialogFragment().show(getSupportFragmentManager(),
+						PROG_DIALOG_TAG);
+			}
+		}
+	}
+
 	public class LoadData extends AsyncTask<File, Void, Boolean> {
+		
 		ProgressDialog progressDialog;
 		MemberImporter importer;
 		OrderExporter exporter;
 
-		// declare other objects as per your need
 
 		public LoadData() {
 			importer = new MemberImporter(LedenMainActivity.this);
@@ -372,14 +405,27 @@ public class LedenMainActivity extends Activity implements OnItemClickListener {
 		protected Boolean doInBackground(File... params) {
 			// TODO Auto-generated method stub
 
-			try {
-				exporter.exportSD();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
 			File f = params[0];
 			return importer.importMembers(f);
 		}
 	}
+
+	@Override
+	public void onDialogPositiveClick(DialogFragment dialog) {
+		// TODO Auto-generated method stub
+		Log.i("positiveClick","Hello");
+		LoadData memberLoader = new LoadData();
+		memberLoader.doInBackground(new File(targetPath));
+		
+		c.close();
+		c = DB.getMembers();
+		adapter.swapCursor(c);
+	}
+
+	@Override
+	public void onDialogNegativeClick(DialogFragment dialog) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

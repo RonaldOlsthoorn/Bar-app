@@ -12,8 +12,10 @@ import java.util.Calendar;
 
 import org.xmlpull.v1.XmlSerializer;
 
+import com.groover.bar.frame.DBHelper.BackupLog;
 import com.groover.bar.frame.DBHelper.Order;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.os.Environment;
@@ -25,6 +27,7 @@ public class OrderExporter {
 	private DBHelper DB;
 	private Context context;
 	private String ts_settled;
+	private DecimalFormat df= new DecimalFormat("0.00");
 	
 	public OrderExporter(Context c) {
 
@@ -33,59 +36,82 @@ public class OrderExporter {
 		
 	}
 
-	public void exportSD() throws IOException {
+	public IOReport exportSD(){
 
 		boolean mExternalStorageAvailable = false;
 		boolean mExternalStorageWriteable = false;
 		String state = Environment.getExternalStorageState();
 		
-		Calendar c = Calendar.getInstance();
-		SimpleDateFormat df1 = new SimpleDateFormat("dd-MM-yy hh.mm.ss");
-		ts_settled = df1.format(c.getTime());
-		
 		if (Environment.MEDIA_MOUNTED.equals(state)) {
 			// We can read and write the media
 			mExternalStorageAvailable = mExternalStorageWriteable = true;
+			
 		} else if (Environment.MEDIA_MOUNTED_READ_ONLY.equals(state)) {
 			// We can only read the media
 			mExternalStorageAvailable = true;
 			mExternalStorageWriteable = false;
+
 		} else {
 			// Something else is wrong. It may be one of many other states, but
 			// all we need
 			// to know is we can neither read nor write
 			mExternalStorageAvailable = mExternalStorageWriteable = false;
+
 		}
 		
-		Log.d("sd",mExternalStorageAvailable+" "+mExternalStorageWriteable);
-
-
-		if (mExternalStorageAvailable && mExternalStorageWriteable) {
+		if(!mExternalStorageAvailable){
+			return new IOReport(false,IOReport.CAUSE_NO_SD_MOUNTED);			
+		}
+		if(!mExternalStorageWriteable){
+			return new IOReport(false,IOReport.CAUSE_WRITING_EXCEPTION);			
+		}
+		
+		else {
+			
+			Calendar c = Calendar.getInstance();
+			SimpleDateFormat df1 = new SimpleDateFormat("dd-MM-yy hh.mm.ss");
+			ts_settled = df1.format(c.getTime());
 			
 			File sdRoot = Environment.getExternalStorageDirectory();
 			File mainFolder = new File(sdRoot,
 					"Groover Bar/afrekeningen/afrekening "+ts_settled);
 			mainFolder.mkdirs();
 			
-			File currentDB = context.getDatabasePath(DBHelper.DATABASE_NAME);
-			File backupDB = new File(mainFolder, "DB.db");
-			backupDB.createNewFile();
-			FileChannel src = new FileInputStream(currentDB).getChannel();
-			FileChannel dst = new FileOutputStream(backupDB).getChannel();
-			dst.transferFrom(src, 0, src.size());
-			src.close();
-			dst.close();
-
-			File xml = new File(mainFolder, "afrekening "
-					+ ts_settled + ".xml");
-
-			BufferedOutputStream buf = new BufferedOutputStream(
-					new FileOutputStream(xml));
-			extractFromDB(buf);
-			buf.close();
 			
-			DB.deleteAllOrders();
+			try{
+				
+				File currentDB = context.getDatabasePath(DBHelper.DATABASE_NAME);
+				File backupDB = new File(mainFolder, "DB.db");
+				backupDB.createNewFile();
+				FileChannel src = new FileInputStream(currentDB).getChannel();
+				FileChannel dst = new FileOutputStream(backupDB).getChannel();
+				dst.transferFrom(src, 0, src.size());
+				src.close();
+				dst.close();
 
+				File xml = new File(mainFolder, "afrekening "
+						+ ts_settled + ".xml");
+
+				BufferedOutputStream buf = new BufferedOutputStream(
+						new FileOutputStream(xml));
+				extractFromDB(buf);
+				buf.close();
+				
+				//backup success. note to database.
+				ContentValues v = new ContentValues();
+				v.put(DBHelper.BackupLog.COLUMN_SUCCESS, true);
+				v.put(DBHelper.BackupLog.COLUMN_TYPE, "SD");
+				
+				DB.insertOrIgnore(DBHelper.BackupLog.TABLE_NAME, v);
+				DB.deleteAllOrders();
+				
+				return new IOReport(true,null);
+				
+			}catch(IOException e){
+				
+				return new IOReport(false,IOReport.CAUSE_WRITING_EXCEPTION);
+
+			}
 		}
 	}
 	
@@ -156,7 +182,7 @@ public class OrderExporter {
 			xmlSerializer.attribute(null, "GR_ID", "" + c.getInt(0));
 			xmlSerializer.attribute(null, "first_name", c.getString(1));
 			xmlSerializer.attribute(null, "last_name", "" + c.getString(2));
-			xmlSerializer.attribute(null, "total", ""+c.getDouble(4));
+			xmlSerializer.attribute(null, "total", df.format(c.getDouble(4)));
 			
 			orders.moveToFirst();
 			
@@ -168,9 +194,9 @@ public class OrderExporter {
 				xmlSerializer.attribute(null, "ts_settled", ts_settled);
 				xmlSerializer.attribute(null, "article", orders.getString(3));
 				xmlSerializer.attribute(null, "amount", "" + orders.getInt(4));
-				xmlSerializer.attribute(null, "price", "" + orders.getDouble(5));
+				xmlSerializer.attribute(null, "price", df.format(orders.getDouble(5)));
 
-				xmlSerializer.attribute(null, "subtotal", new DecimalFormat("#.00").format(orders.getDouble(0)));
+				xmlSerializer.attribute(null, "subtotal", df.format(orders.getDouble(0)));
 
 				xmlSerializer.endTag(null, "consumption");
 				
@@ -186,7 +212,6 @@ public class OrderExporter {
 		}
 		
 		xmlSerializer.endTag(null,"list");
-		// end DOCUMENT
 		
 		xmlSerializer.endTag(null, "afrekening");
 

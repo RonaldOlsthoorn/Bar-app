@@ -425,7 +425,7 @@ public class DBHelper extends SQLiteOpenHelper {
 	}
 
 	// veel verbetering mogelijk qua performance.
-	public boolean checkNeedToUpdate() {
+	public boolean checkNeedToBackup() {
 
 		SQLiteDatabase db = getReadableDatabase();
 		
@@ -443,8 +443,10 @@ public class DBHelper extends SQLiteOpenHelper {
 		
 		String inner = "SELECT "+ "MAX("+ BackupLog.COLUMN_TIME_STAMP + ") AS "+BackupLog.COLUMN_TIME_STAMP 
 				+ " FROM "+ BackupLog.TABLE_NAME 
-				+ " WHERE " + BackupLog.COLUMN_TYPE
-				+ "=\"upload\"" + " AND " + BackupLog.COLUMN_SUCCESS + "=1";
+				+ " WHERE " 
+				+ "("+ BackupLog.COLUMN_TYPE	+ "=\"upload\"" 
+				+ " OR " +BackupLog.COLUMN_TYPE	+ "=\"SD\"" +")"
+				+ " AND " + BackupLog.COLUMN_SUCCESS + "=1";
 		
 		String query = "SELECT * " 
 				+" FROM " + Order.TABLE_NAME
@@ -454,7 +456,6 @@ public class DBHelper extends SQLiteOpenHelper {
 
 		c = db.rawQuery(query, null);
 
-		Log.i(TAG,""+c.getCount());
 
 		if (c.getCount() > 0) {
 			return true;
@@ -462,6 +463,53 @@ public class DBHelper extends SQLiteOpenHelper {
 		return false; 
 
 	}
+	
+	// veel verbetering mogelijk qua performance.
+	public boolean checkNeedToBackupSD() {
+
+		SQLiteDatabase db = getReadableDatabase();
+		
+		Cursor c = db.query(Order.TABLE_NAME, new String[]{Order.COLUMN_ID}, null, null, null, null, null);
+		
+		Log.i("DB",c.getCount()+" orders");
+		if(c.getCount()==0){
+			return false;
+		}
+
+		c = db.query(BackupLog.TABLE_NAME, new String[]{BackupLog.COLUMN_ID}, DBHelper.BackupLog.COLUMN_TYPE+"=\"SD\"" +" AND "+DBHelper.BackupLog.COLUMN_SUCCESS+"=1", null, null, null, null);
+		
+		Log.i("DB",c.getCount()+" backups");
+		if(c.getCount()==0){
+			return true;
+		}
+		
+		String inner = "SELECT "+ "MAX("+ BackupLog.COLUMN_TIME_STAMP + ") AS "+BackupLog.COLUMN_TIME_STAMP 
+				+ " FROM "+ BackupLog.TABLE_NAME 
+				+ " WHERE " 
+				+ BackupLog.COLUMN_TYPE	+ "=\"SD\"" 
+				+ " AND " + BackupLog.COLUMN_SUCCESS + "=1";
+		
+		c = db.rawQuery(inner, null);
+		Log.i("DB",c.getCount()+" inner ");
+
+		
+		String query = "SELECT * " 
+				+" FROM " + Order.TABLE_NAME
+				+ " WHERE "+ "("
+				+ inner +")"
+				+ " < " + Order.COLUMN_TS_CREATED;
+
+		c = db.rawQuery(query, null);
+		Log.i("DB",query);
+	
+
+		if (c.getCount() > 0) {
+			return true;
+		}
+		return false; 
+
+	}
+	
 	
 	public boolean checkIdInTable(String table,int id){
 		

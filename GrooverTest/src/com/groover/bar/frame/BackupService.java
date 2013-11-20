@@ -27,7 +27,7 @@ public class BackupService extends IntentService {
 	protected void onHandleIntent(Intent intent) {
 		// TODO Auto-generated method stub
 		// Check whether it needed to make a back up
-		boolean check = DB.checkNeedToUpdate();
+		boolean check = DB.checkNeedToBackup();
 		
 		Log.i("backup",""+check);
 		

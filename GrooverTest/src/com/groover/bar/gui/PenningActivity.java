@@ -1,31 +1,22 @@
 package com.groover.bar.gui;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.nio.channels.FileChannel;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import com.groover.bar.R;
 import com.groover.bar.frame.DBHelper;
+import com.groover.bar.frame.IOReport;
 import com.groover.bar.frame.OrderExporter;
 
 import android.os.Bundle;
-import android.os.Environment;
-import android.app.Activity;
+
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.NavUtils;
 import android.annotation.TargetApi;
-import android.database.Cursor;
 import android.os.Build;
-import au.com.bytecode.opencsv.CSVWriter;
 
-public class PenningActivity extends Activity {
+public class PenningActivity extends FragmentActivity {
 	
 	DBHelper DB;
 
@@ -75,14 +66,21 @@ public class PenningActivity extends Activity {
 
 	public void processDB(View v) {
 
-		OrderExporter ex = new OrderExporter(this);
-		try {
-			ex.exportSD();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		OrderExporter ex = new OrderExporter(this);	
+		IOReport report = ex.exportSD();
+		
+		if(report.getSucces()){
+			Toast toast = Toast.makeText(this, "Succesfully made afrekening", Toast.LENGTH_SHORT);
+			toast.show();
+			return;
+		}if(report.getCause().equals(IOReport.CAUSE_NO_SD_MOUNTED)){			
+			BasicAlertDialogFragment dialog = new BasicAlertDialogFragment("No sd card mounted. Check if there is an sd card in the slot. Tablet must not be connect to a pc using USB!");
+			dialog.show(getSupportFragmentManager(), "error_sd");
+			return;
+		}else{
+			BasicAlertDialogFragment dialog = new BasicAlertDialogFragment("An error occured during the process. No backup made");
+			dialog.show(getSupportFragmentManager(), "error_sd");
 		}
-
 	}
 
 	public void toStatistics(View view) {

@@ -69,10 +69,12 @@ public class MemberImporter {
 			long result = DB.insertOrIgnore(DBHelper.MemberTable.TABLE_NAME, v);
 			
 			if(result==-1){
-				return false;
+				res = false;
 			}
 
 		}
+		
+		DB.deleteAllOrders();
 
 		return res;
 	}

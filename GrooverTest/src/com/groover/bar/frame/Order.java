@@ -1,6 +1,6 @@
 package com.groover.bar.frame;
 
-import java.util.Collection;
+import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Stack;
@@ -8,7 +8,6 @@ import java.util.Stack;
 
 import android.content.ContentValues;
 import android.content.Context;
-import android.util.Log;
 
 public class Order {
 	
@@ -16,6 +15,8 @@ public class Order {
 	private HashMap<Integer,OrderUnit> map;
 	private Stack<Integer> stack;
 	private ArticleFactory af;
+	private DecimalFormat df= new DecimalFormat("0.00");
+	
 	
 	public Order(Customer c, ArticleFactory af){
 		
@@ -128,7 +129,7 @@ public class Order {
 			res = res + unit.getAmount()+" "+unit.getArticle().getName()+",";
 		}
 		
-		return res.substring(0, res.length()-1)+" totaal: "+calculateTotal();
+		return res.substring(0, res.length()-1)+" totaal: "+df.format(calculateTotal());
 		
 	}
 }
