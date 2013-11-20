@@ -50,12 +50,6 @@ public class BeheerActivity extends Activity {
 		startActivity(intent);
 	}
 
-	public void toGroepen(View view){
-		
-		Intent intent = new Intent(this, GroupMainActivity.class);
-		startActivity(intent);
-	}
-	
 	public void toArtikelen(View view){
 		
 		Intent intent = new Intent(this, ArticleActivity.class);

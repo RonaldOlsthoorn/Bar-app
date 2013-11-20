@@ -44,13 +44,6 @@ public class BarBazzActivity extends Activity {
 		return super.onOptionsItemSelected(item);
 	}
 	
-	public void toGroups(View view){
-		
-		Intent intent = new Intent(this, GroupMainActivity.class);
-		startActivity(intent);
-		
-	}
-	
 	public void editTurflijst(View view){
 		
 		Intent intent = new Intent(this, EditTurfListActivity.class);

@@ -24,18 +24,12 @@ OnItemClickListener {
 
 	private DBHelper DB;
 
-	private FilteredCursor c_groepen1;
-	private FilteredCursor c_groepen2;
 	private FilteredCursor c_leden1;
 	private FilteredCursor c_leden2;
 
-	private SimpleCursorAdapter a_groepen1;
-	private SimpleCursorAdapter a_groepen2;
 	private SimpleCursorAdapter a_leden1;
 	private SimpleCursorAdapter a_leden2;
 
-	private ListView l_groepen1;
-	private ListView l_groepen2;
 	private ListView l_leden1;
 	private ListView l_leden2;
 
@@ -47,10 +41,6 @@ OnItemClickListener {
 	private int[] TO1 = new int[] { R.groupRow2.first,
 			R.groupRow2.last, R.ledenlijstrow.account };
 
-	private String[] FROM2 = new String[] { DBHelper.GroupTable.COLUMN_GROUP_NAME, };
-
-	private int[] TO2 = new int[] { R.groupRow3.first };
-
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -61,18 +51,11 @@ OnItemClickListener {
 
 		DB = DBHelper.getDBHelper(this);
 		
-
 		c_leden1 = new FilteredCursor(DB.getMembers());
 		c_leden1.setAll();	
 		c_leden1 = FilterList(c_leden1);
 		c_leden2 = c_leden1.mirrorCursor();		
-		
-		c_groepen1 = new FilteredCursor(DB.getGroups());		
-		c_groepen1.setAll();
-		c_groepen1 = FilterList(c_groepen1);
-		c_groepen2 = c_groepen1.mirrorCursor();
-		
-		
+			
 		a_leden1 = new SimpleCursorAdapter(this, R.layout.group_row2,
 				c_leden1, FROM1, TO1,
 				CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
@@ -80,52 +63,30 @@ OnItemClickListener {
 		a_leden2 = new SimpleCursorAdapter(this, R.layout.group_row2,
 				c_leden2, FROM1, TO1,
 				CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
-
-		a_groepen1 = new SimpleCursorAdapter(this, R.layout.group_row3,
-				c_groepen1, FROM2, TO2,
-				CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
-
-		a_groepen2 = new SimpleCursorAdapter(this, R.layout.group_row3,
-				c_groepen2, FROM2, TO2,
-				CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
 		
 		l_leden1 = (ListView) findViewById(R.editTurf.listView1);
 		l_leden2 = (ListView) findViewById(R.editTurf.listView2);
-		l_groepen1 = (ListView) findViewById(R.editTurf.listView3);
-		l_groepen2 = (ListView) findViewById(R.editTurf.listView4);
 		
-		l_groepen1.setAdapter(a_groepen1);
-		l_groepen2.setAdapter(a_groepen2);
 		l_leden1.setAdapter(a_leden1);
 		l_leden2.setAdapter(a_leden2);
 		
-		l_groepen1.setOnItemClickListener(this);
-		l_groepen2.setOnItemClickListener(this);
 		l_leden1.setOnItemClickListener(this);
 		l_leden2.setOnItemClickListener(this);
 				
 	}
 
 	private FilteredCursor FilterList(FilteredCursor c) {
-
-		// TODO Auto-generated method stub
 		
 		int bool = c.getColumnIndex(DBHelper.MemberTable.COLUMN_ACTIVE);
 		c.moveToFirst();
 				
-		while (c.getPosition() < c.getCount()) {
-						
+		while (c.getPosition() < c.getCount()) {	
 			if (c.getInt(bool) == 0) {
-				
-				
-				c.filter(c.getPosition());
-				
+				c.filter(c.getPosition());		
 			}else{
-				
 				c.moveToNext();
 			}			
-		}
-		
+		}		
 		return c;
 	}
 
@@ -155,24 +116,6 @@ OnItemClickListener {
 
 	@Override
 	public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
-	
-		// TODO Auto-generated method stub
-		if (arg0.equals(l_groepen1)) {
-
-			c_groepen1.moveToPosition(arg2);
-			c_groepen2.addId(c_groepen1.getInt(0));
-			c_groepen1.filter(arg2);
-			a_groepen1.notifyDataSetChanged();
-			a_groepen2.notifyDataSetChanged();
-		}
-		if (arg0.equals(l_groepen2)) {
-
-			c_groepen2.moveToPosition(arg2);
-			c_groepen1.addId(c_groepen2.getInt(0));
-			c_groepen2.filter(arg2);
-			a_groepen1.notifyDataSetChanged();
-			a_groepen2.notifyDataSetChanged();
-		}
 
 		if (arg0.equals(l_leden1)) {
 
@@ -217,27 +160,6 @@ OnItemClickListener {
 			
 			DB.updateOrIgnore(DBHelper.MemberTable.TABLE_NAME, c_leden2.getInt(0), c);
 			c_leden2.moveToNext();
-		}
-		
-		c_groepen1.moveToFirst();
-		c = new ContentValues();
-		c.put(DBHelper.GroupTable.COLUMN_ACTIVE, 1);
-		
-		while(c_groepen1.getPosition()<c_groepen1.getCount()){
-			
-			boolean groupupdate = DB.updateOrIgnore(DBHelper.GroupTable.TABLE_NAME, c_groepen1.getInt(0), c);
-			c_groepen1.moveToNext();
-		}
-		
-		c_groepen2.moveToFirst();
-		c = new ContentValues();
-		c.put(DBHelper.GroupTable.COLUMN_ACTIVE, 0);
-		
-		while(c_groepen2.getPosition()<c_groepen2.getCount()){
-			
-			boolean groupupdate =DB.updateOrIgnore(DBHelper.GroupTable.TABLE_NAME, c_groepen2.getInt(0), c);
-			c_groepen2.moveToNext();
-			
 		}
 	}
 }

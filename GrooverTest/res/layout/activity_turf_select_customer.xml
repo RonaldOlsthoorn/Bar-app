@@ -69,18 +69,17 @@
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
-        android:text="Kies lid/groep:  "
+        android:text="Kies lid:  "
         android:textAppearance="?android:attr/textAppearanceLarge" />
 
-    <Button
-        android:id="@+id/button1"
+    <TextView
+        android:id="@+selectCustomer/customer"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
-        android:layout_weight="0.5"
-        android:onClick="annuleren"
-        android:text="    Annuleren    " />
+        android:layout_alignParentTop="true"
+        android:layout_marginLeft="10dp"
+        android:layout_toRightOf="@+id/textView1"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
 
     <Button
         android:id="@+selectCustomer/nextButton"
@@ -93,13 +92,14 @@
         android:onClick="next"
         android:text="    Door naar bestelling    " />
 
-    <TextView
-        android:id="@+selectCustomer/customer"
+    <Button
+        android:id="@+id/button1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_marginLeft="10dp"
-        android:layout_toRightOf="@+id/textView1"
-        android:textAppearance="?android:attr/textAppearanceLarge" />
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_weight="0.5"
+        android:onClick="annuleren"
+        android:text="    Annuleren    " />
 
 </RelativeLayout>

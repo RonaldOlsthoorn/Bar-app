@@ -39,29 +39,18 @@ public class TurfSelectCustomerActivity extends Activity implements
 	private DBHelper DB;
 	private SearchCursor c_leden;
 	private Cursor c_filter_leden;
-	// private Cursor c_groepen;
 	private SimpleCursorAdapter a_leden;
-	private SimpleCursorAdapter a_groepen;
-	private DecimalFormat df;
+	private DecimalFormat df= new DecimalFormat("0.00");
 
 	private String[] FROM_LEDEN = new String[] {
-			
-			DBHelper.MemberTable.COLUMN_FIRST_NAME,
+
+	DBHelper.MemberTable.COLUMN_FIRST_NAME,
 			DBHelper.MemberTable.COLUMN_LAST_NAME,
 			DBHelper.MemberTable.COLUMN_BALANCE };
-	
-	// private String[] FROM_GROUPS = new String[] {
-	// DBHelper.GroupTable.COLUMN_GROUP_NAME,
-	// DBHelper.GroupTable.COLUMN_GROUP_BALANCE };
 
 	private int[] TO_LEDEN = new int[] { R.ledenlijstrow.voornaam,
 			R.ledenlijstrow.achternaam, R.ledenlijstrow.account };
-	// private int[] TO_GROUPS = new int[] { R.grouprow1.naam,
-	// R.grouprow1.balance };
-
 	private ListView l_leden;
-	// private ListView l_groepen;
-
 	private TextView customerNameTV;
 	private int customerId;
 	private String customerName;
@@ -112,41 +101,21 @@ public class TurfSelectCustomerActivity extends Activity implements
 		setContentView(R.layout.activity_turf_select_customer);
 		// Show the Up button in the action bar.
 		setupActionBar();
-		
-		Log.i("selectCustomer","create");
-
-		df = new DecimalFormat("0.00");
 
 		nextButton = (Button) findViewById(R.selectCustomer.nextButton);
 		customerNameTV = (TextView) findViewById(R.selectCustomer.customer);
 
 		DB = DBHelper.getDBHelper(this);
-		c_leden = new SearchCursor( DB.getListMembers());
-
-
-		// c_groepen = DB.getListGroups();
+		c_leden = new SearchCursor(DB.getListMembers());
 
 		a_leden = new FormatTextAdapter(this, R.layout.ledenlijstrow, c_leden,
 				FROM_LEDEN, TO_LEDEN,
 				CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER, df,
 				R.ledenlijstrow.account);
 
-		// a_groepen = new FormatTextAdapter(this, R.layout.grouprow, c_groepen,
-		// FROM_GROUPS, TO_GROUPS,
-		// CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER, df,
-		// R.grouprow1.balance);
-
 		l_leden = (ListView) findViewById(R.selectCustomer.listViewleden);
-
-		// TO PUT GOUPS BACK UNCOMMENT THIS LIN
-		findViewById(R.selectCustomer.listViewgroepen).setVisibility(View.GONE);
-
 		l_leden.setAdapter(a_leden);
-
-		// l_groepen.setAdapter(a_groepen);
-
 		l_leden.setOnItemClickListener(this);
-		// l_groepen.setOnItemClickListener(this);
 
 		autoCompleteAdapter = new SimpleCursorAdapter(this,
 				R.layout.autocomplete, c_filter_leden, new String[] {
@@ -159,20 +128,17 @@ public class TurfSelectCustomerActivity extends Activity implements
 		search.setThreshold(2);
 		search.setAdapter(autoCompleteAdapter);
 		autoCompleteAdapter.setFilterQueryProvider(filterQueryProvider);
-		
+
 		Resources res = getResources();
 		int color = res.getColor(android.R.color.black);
 		search.setTextColor(color);
 
 		search.setOnItemClickListener(this);
-		
-		DB.getFilteredMember("hello");
-
 	}
 
 	@Override
 	public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
-		
+
 		// TODO Auto-generated method stub
 		if (arg0.equals(l_leden)) {
 			c_leden.moveToPosition(arg2);
@@ -183,19 +149,9 @@ public class TurfSelectCustomerActivity extends Activity implements
 			customerNameTV.setText(customerName);
 			nextButton.setEnabled(true);
 		}
-		// if (arg0.equals(l_groepen)) {
-		// c_groepen.moveToPosition(arg2);
-		// customerId = c_groepen.getInt(0);
-		// customerName = c_groepen.getString(1);
-		// customerType = "group";
-		// customerAcount = c_groepen.getInt(2);
-		// customerNameTV.setText(customerName);
-		// nextButton.setEnabled(true);
-		//
-		// }
 
 		else {
-						
+
 			c_leden.moveToId((int) arg3);
 			customerId = c_leden.getInt(0);
 			customerName = c_leden.getString(1) + " " + c_leden.getString(2);
@@ -234,13 +190,13 @@ public class TurfSelectCustomerActivity extends Activity implements
 			}
 		}
 	}
-	
+
 	private FilterQueryProvider filterQueryProvider = new FilterQueryProvider() {
-	    public Cursor runQuery(CharSequence constraint) {
-	        // assuming you have your custom DBHelper instance 
-	        // ready to execute the DB request
-	        return DB.getFilteredMember(constraint.toString());
-	        		
-	    }
+		public Cursor runQuery(CharSequence constraint) {
+			// assuming you have your custom DBHelper instance
+			// ready to execute the DB request
+			return DB.getFilteredMember(constraint.toString());
+
+		}
 	};
 }

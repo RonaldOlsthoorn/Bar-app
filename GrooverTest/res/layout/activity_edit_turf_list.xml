@@ -95,52 +95,6 @@
                 android:layout_height="wrap_content" >
             </ListView>
         </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_margin="2dp"
-            android:layout_weight="0.25"
-            android:gravity="center|top"
-            android:orientation="vertical"
-            android:visibility="gone" >
-
-            <TextView
-                android:id="@+id/textView5"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Groepen op turflijst"
-                android:textAppearance="?android:attr/textAppearanceMedium" />
-
-            <ListView
-                android:id="@+editTurf/listView3"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" >
-            </ListView>
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_margin="2dp"
-            android:layout_weight="0.25"
-            android:gravity="center|top"
-            android:orientation="vertical"
-            android:visibility="gone" >
-
-            <TextView
-                android:id="@+id/textView6"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Groepen niet op turflijst"
-                android:textAppearance="?android:attr/textAppearanceMedium" />
-
-            <ListView
-                android:id="@+editTurf/listView4"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" >
-            </ListView>
-        </LinearLayout>
     </LinearLayout>
 
     <LinearLayout
