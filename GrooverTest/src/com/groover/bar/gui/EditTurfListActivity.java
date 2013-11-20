@@ -7,8 +7,6 @@ import com.groover.bar.frame.FilteredCursor;
 import android.os.Bundle;
 import android.app.Activity;
 import android.content.ContentValues;
-import android.database.Cursor;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -36,10 +34,10 @@ OnItemClickListener {
 	private String[] FROM1 = new String[] {
 			DBHelper.MemberTable.COLUMN_FIRST_NAME,
 			DBHelper.MemberTable.COLUMN_LAST_NAME,
-			DBHelper.MemberTable.COLUMN_GR_ID };
+			};
 	
-	private int[] TO1 = new int[] { R.groupRow2.first,
-			R.groupRow2.last, R.ledenlijstrow.account };
+	private int[] TO1 = new int[] { R.ledenlijstrow2.voornaam,
+			R.ledenlijstrow2.achternaam };
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -56,11 +54,11 @@ OnItemClickListener {
 		c_leden1 = FilterList(c_leden1);
 		c_leden2 = c_leden1.mirrorCursor();		
 			
-		a_leden1 = new SimpleCursorAdapter(this, R.layout.group_row2,
+		a_leden1 = new SimpleCursorAdapter(this, R.layout.ledenlijstrow2,
 				c_leden1, FROM1, TO1,
 				CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
 
-		a_leden2 = new SimpleCursorAdapter(this, R.layout.group_row2,
+		a_leden2 = new SimpleCursorAdapter(this, R.layout.ledenlijstrow2,
 				c_leden2, FROM1, TO1,
 				CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
 		

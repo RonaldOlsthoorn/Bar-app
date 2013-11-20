@@ -8,14 +8,10 @@ import com.groover.bar.frame.SearchCursor;
 
 import android.os.Bundle;
 import android.app.Activity;
-import android.text.Editable;
-import android.text.TextWatcher;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.FilterQueryProvider;
@@ -41,13 +37,10 @@ public class TurfSelectCustomerActivity extends Activity implements
 	private Cursor c_filter_leden;
 	private SimpleCursorAdapter a_leden;
 	private DecimalFormat df= new DecimalFormat("0.00");
-
 	private String[] FROM_LEDEN = new String[] {
-
 	DBHelper.MemberTable.COLUMN_FIRST_NAME,
 			DBHelper.MemberTable.COLUMN_LAST_NAME,
 			DBHelper.MemberTable.COLUMN_BALANCE };
-
 	private int[] TO_LEDEN = new int[] { R.ledenlijstrow.voornaam,
 			R.ledenlijstrow.achternaam, R.ledenlijstrow.account };
 	private ListView l_leden;
