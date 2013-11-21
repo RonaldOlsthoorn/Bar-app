@@ -1,11 +1,9 @@
 package com.groover.bar.gui;
 
 import java.text.DecimalFormat;
-
 import com.groover.bar.R;
 import com.groover.bar.frame.DBHelper;
 import com.groover.bar.frame.SearchCursor;
-
 import android.os.Bundle;
 import android.app.Activity;
 import android.view.Menu;
