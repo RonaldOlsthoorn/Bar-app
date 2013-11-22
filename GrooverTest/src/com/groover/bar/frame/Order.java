@@ -8,6 +8,7 @@ import java.util.Stack;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.util.SparseArray;
 
 /*
  * proxy class representing consumptions.
@@ -15,49 +16,50 @@ import android.content.Context;
 public class Order {
 	
 	private Customer customer;
-	private HashMap<Integer,OrderUnit> map;
-	private Stack<Integer> stack;
-	private ArticleFactory af;
+	private OrderUnit[] orderUnits;
 	private DecimalFormat df= new DecimalFormat("0.00");
-	
-	
-	public Order(Customer c, ArticleFactory af){
 		
-		this.af=af;
+	public Order(Customer c, OrderUnit[] o){
+		
 		customer = c;
-		map = new HashMap<Integer,OrderUnit>();
-		stack = new Stack<Integer>();
+		orderUnits = o;			
+	}
+	
+	public int getCount() {
+		return orderUnits.length;
+	}
+	
+
+	public OrderUnit getUnit(int position) {
+		return orderUnits[position];
+	}
+	
+	public void setAmount(int position, int amount){
 		
+		getUnit(position).setAmount(amount);
 	}
 	
-	public void addOrderUnit(OrderUnit u){
+	public long getId(int position) {
+		return getUnit(position).getArticle().getId();
+	}
+
+	public void deleteOrder(int position) {
+		setAmount(position, 0);
+	}
+	
+	public void addAmmountToOrderUnit(int position, int i) {
 		
-		map.put(Integer.valueOf(u.getArticle().getId()), u);
-		stack.push(Integer.valueOf(u.getArticle().getId()));
+		setAmount(position, getUnit(position).getAmount()+i);
 	}
-	
-	public void addSpecified(int art_id, int amount){
-		addOrderUnit(new OrderUnit(af.getArticle(art_id),amount));
-	}
-	
-	public void addUnspecified(int art_id){
-		addSpecified(art_id,0);
-	}
-	
-	public void deleteOrderKey(int key){
-		
-		map.remove(Integer.valueOf(key));
-		stack.remove(Integer.valueOf(key));
-	}
+
 	
 	public double calculateTotal(){
 		
-		double total =0;
-		Iterator<OrderUnit> it = map.values().iterator();
-		while(it.hasNext()){
-			total = total + it.next().getSubtotal();
-		}
+		double total =0;	
 		
+		for(int i=0; i<orderUnits.length;i++){
+			total = total + orderUnits[i].getSubtotal();
+		}
 		return total;
 	}
 	
@@ -66,11 +68,11 @@ public class Order {
 		DBHelper db = DBHelper.getDBHelper(c);
 		ContentValues v = new ContentValues();
 		
-		for(int i=0; i<stack.size();i++){
+		for(int i=0; i<orderUnits.length;i++){
 			
 			v.clear();
 			v.put(DBHelper.Order.COLUMN_ACCOUNT, customer.getAccount());
-			v.put(DBHelper.Order.COLUMN_TOTAL,map.get(stack.get(i)).getSubtotal());
+			v.put(DBHelper.Order.COLUMN_TOTAL,orderUnits[i].getSubtotal());
 			v.put(DBHelper.Order.COLUMN_TYPE, "consumption");
 			
 			long id = db.insertOrIgnore(DBHelper.Order.TABLE_NAME, v);
@@ -81,9 +83,9 @@ public class Order {
 			
 			v.clear();
 			v.put(DBHelper.Consumption.COLUMN_ID, id);
-			v.put(DBHelper.Consumption.COLUMN_AMMOUNT, map.get(stack.get(i)).getAmount());
-			v.put(DBHelper.Consumption.COLUMN_ARTICLE_NAME, map.get(stack.get(i)).getArticle().getName());
-			v.put(DBHelper.Consumption.COLUMN_ARTICLE_PRICE, map.get(stack.get(i)).getArticle().getPrice());
+			v.put(DBHelper.Consumption.COLUMN_AMMOUNT, orderUnits[i].getAmount());
+			v.put(DBHelper.Consumption.COLUMN_ARTICLE_NAME, orderUnits[i].getArticle().getName());
+			v.put(DBHelper.Consumption.COLUMN_ARTICLE_PRICE, orderUnits[i].getArticle().getPrice());
 				
 			id =  db.insertOrIgnore(DBHelper.Consumption.TABLE_NAME, v);
 			
@@ -91,49 +93,21 @@ public class Order {
 				return false;
 			}
 		}
-		
 		return true;
-		
-	}
-
-	public int getCount() {
-		// TODO Auto-generated method stub
-		
-		return map.size();
-	}
-	
-	public long getId(int pos){
-		
-		return stack.get(pos).longValue();
-	}
-
-	public OrderUnit getUnit(int position) {
-		// TODO Auto-generated method stub
-		return map.get(stack.get(position));
-	}
-	
-	public OrderUnit getUnitById(int id){
-		
-		return map.get(Integer.valueOf(id));
-	}
-	
-	public boolean contains(int i){
-		
-		return stack.contains(Integer.valueOf(i));
-			
 	}
 	
 	public String toString(){
 		
-		String res="";
-		Iterator<OrderUnit> it = map.values().iterator();
-		while(it.hasNext()){
-			OrderUnit unit = it.next();
-			res = res + unit.getAmount()+" "+unit.getArticle().getName()+",";
-		}
+		String res="";	
 		
+		for(int i=0; i<orderUnits.length;i++){
+			res = res +orderUnits[i].getAmount()+" "+orderUnits[i].getArticle().getName()+",";
+		}
 		return res.substring(0, res.length()-1)+" totaal: "+df.format(calculateTotal());	
 	}
+
+	
+
 }
 
 

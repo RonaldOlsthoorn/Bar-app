@@ -29,6 +29,7 @@ public class UploadService extends IntentService {
 	protected void onHandleIntent(Intent arg0) {
 		// TODO Auto-generated method stub
 		
+		/*
 		FTPClient client = new FTPClient();	
 		FileInputStream fis = null;
 	
@@ -106,6 +107,7 @@ public class UploadService extends IntentService {
 			}catch(IOException e){
 				e.printStackTrace();
 			}	
-		}
+		}*/
 	}
+	
 }

@@ -10,20 +10,16 @@
 
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
-        
-        
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
-        
         <activity
             android:name="com.groover.bar.gui.MainActivity"
-            android:label="@string/app_name"
-            android:screenOrientation="landscape" >
+            android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -33,14 +29,13 @@
         <activity
             android:name="com.groover.bar.gui.LoginActivity"
             android:label="@string/app_name"
-            android:screenOrientation="landscape"
+            android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustResize|stateVisible" >
         </activity>
         <activity
             android:name="com.groover.bar.gui.LedenMainActivity"
             android:label="@string/title_activity_leden_main"
-            android:parentActivityName="com.groover.bar.gui.MainActivity"
-            android:screenOrientation="landscape" >
+            android:parentActivityName="com.groover.bar.gui.MainActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.groovertest.MainActivity" />
@@ -48,8 +43,7 @@
         <activity
             android:name="com.groover.bar.gui.ArticleActivity"
             android:label="@string/title_activity_article"
-            android:parentActivityName="com.groover.bar.gui.MainActivity"
-            android:screenOrientation="landscape" >
+            android:parentActivityName="com.groover.bar.gui.MainActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.groovertest.MainActivity" />
@@ -57,8 +51,7 @@
         <activity
             android:name="com.groover.bar.gui.GroupMainActivity"
             android:label="@string/title_activity_group_main"
-            android:parentActivityName="com.groover.bar.gui.MainActivity"
-            android:screenOrientation="landscape" >
+            android:parentActivityName="com.groover.bar.gui.MainActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.groovertest.MainActivity" />
@@ -66,8 +59,7 @@
         <activity
             android:name="com.groover.bar.gui.BeheerActivity"
             android:label="@string/title_activity_beheer"
-            android:parentActivityName="com.groover.bar.gui.MainActivity"
-            android:screenOrientation="landscape" >
+            android:parentActivityName="com.groover.bar.gui.MainActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.groovertest.MainActivity" />
@@ -75,8 +67,7 @@
         <activity
             android:name="com.groover.bar.gui.BarBazzActivity"
             android:label="@string/title_activity_bar_bazz"
-            android:parentActivityName="com.groover.bar.gui.MainActivity"
-            android:screenOrientation="landscape" >
+            android:parentActivityName="com.groover.bar.gui.MainActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.groovertest.MainActivity" />
@@ -84,8 +75,7 @@
         <activity
             android:name="com.groover.bar.gui.TurfMenuActivity"
             android:label="@string/title_activity_turf_menu"
-            android:parentActivityName="com.groover.bar.gui.BarBazzActivity"
-            android:screenOrientation="landscape" >
+            android:parentActivityName="com.groover.bar.gui.BarBazzActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.groovertest.BarBazzActivity" />
@@ -93,8 +83,7 @@
         <activity
             android:name="com.groover.bar.gui.EditTurfListActivity"
             android:label="@string/title_activity_edit_turf_list"
-            android:parentActivityName="com.groover.bar.gui.TurfMenuActivity"
-            android:screenOrientation="landscape" >
+            android:parentActivityName="com.groover.bar.gui.TurfMenuActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.groovertest.TurfMenuActivity" />
@@ -103,7 +92,7 @@
             android:name="com.groover.bar.gui.TurfSelectCustomerActivity"
             android:label="@string/title_activity_turf_select_customer"
             android:parentActivityName="com.groover.bar.gui.TurfMenuActivity"
-            android:screenOrientation="landscape" >
+            android:screenOrientation="portrait" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.groovertest.TurfMenuActivity" />
@@ -112,21 +101,15 @@
             android:name="com.groover.bar.gui.OrderActivity"
             android:label="@string/title_activity_order"
             android:parentActivityName="com.groover.bar.gui.TurfSelectCustomerActivity"
-            android:screenOrientation="landscape" >
+            android:screenOrientation="portrait" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.groovertest.TurfSelectCustomerActivity" />
         </activity>
         <activity
-            android:name="com.groover.bar.gui.TestAnnoyingLayoutsActivity"
-            android:label="@string/title_activity_test_annoying_layouts"
-            android:screenOrientation="landscape" >
-        </activity>
-        <activity
             android:name="com.groover.bar.gui.PenningActivity"
             android:label="@string/title_activity_penning"
-            android:parentActivityName="com.groover.bar.gui.BeheerActivity"
-            android:screenOrientation="landscape" >
+            android:parentActivityName="com.groover.bar.gui.BeheerActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.groovertest.BeheerActivity" />
@@ -141,15 +124,14 @@
         </activity>
         <activity
             android:name="com.groover.bar.frame.FileDialog"
-            android:label="@string/dialog_name"
-            android:screenOrientation="landscape" >
+            android:label="@string/dialog_name" >
         </activity>
 
         <service android:name="com.groover.bar.frame.BackupService" >
         </service>
         <service android:name="com.groover.bar.frame.UploadService" >
         </service>
-        
+
         <receiver
             android:name="com.groover.bar.frame.NetworkChangeReceiver"
             android:label="NetworkChangeReceiver" >

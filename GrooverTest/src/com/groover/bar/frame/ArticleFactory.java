@@ -16,7 +16,7 @@ public class ArticleFactory {
 	}
 	
 	//pre: id is the identifier (same id as stored in the database) of the article
-	//returns the article
+	//returns the article. If article is not in the database it returns null
 	public Article getArticle(int id){
 
 		source.moveToFirst();
