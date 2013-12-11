@@ -12,7 +12,6 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.View.OnFocusChangeListener;
 import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
@@ -20,7 +19,6 @@ import android.widget.FilterQueryProvider;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.AdapterView.OnItemClickListener;
-
 import android.widget.ListView;
 import android.support.v4.app.NavUtils;
 import android.support.v4.widget.CursorAdapter;
@@ -28,7 +26,6 @@ import android.support.v4.widget.SimpleCursorAdapter;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.os.Build;
@@ -45,7 +42,7 @@ public class TurfSelectCustomerActivity extends Activity implements
 	private ListView l_leden_aanwezig;
 
 	private Cursor c_filter_leden;
-	private SimpleCursorAdapter a_leden;
+	private FormatTextAdapter a_leden;
 	private DecimalFormat df = new DecimalFormat("0.00");
 	private String[] FROM_LEDEN = new String[] {
 			DBHelper.MemberTable.COLUMN_FIRST_NAME,
@@ -238,13 +235,11 @@ public class TurfSelectCustomerActivity extends Activity implements
 
 	        if (actualHeight > proposedheight){
 	            // Keyboard is shown
-	        	Log.i("measure","hello false");
-	        	memberListClickable=false;
+	        	a_leden.setAllChildrenEnabled(false);
 
 	        } else {
 	            // Keyboard is hidden
-	        	Log.i("measure","hello true");
-	        	memberListClickable = true;
+	        	a_leden.setAllChildrenEnabled(true);
 	        }
 	        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
 	    }

@@ -11,6 +11,7 @@ import java.text.DecimalFormat;
 
 public class FormatTextAdapter extends SimpleCursorAdapter{
 	
+	private boolean childrenEnabled=true;
 	private DecimalFormat df;
 	private int id;
 	
@@ -20,6 +21,15 @@ public class FormatTextAdapter extends SimpleCursorAdapter{
 		// TODO Auto-generated constructor stub
 		this.df = df;
 		this.id = id;
+	}
+	
+	@Override
+	public boolean isEnabled(int position) {
+	    return childrenEnabled;
+	}
+	
+	public void setAllChildrenEnabled(boolean enabled){
+		childrenEnabled = enabled;
 	}
 	
 	public View getView(int position, View convertView, ViewGroup parent){

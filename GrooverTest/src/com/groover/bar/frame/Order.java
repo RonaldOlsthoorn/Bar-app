@@ -104,13 +104,10 @@ public class Order {
 		String res="";	
 		
 		for(int i=0; i<orderUnits.length;i++){
-			res = res +orderUnits[i].getAmount()+" "+orderUnits[i].getArticle().getName()+",";
+			if(orderUnits[i].getAmount()!=0){
+				res = res +orderUnits[i].getAmount()+" "+orderUnits[i].getArticle().getName()+",";
+			}
 		}
 		return res.substring(0, res.length()-1)+" totaal: "+df.format(calculateTotal());	
 	}
-
-	
-
 }
-
-
