@@ -6,21 +6,29 @@ import com.groover.bar.frame.DBHelper;
 import com.groover.bar.frame.SearchCursor;
 import android.os.Bundle;
 import android.app.Activity;
+import android.util.AttributeSet;
+import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnFocusChangeListener;
 import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.FilterQueryProvider;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.AdapterView.OnItemClickListener;
+
 import android.widget.ListView;
 import android.support.v4.app.NavUtils;
 import android.support.v4.widget.CursorAdapter;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.annotation.TargetApi;
+import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.os.Build;
@@ -29,14 +37,18 @@ public class TurfSelectCustomerActivity extends Activity implements
 		OnItemClickListener {
 
 	private int REQUEST_CODE = 123;
-
 	private DBHelper DB;
 	private SearchCursor c_leden;
+	private SearchCursor c_leden_aanwezig;
+
+	private FormatTextAdapter a_leden_aanwezig;
+	private ListView l_leden_aanwezig;
+
 	private Cursor c_filter_leden;
 	private SimpleCursorAdapter a_leden;
-	private DecimalFormat df= new DecimalFormat("0.00");
+	private DecimalFormat df = new DecimalFormat("0.00");
 	private String[] FROM_LEDEN = new String[] {
-	DBHelper.MemberTable.COLUMN_FIRST_NAME,
+			DBHelper.MemberTable.COLUMN_FIRST_NAME,
 			DBHelper.MemberTable.COLUMN_LAST_NAME,
 			DBHelper.MemberTable.COLUMN_BALANCE };
 	private int[] TO_LEDEN = new int[] { R.ledenlijstrow.voornaam,
@@ -48,9 +60,9 @@ public class TurfSelectCustomerActivity extends Activity implements
 	private String customerType;
 	private int customerAcount;
 	private Button nextButton;
-
 	private AutoCompleteTextView search;
 	private SimpleCursorAdapter autoCompleteAdapter;
+	private boolean memberListClickable = true;
 
 	/**
 	 * Set up the {@link android.app.ActionBar}, if the API is available.
@@ -89,7 +101,9 @@ public class TurfSelectCustomerActivity extends Activity implements
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_turf_select_customer);
+		MainSearchLayout searchLayout = new MainSearchLayout(this, null);
+        setContentView(searchLayout);
+
 		// Show the Up button in the action bar.
 		setupActionBar();
 
@@ -98,6 +112,7 @@ public class TurfSelectCustomerActivity extends Activity implements
 
 		DB = DBHelper.getDBHelper(this);
 		c_leden = new SearchCursor(DB.getListMembers());
+		c_leden_aanwezig = new SearchCursor(DB.getFrequentVisitors());
 
 		a_leden = new FormatTextAdapter(this, R.layout.ledenlijstrow, c_leden,
 				FROM_LEDEN, TO_LEDEN,
@@ -107,6 +122,15 @@ public class TurfSelectCustomerActivity extends Activity implements
 		l_leden = (ListView) findViewById(R.selectCustomer.listViewleden);
 		l_leden.setAdapter(a_leden);
 		l_leden.setOnItemClickListener(this);
+
+		a_leden_aanwezig = new FormatTextAdapter(this, R.layout.ledenlijstrow,
+				c_leden_aanwezig, FROM_LEDEN, TO_LEDEN,
+				CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER, df,
+				R.ledenlijstrow.account);
+
+		l_leden_aanwezig = (ListView) findViewById(R.selectCustomer.leden_aanwezig);
+		l_leden_aanwezig.setAdapter(a_leden_aanwezig);
+		l_leden_aanwezig.setOnItemClickListener(this);
 
 		autoCompleteAdapter = new SimpleCursorAdapter(this,
 				R.layout.autocomplete, c_filter_leden, new String[] {
@@ -128,22 +152,26 @@ public class TurfSelectCustomerActivity extends Activity implements
 	}
 
 	@Override
-	public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
+	public void onItemClick(AdapterView<?> adapterView, View view, int pos,
+			long id) {
 
-		// TODO Auto-generated method stub
-		if (arg0.equals(l_leden)) {
-			c_leden.moveToPosition(arg2);
-			customerId = c_leden.getInt(0);
-			customerName = c_leden.getString(1) + " " + c_leden.getString(2);
-			customerType = "individual";
-			customerAcount = c_leden.getInt(3);
-			customerNameTV.setText(customerName);
-			nextButton.setEnabled(true);
+		Log.i("Click",memberListClickable+"");
+		if (adapterView.equals(l_leden) ) {
+			if(memberListClickable){
+				
+				c_leden.moveToPosition(pos);
+				customerId = c_leden.getInt(0);
+				customerName = c_leden.getString(1) + " " + c_leden.getString(2);
+				customerType = "individual";
+				customerAcount = c_leden.getInt(3);
+				customerNameTV.setText(customerName);
+				nextButton.setEnabled(true);
+			}
 		}
 
 		else {
 
-			c_leden.moveToId((int) arg3);
+			c_leden.moveToId((int) id);
 			customerId = c_leden.getInt(0);
 			customerName = c_leden.getString(1) + " " + c_leden.getString(2);
 			customerType = "individual";
@@ -190,4 +218,35 @@ public class TurfSelectCustomerActivity extends Activity implements
 
 		}
 	};
+
+	
+	//gebeund!
+	public class MainSearchLayout extends LinearLayout {
+
+	    public MainSearchLayout(Context context, AttributeSet attributeSet) {
+	        super(context, attributeSet);
+	        LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+	        inflater.inflate(R.layout.activity_turf_select_customer, this);
+	    }
+
+	    @Override
+	    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+	        Log.d("Search Layout", "Handling Keyboard Window shown");
+
+	        final int proposedheight = MeasureSpec.getSize(heightMeasureSpec);
+	        final int actualHeight = getHeight();
+
+	        if (actualHeight > proposedheight){
+	            // Keyboard is shown
+	        	Log.i("measure","hello false");
+	        	memberListClickable=false;
+
+	        } else {
+	            // Keyboard is hidden
+	        	Log.i("measure","hello true");
+	        	memberListClickable = true;
+	        }
+	        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+	    }
+	}
 }

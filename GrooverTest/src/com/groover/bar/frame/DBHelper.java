@@ -26,8 +26,8 @@ public class DBHelper extends SQLiteOpenHelper {
 	public static int DATABASE_VERSION = 1;
 	public static final String DATABASE_NAME = "GrooverMembers.db";
 	private static DBHelper singleton;
-	
-	//Returns the DBHelper object. Singleton pattern is used.
+
+	// Returns the DBHelper object. Singleton pattern is used.
 	public static DBHelper getDBHelper(Context context) {
 		if (singleton == null) {
 			singleton = new DBHelper(context);
@@ -35,7 +35,7 @@ public class DBHelper extends SQLiteOpenHelper {
 		return singleton;
 	}
 
-	//Constructor for new DBHelper object. 
+	// Constructor for new DBHelper object.
 	private DBHelper(Context context) {
 		super(context, DATABASE_NAME, null, DATABASE_VERSION);
 	}
@@ -43,11 +43,12 @@ public class DBHelper extends SQLiteOpenHelper {
 	/*
 	 * This first bunch of functions are all queries of some sort.
 	 */
-	
-	/* Used by the autocompleteTextView in the select customer activity to
+
+	/*
+	 * Used by the autocompleteTextView in the select customer activity to
 	 * 
-	 * Returns a cursor with all the members which have constraint in
-	 * their respective first or last name
+	 * Returns a cursor with all the members which have constraint in their
+	 * respective first or last name
 	 */
 	public Cursor getFilteredMember(String constraint) {
 		SQLiteDatabase db = getReadableDatabase();
@@ -77,7 +78,7 @@ public class DBHelper extends SQLiteOpenHelper {
 	 * Returns a cursor containing all members which are active and can be
 	 * displayed on the list (alle leden die actif op de turflijst staan)
 	 */
-	
+
 	public Cursor getListMembers() {
 
 		SQLiteDatabase db;
@@ -90,10 +91,32 @@ public class DBHelper extends SQLiteOpenHelper {
 
 	}
 
+	public Cursor getFrequentVisitors() {
+		SQLiteDatabase db = getReadableDatabase();
 
+		String queryString = "SELECT DISTINCT " 
+				+ MemberTable.TABLE_NAME+"."+MemberTable.COLUMN_GR_ID + " AS "+MemberTable.COLUMN_GR_ID+" , " 
+				+ MemberTable.COLUMN_FIRST_NAME + " , "
+				+ MemberTable.COLUMN_LAST_NAME+" , "+MemberTable.COLUMN_BALANCE 
+				+ " FROM " + MemberTable.TABLE_NAME + " , "
+				+ Order.TABLE_NAME 
+				+ " WHERE "
+				+ MemberTable.TABLE_NAME+"."+MemberTable.COLUMN_ACCOUNT + "="+ Order.TABLE_NAME+"."+Order.COLUMN_ACCOUNT 
+				+ " AND " 
+				+ Order.TABLE_NAME+"."+Order.COLUMN_TS_CREATED
+				+ ">" + "DATETIME(\'now\',\'-1 day\')" 
+				+ " ORDER BY "
+				+ MemberTable.COLUMN_FIRST_NAME + " COLLATE NOCASE ASC, "
+				+ MemberTable.COLUMN_LAST_NAME + " COLLATE NOCASE ASC";
+
+	
+		return db.rawQuery(queryString, null);
+
+	}
 
 	/*
-	 * Not used yet. Returns all accounts. Accounts can belong to both groups as members.
+	 * Not used yet. Returns all accounts. Accounts can belong to both groups as
+	 * members.
 	 */
 	public Cursor getAccounts() {
 
@@ -104,11 +127,10 @@ public class DBHelper extends SQLiteOpenHelper {
 				null);
 	}
 
-	
 	/*
 	 * Returns a cursor containing all articles that are stored in the database
 	 */
-	
+
 	public Cursor getArticles() {
 
 		SQLiteDatabase db;
@@ -120,8 +142,8 @@ public class DBHelper extends SQLiteOpenHelper {
 	}
 
 	/*
-	 * Returns all the categories at which the articles are ordered (ie food, liquor, whisky etc)
-	 * Currently NOT used
+	 * Returns all the categories at which the articles are ordered (ie food,
+	 * liquor, whisky etc) Currently NOT used
 	 */
 	public Cursor getCategories() {
 
@@ -135,18 +157,18 @@ public class DBHelper extends SQLiteOpenHelper {
 	}
 
 	/*
-	 * Returns a cursor containing all consumptions. Note that group clearances ("groeps afrekeningen")
-	 * are stored in another table. In this version the groups version is disabled so it does not matter.
-	 * 
+	 * Returns a cursor containing all consumptions. Note that group clearances
+	 * ("groeps afrekeningen") are stored in another table. In this version the
+	 * groups version is disabled so it does not matter.
 	 */
 	public Cursor getConsumptions(int memberId) {
 
 		SQLiteDatabase db = getReadableDatabase();
 
-		String query = "SELECT " + Order.COLUMN_TOTAL + ","
-				+ Order.COLUMN_TS_CREATED + "," + Order.COLUMN_TYPE + ","
-				+ Consumption.COLUMN_ARTICLE_NAME + ","
-				+ Consumption.COLUMN_AMMOUNT + ","
+		String query = "SELECT " + Order.COLUMN_TOTAL + "," + "DATETIME("
+				+ Order.COLUMN_TS_CREATED + ", \'localtime\')" + ","
+				+ Order.COLUMN_TYPE + "," + Consumption.COLUMN_ARTICLE_NAME
+				+ "," + Consumption.COLUMN_AMMOUNT + ","
 				+ Consumption.COLUMN_ARTICLE_PRICE + " FROM "
 				+ Order.TABLE_NAME + " , " + Consumption.TABLE_NAME + " WHERE "
 				+ Order.TABLE_NAME + "." + Order.COLUMN_ACCOUNT + "="
@@ -156,11 +178,11 @@ public class DBHelper extends SQLiteOpenHelper {
 
 		return db.rawQuery(query, null);
 	}
-	
+
 	/*
-	 * inserts a row in a table denoted by String table. The contentvalues are inserted.
-	 * Any Error is ignored. 
-	 * Returns the inserted row id (_id in most cases) or -1 if the operation failed.
+	 * inserts a row in a table denoted by String table. The contentvalues are
+	 * inserted. Any Error is ignored. Returns the inserted row id (_id in most
+	 * cases) or -1 if the operation failed.
 	 */
 	@SuppressWarnings("finally")
 	public long insertOrIgnore(String table, ContentValues values) {
@@ -179,7 +201,7 @@ public class DBHelper extends SQLiteOpenHelper {
 	}
 
 	/*
-	 * Processes an update on a table of row "table" with identifier "id". The 
+	 * Processes an update on a table of row "table" with identifier "id". The
 	 * new values are stored in the ContentValues.
 	 * 
 	 * Returns true if operation succeeded and false if not
@@ -205,7 +227,6 @@ public class DBHelper extends SQLiteOpenHelper {
 		}
 	}
 
-
 	/*
 	 * Deletes row from table with identifier id
 	 * 
@@ -230,11 +251,10 @@ public class DBHelper extends SQLiteOpenHelper {
 			return res;
 		}
 	}
-	
 
 	/*
-	 * Deletes all orders in the database. Both consumptions as groupclearances are
-	 * deleted. Usually done after making the balance.
+	 * Deletes all orders in the database. Both consumptions as groupclearances
+	 * are deleted. Usually done after making the balance.
 	 */
 	public void deleteAllOrders() {
 		// TODO Auto-generated method stub
@@ -243,18 +263,19 @@ public class DBHelper extends SQLiteOpenHelper {
 		db.delete(Consumption.TABLE_NAME, null, null);
 
 	}
-	
+
 	/*
 	 * Deletes all members from the database
 	 */
-	public void deleteAllMembers(){
-		
+	public void deleteAllMembers() {
+
 		SQLiteDatabase db = getWritableDatabase();
 		db.delete(MemberTable.TABLE_NAME, null, null);
 	}
 
 	/*
-	 * Returns a string which represents the identifier column for a given table tableName
+	 * Returns a string which represents the identifier column for a given table
+	 * tableName
 	 */
 	public String getIdColumnName(String tableName) {
 
@@ -277,125 +298,128 @@ public class DBHelper extends SQLiteOpenHelper {
 		return null;
 	}
 
-	/* Returns whether on not a backup needs to be made based on the number of
-	 * orders since the last update. 
-	 * Returns true if an update needs to be made
+	/*
+	 * Returns whether on not a backup needs to be made based on the number of
+	 * orders since the last update. Returns true if an update needs to be made
 	 * otherwise false
 	 */
 	public boolean checkNeedToBackup() {
 
 		SQLiteDatabase db = getReadableDatabase();
-		
-		Cursor c = db.query(Order.TABLE_NAME, new String[]{Order.COLUMN_ID}, null, null, null, null, null);
-		
-		if(c.getCount()==0){
+
+		Cursor c = db.query(Order.TABLE_NAME, new String[] { Order.COLUMN_ID },
+				null, null, null, null, null);
+
+		if (c.getCount() == 0) {
 			return false;
 		}
 
-		c = db.query(BackupLog.TABLE_NAME, new String[]{BackupLog.COLUMN_ID}, null, null, null, null, null);
-		
-		if(c.getCount()==0){
+		c = db.query(BackupLog.TABLE_NAME,
+				new String[] { BackupLog.COLUMN_ID }, null, null, null, null,
+				null);
+
+		if (c.getCount() == 0) {
 			return true;
 		}
-		
-		String inner = "SELECT "+ "MAX("+ BackupLog.COLUMN_TIME_STAMP + ") AS "+BackupLog.COLUMN_TIME_STAMP 
-				+ " FROM "+ BackupLog.TABLE_NAME 
-				+ " WHERE " 
-				+ "("+ BackupLog.COLUMN_TYPE	+ "=\"upload\"" 
-				+ " OR " +BackupLog.COLUMN_TYPE	+ "=\"SD\"" +")"
-				+ " AND " + BackupLog.COLUMN_SUCCESS + "=1";
-		
-		String query = "SELECT * " 
-				+" FROM " + Order.TABLE_NAME
-				+ " WHERE "+ "("
-				+ inner +")"
-				+ " < " + Order.COLUMN_TS_CREATED;
+
+		String inner = "SELECT " + "MAX(" + BackupLog.COLUMN_TIME_STAMP
+				+ ") AS " + BackupLog.COLUMN_TIME_STAMP + " FROM "
+				+ BackupLog.TABLE_NAME + " WHERE " + "("
+				+ BackupLog.COLUMN_TYPE + "=\"upload\"" + " OR "
+				+ BackupLog.COLUMN_TYPE + "=\"SD\"" + ")" + " AND "
+				+ BackupLog.COLUMN_SUCCESS + "=1";
+
+		String query = "SELECT * " + " FROM " + Order.TABLE_NAME + " WHERE "
+				+ "(" + inner + ")" + " < " + Order.COLUMN_TS_CREATED;
 
 		c = db.rawQuery(query, null);
-
 
 		if (c.getCount() > 0) {
 			return true;
 		}
-		return false; 
+		return false;
 
 	}
-	
+
 	/*
 	 * Returns whether on not a backup needs to be made based on the number of
-	 * orders since the last update. Only SD balances are considered.
-	 * Returns true if an update needs to be made
-	 * otherwise false.
+	 * orders since the last update. Only SD balances are considered. Returns
+	 * true if an update needs to be made otherwise false.
 	 */
 	public boolean checkNeedToBackupSD() {
 
 		SQLiteDatabase db = getReadableDatabase();
-		
-		Cursor c = db.query(Order.TABLE_NAME, new String[]{Order.COLUMN_ID}, null, null, null, null, null);
-		
-		Log.i("DB",c.getCount()+" orders");
-		if(c.getCount()==0){
+
+		Cursor c = db.query(Order.TABLE_NAME, new String[] { Order.COLUMN_ID },
+				null, null, null, null, null);
+
+		Log.i("DB", c.getCount() + " orders");
+		if (c.getCount() == 0) {
 			return false;
 		}
 
-		c = db.query(BackupLog.TABLE_NAME, new String[]{BackupLog.COLUMN_ID}, DBHelper.BackupLog.COLUMN_TYPE+"=\"SD\"" +" AND "+DBHelper.BackupLog.COLUMN_SUCCESS+"=1", null, null, null, null);
-		
-		Log.i("DB",c.getCount()+" backups");
-		if(c.getCount()==0){
+		c = db.query(BackupLog.TABLE_NAME,
+				new String[] { BackupLog.COLUMN_ID },
+				DBHelper.BackupLog.COLUMN_TYPE + "=\"SD\"" + " AND "
+						+ DBHelper.BackupLog.COLUMN_SUCCESS + "=1", null, null,
+				null, null);
+
+		Log.i("DB", c.getCount() + " backups");
+		if (c.getCount() == 0) {
 			return true;
 		}
-		
-		String inner = "SELECT "+ "MAX("+ BackupLog.COLUMN_TIME_STAMP + ") AS "+BackupLog.COLUMN_TIME_STAMP 
-				+ " FROM "+ BackupLog.TABLE_NAME 
-				+ " WHERE " 
-				+ BackupLog.COLUMN_TYPE	+ "=\"SD\"" 
-				+ " AND " + BackupLog.COLUMN_SUCCESS + "=1";
-		
-		c = db.rawQuery(inner, null);
-		Log.i("DB",c.getCount()+" inner ");
 
-		
-		String query = "SELECT * " 
-				+" FROM " + Order.TABLE_NAME
-				+ " WHERE "+ "("
-				+ inner +")"
-				+ " < " + Order.COLUMN_TS_CREATED;
+		String inner = "SELECT " + "MAX(" + BackupLog.COLUMN_TIME_STAMP
+				+ ") AS " + BackupLog.COLUMN_TIME_STAMP + " FROM "
+				+ BackupLog.TABLE_NAME + " WHERE " + BackupLog.COLUMN_TYPE
+				+ "=\"SD\"" + " AND " + BackupLog.COLUMN_SUCCESS + "=1";
+
+		c = db.rawQuery(inner, null);
+		Log.i("DB", c.getCount() + " inner ");
+
+		String query = "SELECT * " + " FROM " + Order.TABLE_NAME + " WHERE "
+				+ "(" + inner + ")" + " < " + Order.COLUMN_TS_CREATED;
 
 		c = db.rawQuery(query, null);
-		Log.i("DB",query);
-	
+		Log.i("DB", query);
 
 		if (c.getCount() > 0) {
 			return true;
 		}
-		return false; 
+		return false;
 
 	}
-	
+
 	/*
-	 * Returns whether a certain id is present in a table.
-	 * Useful for checking valid updates on for instance members.
+	 * Returns whether a certain id is present in a table. Useful for checking
+	 * valid updates on for instance members.
 	 */
-	
-	public boolean checkIdInTable(String table,int id){
-		
+
+	public boolean checkIdInTable(String table, int id) {
+
 		SQLiteDatabase db = getReadableDatabase();
-		
-		Cursor c = db.query(table,new String[]{ getIdColumnName(table)}, getIdColumnName(table)+"="+id, null, null, null, null);
-		
-		if(c.getCount()==0){
-			
+
+		Cursor c = db.query(table, new String[] { getIdColumnName(table) },
+				getIdColumnName(table) + "=" + id, null, null, null, null);
+
+		if (c.getCount() == 0) {
+
 			return false;
 		}
-		
+
 		return true;
 
 	}
 
-	/* Called when the database is first created. Creates all the tables and triggers.
+	/*
+	 * Called when the database is first created. Creates all the tables and
+	 * triggers.
 	 * 
 	 * (non-Javadoc)
-	 * @see android.database.sqlite.SQLiteOpenHelper#onCreate(android.database.sqlite.SQLiteDatabase)
+	 * 
+	 * @see
+	 * android.database.sqlite.SQLiteOpenHelper#onCreate(android.database.sqlite
+	 * .SQLiteDatabase)
 	 */
 	@Override
 	public void onCreate(SQLiteDatabase db) {
@@ -415,10 +439,15 @@ public class DBHelper extends SQLiteOpenHelper {
 
 	}
 
-	/* Called when the database is updated. Simply removes all the tables and recreates them
+	/*
+	 * Called when the database is updated. Simply removes all the tables and
+	 * recreates them
 	 * 
 	 * (non-Javadoc)
-	 * @see android.database.sqlite.SQLiteOpenHelper#onUpgrade(android.database.sqlite.SQLiteDatabase, int, int)
+	 * 
+	 * @see
+	 * android.database.sqlite.SQLiteOpenHelper#onUpgrade(android.database.sqlite
+	 * .SQLiteDatabase, int, int)
 	 */
 	@Override
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
@@ -502,7 +531,6 @@ public class DBHelper extends SQLiteOpenHelper {
 		}
 	}
 
-
 	/*
 	 * Inner class representing the table containing all the articles
 	 */
@@ -535,8 +563,8 @@ public class DBHelper extends SQLiteOpenHelper {
 	}
 
 	/*
-	 * Inner class representing the table containing all the accounts
-	 * belonging to both members and groups
+	 * Inner class representing the table containing all the accounts belonging
+	 * to both members and groups
 	 */
 	public static abstract class AccountList implements BaseColumns {
 
@@ -576,7 +604,6 @@ public class DBHelper extends SQLiteOpenHelper {
 				+ COLUMN_ACCOUNT
 				+ " ; " + "END";
 
-
 		public static String getIdColumnName() {
 			// TODO Auto-generated method stub
 			return COLUMN_ACCOUNT;
@@ -585,8 +612,8 @@ public class DBHelper extends SQLiteOpenHelper {
 	}
 
 	/*
-	 * Inner class representing the table containing all the orders
-	 * An order can be a consumption or a groupclearance
+	 * Inner class representing the table containing all the orders An order can
+	 * be a consumption or a groupclearance
 	 */
 	public static abstract class Order implements BaseColumns {
 
@@ -769,4 +796,5 @@ public class DBHelper extends SQLiteOpenHelper {
 			return COLUMN_ID;
 		}
 	}
+
 }

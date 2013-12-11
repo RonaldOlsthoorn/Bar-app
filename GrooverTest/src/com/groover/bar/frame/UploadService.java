@@ -29,7 +29,7 @@ public class UploadService extends IntentService {
 	protected void onHandleIntent(Intent arg0) {
 		// TODO Auto-generated method stub
 		
-		/*
+		
 		FTPClient client = new FTPClient();	
 		FileInputStream fis = null;
 	
@@ -75,8 +75,7 @@ public class UploadService extends IntentService {
 					res = client.storeFile(grandchild.getName(),fis);
 					Log.i("ftp",grandchild.getAbsolutePath()+" "+res+" "+client.getReplyString());
 
-				}
-								
+				}								
 			}
 			
 			client.logout();
@@ -89,6 +88,7 @@ public class UploadService extends IntentService {
 			
 		            
 		}catch(IOException e){
+			
 			e.printStackTrace();
 			
 			ContentValues v = new ContentValues();
@@ -107,7 +107,7 @@ public class UploadService extends IntentService {
 			}catch(IOException e){
 				e.printStackTrace();
 			}	
-		}*/
+		}
 	}
 	
 }

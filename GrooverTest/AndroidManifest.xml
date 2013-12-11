@@ -92,6 +92,7 @@
             android:name="com.groover.bar.gui.TurfSelectCustomerActivity"
             android:label="@string/title_activity_turf_select_customer"
             android:parentActivityName="com.groover.bar.gui.TurfMenuActivity"
+            android:configChanges="orientation|keyboardHidden"
             android:screenOrientation="portrait" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"

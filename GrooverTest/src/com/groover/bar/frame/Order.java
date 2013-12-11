@@ -70,28 +70,31 @@ public class Order {
 		
 		for(int i=0; i<orderUnits.length;i++){
 			
-			v.clear();
-			v.put(DBHelper.Order.COLUMN_ACCOUNT, customer.getAccount());
-			v.put(DBHelper.Order.COLUMN_TOTAL,orderUnits[i].getSubtotal());
-			v.put(DBHelper.Order.COLUMN_TYPE, "consumption");
-			
-			long id = db.insertOrIgnore(DBHelper.Order.TABLE_NAME, v);
-			
-			if(id == -1){
-				return false;
-			}
-			
-			v.clear();
-			v.put(DBHelper.Consumption.COLUMN_ID, id);
-			v.put(DBHelper.Consumption.COLUMN_AMMOUNT, orderUnits[i].getAmount());
-			v.put(DBHelper.Consumption.COLUMN_ARTICLE_NAME, orderUnits[i].getArticle().getName());
-			v.put(DBHelper.Consumption.COLUMN_ARTICLE_PRICE, orderUnits[i].getArticle().getPrice());
+			if(orderUnits[i].getAmount()!=0){
 				
-			id =  db.insertOrIgnore(DBHelper.Consumption.TABLE_NAME, v);
-			
-			if(id == -1){
-				return false;
-			}
+				v.clear();
+				v.put(DBHelper.Order.COLUMN_ACCOUNT, customer.getAccount());
+				v.put(DBHelper.Order.COLUMN_TOTAL,orderUnits[i].getSubtotal());
+				v.put(DBHelper.Order.COLUMN_TYPE, "consumption");
+				
+				long id = db.insertOrIgnore(DBHelper.Order.TABLE_NAME, v);
+				
+				if(id == -1){
+					return false;
+				}
+				
+				v.clear();
+				v.put(DBHelper.Consumption.COLUMN_ID, id);
+				v.put(DBHelper.Consumption.COLUMN_AMMOUNT, orderUnits[i].getAmount());
+				v.put(DBHelper.Consumption.COLUMN_ARTICLE_NAME, orderUnits[i].getArticle().getName());
+				v.put(DBHelper.Consumption.COLUMN_ARTICLE_PRICE, orderUnits[i].getArticle().getPrice());
+					
+				id =  db.insertOrIgnore(DBHelper.Consumption.TABLE_NAME, v);
+				
+				if(id == -1){
+					return false;
+				}		
+			}		
 		}
 		return true;
 	}
