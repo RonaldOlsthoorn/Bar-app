@@ -13,7 +13,7 @@ import android.util.Log;
  * DBHelper is the applications connection to the database.
  * All the queries are stored as functions of this class.
  * These functions are called by all the classes of the application
- * that need information from the database, or need to updat/insert/delete.
+ * that need information from the database, or need to update/insert/delete.
  * 
  * Also, all the information about the databases' layout are stored in the inner classes
  * each inner class represents a table.
@@ -91,6 +91,10 @@ public class DBHelper extends SQLiteOpenHelper {
 
 	}
 
+	/*
+	 * returns all the members that have placed an order within a day
+	 * 
+	 */
 	public Cursor getFrequentVisitors() {
 		SQLiteDatabase db = getReadableDatabase();
 
@@ -102,6 +106,8 @@ public class DBHelper extends SQLiteOpenHelper {
 				+ Order.TABLE_NAME 
 				+ " WHERE "
 				+ MemberTable.TABLE_NAME+"."+MemberTable.COLUMN_ACCOUNT + "="+ Order.TABLE_NAME+"."+Order.COLUMN_ACCOUNT 
+				+ " AND "
+				+ MemberTable.COLUMN_ACTIVE+"=1"
 				+ " AND " 
 				+ Order.TABLE_NAME+"."+Order.COLUMN_TS_CREATED
 				+ ">" + "DATETIME(\'now\',\'-1 day\')" 

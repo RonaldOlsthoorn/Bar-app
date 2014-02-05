@@ -1,7 +1,6 @@
 package com.groover.bar.frame;
 
 import android.database.Cursor;
-import android.util.Log;
 
 //Creates articles as proxy objects from the database
 public class ArticleFactory {
