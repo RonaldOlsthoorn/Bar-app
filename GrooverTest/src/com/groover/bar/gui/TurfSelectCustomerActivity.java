@@ -147,6 +147,7 @@ public class TurfSelectCustomerActivity extends Activity implements
 
 		search.setOnItemClickListener(this);
 	}
+	
 
 	@Override
 	public void onItemClick(AdapterView<?> adapterView, View view, int pos,
