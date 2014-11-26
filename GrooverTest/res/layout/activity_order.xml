@@ -107,8 +107,8 @@
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
             android:layout_weight="0.5"
-            android:onClick="goBack"
-            android:text="Terug" />
+            android:onClick="toOrderOverview"
+            android:text="Eerdere bestellingen" />
 
         <Button
             android:id="@+id/button4"

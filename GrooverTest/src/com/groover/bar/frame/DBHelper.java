@@ -71,12 +71,12 @@ public class DBHelper extends SQLiteOpenHelper {
 		return db.query(MemberTable.TABLE_NAME, null, null, null, null, null,
 				MemberTable.COLUMN_FIRST_NAME + " COLLATE NOCASE ASC, "
 						+ MemberTable.COLUMN_LAST_NAME + " COLLATE NOCASE ASC");
-
 	}
 
 	/*
 	 * Returns a cursor containing all members which are active and can be
-	 * displayed on the list (alle leden die actif op de turflijst staan)
+	 * displayed on the list (alle leden die actief op de turflijst staan).
+	 * Inactieve leden weggehaald.
 	 */
 
 	public Cursor getListMembers() {
@@ -93,36 +93,31 @@ public class DBHelper extends SQLiteOpenHelper {
 
 	/*
 	 * returns all the members that have placed an order within a day
-	 * 
 	 */
 	public Cursor getFrequentVisitors() {
 		SQLiteDatabase db = getReadableDatabase();
 
-		String queryString = "SELECT DISTINCT " 
-				+ MemberTable.TABLE_NAME+"."+MemberTable.COLUMN_GR_ID + " AS "+MemberTable.COLUMN_GR_ID+" , " 
-				+ MemberTable.COLUMN_FIRST_NAME + " , "
-				+ MemberTable.COLUMN_LAST_NAME+" , "+MemberTable.COLUMN_BALANCE 
-				+ " FROM " + MemberTable.TABLE_NAME + " , "
-				+ Order.TABLE_NAME 
-				+ " WHERE "
-				+ MemberTable.TABLE_NAME+"."+MemberTable.COLUMN_ACCOUNT + "="+ Order.TABLE_NAME+"."+Order.COLUMN_ACCOUNT 
-				+ " AND "
-				+ MemberTable.COLUMN_ACTIVE+"=1"
-				+ " AND " 
-				+ Order.TABLE_NAME+"."+Order.COLUMN_TS_CREATED
-				+ ">" + "DATETIME(\'now\',\'-1 day\')" 
-				+ " ORDER BY "
+		String queryString = "SELECT DISTINCT " + MemberTable.TABLE_NAME + "."
+				+ MemberTable.COLUMN_GR_ID + " AS " + MemberTable.COLUMN_GR_ID
+				+ " , " + MemberTable.COLUMN_FIRST_NAME + " , "
+				+ MemberTable.COLUMN_LAST_NAME + " , "
+				+ MemberTable.COLUMN_BALANCE + " FROM "
+				+ MemberTable.TABLE_NAME + " , " + Order.TABLE_NAME + " WHERE "
+				+ MemberTable.TABLE_NAME + "." + MemberTable.COLUMN_ACCOUNT
+				+ "=" + Order.TABLE_NAME + "." + Order.COLUMN_ACCOUNT + " AND "
+				+ MemberTable.COLUMN_ACTIVE + "=1" + " AND " + Order.TABLE_NAME
+				+ "." + Order.COLUMN_TS_CREATED + ">"
+				+ "DATETIME(\'now\',\'-1 day\')" + " ORDER BY "
 				+ MemberTable.COLUMN_FIRST_NAME + " COLLATE NOCASE ASC, "
 				+ MemberTable.COLUMN_LAST_NAME + " COLLATE NOCASE ASC";
 
-	
 		return db.rawQuery(queryString, null);
 
 	}
 
 	/*
 	 * Not used yet. Returns all accounts. Accounts can belong to both groups as
-	 * members.
+	 * members. Group feature NOT implemented yet.
 	 */
 	public Cursor getAccounts() {
 
@@ -143,8 +138,7 @@ public class DBHelper extends SQLiteOpenHelper {
 		db = getReadableDatabase();
 
 		return db.query(ItemList.TABLE_NAME, null, null, null, null, null,
-				ItemList.COLUMN_NAME_CAT + " COLLATE NOCASE ASC, "
-						+ ItemList.COLUMN_NAME_ITEM + " COLLATE NOCASE ASC");
+				 ItemList.COLUMN_ORDER);
 	}
 
 	/*
@@ -167,20 +161,82 @@ public class DBHelper extends SQLiteOpenHelper {
 	 * ("groeps afrekeningen") are stored in another table. In this version the
 	 * groups version is disabled so it does not matter.
 	 */
-	public Cursor getConsumptions(int memberId) {
+	public Cursor getConsumptionsByMember(int memberId) {
 
 		SQLiteDatabase db = getReadableDatabase();
 
-		String query = "SELECT " + Order.COLUMN_TOTAL + "," + "DATETIME("
-				+ Order.COLUMN_TS_CREATED + ", \'localtime\')" + ","
-				+ Order.COLUMN_TYPE + "," + Consumption.COLUMN_ARTICLE_NAME
-				+ "," + Consumption.COLUMN_AMMOUNT + ","
+		String query = "SELECT " + Consumption.COLUMN_SUBTOTAL + ","
+				+ "DATETIME(" + Order.COLUMN_TS_CREATED + ", \'localtime\')"
+				+ "," + Order.COLUMN_TYPE + ","
+				+ Consumption.COLUMN_ARTICLE_NAME + ","
+				+ Consumption.COLUMN_AMMOUNT + ","
 				+ Consumption.COLUMN_ARTICLE_PRICE + " FROM "
 				+ Order.TABLE_NAME + " , " + Consumption.TABLE_NAME + " WHERE "
 				+ Order.TABLE_NAME + "." + Order.COLUMN_ACCOUNT + "="
 				+ memberId + " AND " + Order.TABLE_NAME + "." + Order.COLUMN_ID
-				+ "=" + Consumption.TABLE_NAME + "." + Consumption.COLUMN_ID
+				+ "=" + Consumption.TABLE_NAME + "."
+				+ Consumption.COLUMN_ORDER_ID + " ORDER BY "
+				+ Order.COLUMN_TS_CREATED;
+
+		return db.rawQuery(query, null);
+	}
+
+	public Cursor getAllOrders() {
+
+		SQLiteDatabase db = getReadableDatabase();
+
+		String query = "SELECT " + Order.TABLE_NAME + "." + Order.COLUMN_ID
+				+ "," + MemberTable.TABLE_NAME + "." + MemberTable.COLUMN_GR_ID
+				+ "," + MemberTable.COLUMN_FIRST_NAME + ","
+				+ MemberTable.COLUMN_LAST_NAME + "," + Order.COLUMN_ACCOUNT
+				+ "," + Order.COLUMN_TOTAL + "," + "DATETIME("
+				+ Order.COLUMN_TS_CREATED + ", \'localtime\')" + " FROM "
+				+ Order.TABLE_NAME + " , " + MemberTable.TABLE_NAME + " WHERE "
+				+ Order.TABLE_NAME + "." + Order.COLUMN_ACCOUNT + "="
+				+ MemberTable.TABLE_NAME + "." + MemberTable.COLUMN_ACCOUNT
 				+ " ORDER BY " + Order.COLUMN_TS_CREATED;
+
+		return db.rawQuery(query, null);
+	}
+	
+	public Cursor getOrdersCust(int id) {
+
+		SQLiteDatabase db = getReadableDatabase();
+
+		String query = "SELECT " + Order.TABLE_NAME + "." + Order.COLUMN_ID
+				+ "," + MemberTable.TABLE_NAME + "." + MemberTable.COLUMN_GR_ID
+				+ "," + MemberTable.COLUMN_FIRST_NAME + ","
+				+ MemberTable.COLUMN_LAST_NAME + "," + Order.COLUMN_ACCOUNT
+				+ "," + Order.COLUMN_TOTAL + "," + "DATETIME("
+				+ Order.COLUMN_TS_CREATED + ", \'localtime\')" + " FROM "
+				+ Order.TABLE_NAME + " , " + MemberTable.TABLE_NAME + " WHERE "
+				+ Order.TABLE_NAME + "." + Order.COLUMN_ACCOUNT + "="
+				+ MemberTable.TABLE_NAME + "." + MemberTable.COLUMN_ACCOUNT
+				+ " AND "
+				+ MemberTable.TABLE_NAME + "." + MemberTable.COLUMN_GR_ID
+				+" = "+id
+				+ " ORDER BY " + Order.COLUMN_TS_CREATED;
+
+		return db.rawQuery(query, null);
+	}
+
+
+	public Cursor getOrder(int id) {
+		// TODO Auto-generated method stub
+		SQLiteDatabase db = getReadableDatabase();
+
+		String query = "SELECT " + Consumption.TABLE_NAME + "."
+				+ Consumption.COLUMN_ID + "," + Consumption.TABLE_NAME + "."
+				+ Consumption.COLUMN_ARTICLE_ID + "," + Consumption.TABLE_NAME
+				+ "." + Consumption.COLUMN_AMMOUNT + ","
+				+ Consumption.TABLE_NAME + "."
+				+ Consumption.COLUMN_ARTICLE_NAME + ","
+				+ Consumption.TABLE_NAME + "."
+				+ Consumption.COLUMN_ARTICLE_PRICE + ","
+				+ Consumption.TABLE_NAME + "." + Consumption.COLUMN_SUBTOTAL
+				+ " FROM " + Consumption.TABLE_NAME + " WHERE "
+				+ Consumption.TABLE_NAME + "." + Consumption.COLUMN_ORDER_ID
+				+ "=" + id;
 
 		return db.rawQuery(query, null);
 	}
@@ -268,6 +324,28 @@ public class DBHelper extends SQLiteOpenHelper {
 		db.delete(Order.TABLE_NAME, null, null);
 		db.delete(Consumption.TABLE_NAME, null, null);
 
+	}
+
+	public boolean deleteOrder(int id) {
+		// TODO Auto-generated method stub
+		SQLiteDatabase db = getWritableDatabase();
+		boolean res = false;
+
+		try {
+
+			db.delete(Consumption.TABLE_NAME, Consumption.COLUMN_ORDER_ID
+					+ "=?", new String[] { id + "" });
+			db.delete(Order.TABLE_NAME, Order.COLUMN_ID + "=?",
+					new String[] { id + "" });
+			res = true;
+
+		} catch (SQLException e) {
+			Log.d(TAG, "deleteOrIgnore on " + id + " fail");
+			res = false;
+		} finally {
+			db.close();
+			return res;
+		}
 	}
 
 	/*
@@ -393,7 +471,6 @@ public class DBHelper extends SQLiteOpenHelper {
 			return true;
 		}
 		return false;
-
 	}
 
 	/*
@@ -409,12 +486,9 @@ public class DBHelper extends SQLiteOpenHelper {
 				getIdColumnName(table) + "=" + id, null, null, null, null);
 
 		if (c.getCount() == 0) {
-
 			return false;
 		}
-
 		return true;
-
 	}
 
 	/*
@@ -442,7 +516,6 @@ public class DBHelper extends SQLiteOpenHelper {
 		db.execSQL(Order.SQL_TRIGGER_UPDATE_TOTAL_4);
 		db.execSQL(Consumption.SQL_CREATE_TABLE);
 		db.execSQL(BackupLog.SQL_CREATE_TABLE);
-
 	}
 
 	/*
@@ -547,6 +620,7 @@ public class DBHelper extends SQLiteOpenHelper {
 		public static final String COLUMN_NAME_ITEM = "item_name";
 		public static final String COLUMN_NAME_PRICE = "item_price";
 		public static final String COLUMN_NAME_CAT = "item_category";
+		public static final String COLUMN_ORDER = "item_order";
 
 		public static final String SQL_CREATE_TABLE = "CREATE TABLE IF NOT EXISTS "
 				+ TABLE_NAME
@@ -557,7 +631,11 @@ public class DBHelper extends SQLiteOpenHelper {
 				+ " TEXT NOT NULL , "
 				+ COLUMN_NAME_PRICE
 				+ " DECIMAL(10,2) ,"
-				+ COLUMN_NAME_CAT + " TEXT DEFAULT 'overig' )";
+				+ COLUMN_NAME_CAT
+				+ " TEXT DEFAULT 'overig', "
+				+ COLUMN_ORDER
+				+ " INTEGER )";
+				
 		public static final String SQL_DELETE_ENTRIES = "DROP TABLE IF EXISTS "
 				+ TABLE_NAME;
 
@@ -618,8 +696,7 @@ public class DBHelper extends SQLiteOpenHelper {
 	}
 
 	/*
-	 * Inner class representing the table containing all the orders An order can
-	 * be a consumption or a groupclearance
+	 * Inner class representing the table containing all the orders
 	 */
 	public static abstract class Order implements BaseColumns {
 
@@ -741,21 +818,35 @@ public class DBHelper extends SQLiteOpenHelper {
 
 		public static final String TABLE_NAME = "consumptions";
 		public static final String COLUMN_ID = _ID;
+		public static final String COLUMN_ORDER_ID = "order_id";
+		public static final String COLUMN_ARTICLE_ID = "article_id";
 		public static final String COLUMN_ARTICLE_NAME = "article_name";
 		public static final String COLUMN_ARTICLE_PRICE = "article_price";
 		public static final String COLUMN_AMMOUNT = "ammount";
+		public static final String COLUMN_SUBTOTAL = "subtotal";
 
 		public static final String SQL_CREATE_TABLE = "CREATE TABLE  IF NOT EXISTS "
 				+ TABLE_NAME
 				+ " ("
 				+ COLUMN_ID
-				+ " INTEGER PRIMARY KEY"
+				+ " INTEGER PRIMARY KEY AUTOINCREMENT"
+				+ ","
+				+ COLUMN_ORDER_ID
+				+ " INTEGER"
+				+ ","
+				+ COLUMN_ARTICLE_ID
+				+ " INTEGER"
 				+ ","
 				+ COLUMN_ARTICLE_NAME
 				+ " TEXT"
 				+ ","
 				+ COLUMN_ARTICLE_PRICE
-				+ " DECIMAL(4,2)" + " , " + COLUMN_AMMOUNT + " INTEGER" + ")";
+				+ " DECIMAL(4,2)"
+				+ " , "
+				+ COLUMN_AMMOUNT
+				+ " INTEGER"
+				+ ","
+				+ COLUMN_SUBTOTAL + " DECIMAL(4,2)" + ")";
 
 		public static final String SQL_DELETE_ENTRIES = "DROP TABLE IF EXISTS "
 				+ TABLE_NAME;

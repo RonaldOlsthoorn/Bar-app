@@ -29,9 +29,14 @@
     <string name="create">Save</string>
     <string name="no_data">No Data</string>
     <string name="err_field_empty">This field cannot be empty</string>
+    <string name="dialog_continue">Doorgaan</string>
+    <string name="dialog_cancel">Annuleren</string>
 
     <color name="gray">#ffff0000</color>
 
     <string name="err">Error</string>
+    <string name="title_activity_order_overview">OrderOverviewActivity</string>
+    <string name="title_activity_orcer_overview">OrcerOverviewActivity</string>
+    <string name="title_activity_edit_order">EditOrderActivity</string>
 
 </resources>

@@ -1,42 +1,82 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical" >
+    android:layout_height="70dp"
+    android:focusable="false"
+    android:focusableInTouchMode="false"
+    android:gravity="right"
+    android:minHeight="70dp"
+    android:orientation="horizontal" >
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:layout_weight="1" >
 
-        <TextView
-            android:id="@+articlerow/naam"
+        <EditText
+            android:id="@+articleRow/name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginRight="5dp"
-            android:text="Medium Text"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:ems="10"
+            android:enabled="false" />
 
         <TextView
             android:id="@+id/textView1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text=" Prijs: "
-            android:textAppearance="?android:attr/textAppearanceMedium" />
+            android:layout_gravity="center"
+            android:layout_marginRight="5dp"
+            android:text="Prijs: €"
+            android:textAppearance="?android:attr/textAppearanceLarge" />
 
-        <TextView
-            android:id="@+articlerow/price"
+        <EditText
+            android:id="@+articleRow/price"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Medium Text"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:ems="10"
+            android:enabled="false"
+            android:inputType="numberDecimal" >
 
+            <requestFocus />
+        </EditText>
     </LinearLayout>
 
-    <TextView
-        android:id="@+articlerow/category"
+    <Button
+        android:id="@+articleRow/down"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:layout_gravity="center"
+        android:focusable="false"
+        android:text="▼" />
+
+    <Button
+        android:id="@+articleRow/up"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:layout_gravity="center"
+        android:layout_marginLeft="5dp"
+        android:focusable="false"
+        android:text="▲" />
+
+    <Button
+        android:id="@+articleRow/edit"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Small Text"
-        android:textAppearance="?android:attr/textAppearanceSmall" />
+        android:layout_height="45dp"
+        android:layout_gravity="center"
+        android:focusable="false"
+        android:text="Aanpassen" />
+
+    <Button
+        android:id="@+articleRow/delete"
+        android:layout_width="wrap_content"
+        android:layout_height="45dp"
+        android:layout_gravity="center"
+        android:focusable="false"
+        android:text="Verwijderen" />
 
 </LinearLayout>

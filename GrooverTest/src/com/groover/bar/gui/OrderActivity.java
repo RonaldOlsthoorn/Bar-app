@@ -1,13 +1,14 @@
 package com.groover.bar.gui;
 
 import java.text.DecimalFormat;
+
 import com.groover.bar.R;
-import com.groover.bar.frame.ArticleFactory;
 import com.groover.bar.frame.Customer;
 import com.groover.bar.frame.DBHelper;
 import com.groover.bar.frame.Order;
 import com.groover.bar.frame.OrderFactory;
-import com.groover.bar.frame.OrderListAdapter;
+import com.groover.bar.frame.OrderAdapter;
+
 import android.os.Bundle;
 import android.app.Activity;
 import android.view.Menu;
@@ -25,18 +26,18 @@ import android.database.Cursor;
 import android.os.Build;
 
 public class OrderActivity extends Activity implements OnItemClickListener,
-		OrderListAdapter.UpdateListener {
+		OrderAdapter.UpdateListener {
 
 	private TextView customerName;
 	private Customer customer;
 	private ListView l_order;
-	private OrderListAdapter a_order;
+	private OrderAdapter a_order;
 	private DecimalFormat df = new DecimalFormat("0.00");
 	private DBHelper DB;
 	private Cursor c_Articles;
 	private Order c_Order;
 	private TextView totaal_output;
-	
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -56,12 +57,12 @@ public class OrderActivity extends Activity implements OnItemClickListener,
 
 		DB = DBHelper.getDBHelper(this);
 
-		l_order = (ListView) findViewById(R.order.orderList);
-
 		c_Articles = DB.getArticles();
 		c_Order = OrderFactory.createEmptyOrder(customer, c_Articles);
-		
-		a_order = new OrderListAdapter(this, R.layout.order_row, c_Order, this);
+
+		l_order = (ListView) findViewById(R.order.orderList);
+
+		a_order = new OrderAdapter(this, R.layout.order_row, c_Order, this);
 
 		l_order.setAdapter(a_order);
 		l_order.setOnItemClickListener(this);
@@ -106,22 +107,26 @@ public class OrderActivity extends Activity implements OnItemClickListener,
 		updateTotal();
 	}
 
-	public void goBack(View view) {
+	public void toOrderOverview(View view) {
 
-		finish();
+		Intent intent = new Intent(this, OrderOverviewActivity.class);
+		intent.putExtra("custId", customer.getId());
+		startActivity(intent);
 	}
 
 	public void saveOrder(View view) {
 
 		boolean res = c_Order.writeToDB(this);
-		if(res){
-			Toast toast = Toast.makeText(this, c_Order.toString(), Toast.LENGTH_SHORT);
+		if (res) {
+			Toast toast = Toast.makeText(this, c_Order.toString(),
+					Toast.LENGTH_SHORT);
 			toast.show();
-		}else{
-			Toast toast = Toast.makeText(this, "failed to order", Toast.LENGTH_SHORT);
+		} else {
+			Toast toast = Toast.makeText(this, "failed to order",
+					Toast.LENGTH_SHORT);
 			toast.show();
 		}
-		
+
 		Intent intent = new Intent(this, TurfSelectCustomerActivity.class);
 
 		if (getParent() == null) {
@@ -135,13 +140,11 @@ public class OrderActivity extends Activity implements OnItemClickListener,
 
 	public void updateTotal() {
 		totaal_output.setText(df.format(c_Order.calculateTotal()) + "");
-
 	}
-	
+
 	@Override
 	public void Update(Order o) {
-		// TODO Auto-generated method stub
 		totaal_output.setText(df.format(c_Order.calculateTotal()) + "");
-
+		//a_order.notifyDataSetChanged();
 	}
 }

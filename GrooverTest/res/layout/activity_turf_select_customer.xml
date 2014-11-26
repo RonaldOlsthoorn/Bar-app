@@ -1,6 +1,6 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/RelativeLayout1"
+    android:id="@+id/LinearLayout1"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/ronald_request_barapp"
@@ -12,105 +12,89 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context=".TurfSelectCustomerActivity" >
 
-    <Button
-        android:id="@+selectCustomer/nextButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentTop="true"
-        android:enabled="false"
-        android:onClick="next"
-        android:text="Door naar bestelling" />
-
     <LinearLayout
         android:id="@+id/linearLayout1"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"
         android:orientation="vertical" >
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" >
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp" >
 
             <TextView
                 android:id="@+id/textView1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="5dp"
-                android:text="Kies lid: "
+                android:text="Search: "
                 android:textAppearance="?android:attr/textAppearanceLarge" />
 
-            <TextView
-                android:id="@+selectCustomer/customer"
+            <EditText
+                android:id="@+selectCustomer/search"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="5dp"
-                android:textAppearance="?android:attr/textAppearanceLarge" />
+                android:layout_weight="1"
+                android:ems="10" >
+
+                <requestFocus />
+            </EditText>
 
         </LinearLayout>
-
-        <AutoCompleteTextView
-            android:id="@+selectCustomer/search"
-            android:layout_width="221dp"
-            android:layout_height="wrap_content"
-            android:inputType="textPersonName" />
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/linearLayout1"
-        android:layout_below="@+id/linearLayout1"
+        android:layout_height="match_parent"
         android:orientation="horizontal" >
 
         <LinearLayout
+            android:id="@+selectCustomer/boxAllMembers"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="0.5"
-            android:orientation="vertical" >
+            android:orientation="vertical"
+            android:visibility="gone" >
 
             <TextView
                 android:id="@+id/textView3"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="0"
+                android:gravity="center"
                 android:text="Alle leden"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
 
             <ListView
-                android:id="@+selectCustomer/listViewleden"
+                android:id="@+selectCustomer/listAllMembers"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_weight="1" >
             </ListView>
-
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+selectCustomer/boxFrequentVisitiors"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="0.5"
             android:orientation="vertical" >
 
             <TextView
                 android:id="@+id/textView4"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="0"
+                android:gravity="center"
                 android:text="Vanavond aanwezig"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
 
             <ListView
-                android:id="@+selectCustomer/leden_aanwezig"
+                android:id="@+selectCustomer/listFrequentMembers"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_weight="1" >
             </ListView>
-
         </LinearLayout>
-
     </LinearLayout>
 
-</RelativeLayout>
+</LinearLayout>

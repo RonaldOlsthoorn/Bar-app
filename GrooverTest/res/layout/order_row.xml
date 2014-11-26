@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+orderRow/lin_layout"
     android:layout_width="match_parent"
     android:layout_height="70dp"
     android:minHeight="70dp"
@@ -33,11 +34,12 @@
             android:textAppearance="?android:attr/textAppearanceSmall" />
     </LinearLayout>
 
-    <TextView
+    <EditText
         android:id="@+orderRow/amount"
-        android:layout_width="40dp"
+        android:layout_width="80dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
+        android:inputType="numberSigned"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
     <Button

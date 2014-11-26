@@ -1,11 +1,15 @@
 package com.groover.bar.gui;
 
 import java.text.DecimalFormat;
+
 import com.groover.bar.R;
 import com.groover.bar.frame.DBHelper;
 import com.groover.bar.frame.SearchCursor;
+
 import android.os.Bundle;
 import android.app.Activity;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -13,16 +17,13 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.AutoCompleteTextView;
-import android.widget.Button;
+import android.widget.EditText;
 import android.widget.FilterQueryProvider;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 import android.support.v4.app.NavUtils;
 import android.support.v4.widget.CursorAdapter;
-import android.support.v4.widget.SimpleCursorAdapter;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
@@ -31,17 +32,17 @@ import android.database.Cursor;
 import android.os.Build;
 
 public class TurfSelectCustomerActivity extends Activity implements
-		OnItemClickListener {
+		OnItemClickListener, TextWatcher {
 
 	private int REQUEST_CODE = 123;
 	private DBHelper DB;
 	private SearchCursor c_leden;
 	private SearchCursor c_leden_aanwezig;
-
+	private SearchCursor c_filtered;
+	
 	private FormatTextAdapter a_leden_aanwezig;
 	private ListView l_leden_aanwezig;
 
-	private Cursor c_filter_leden;
 	private FormatTextAdapter a_leden;
 	private DecimalFormat df = new DecimalFormat("0.00");
 	private String[] FROM_LEDEN = new String[] {
@@ -51,15 +52,20 @@ public class TurfSelectCustomerActivity extends Activity implements
 	private int[] TO_LEDEN = new int[] { R.ledenlijstrow.voornaam,
 			R.ledenlijstrow.achternaam, R.ledenlijstrow.account };
 	private ListView l_leden;
-	private TextView customerNameTV;
-	private int customerId;
-	private String customerName;
-	private String customerType;
-	private int customerAcount;
-	private Button nextButton;
-	private AutoCompleteTextView search;
-	private SimpleCursorAdapter autoCompleteAdapter;
-	private boolean memberListClickable = true;
+	private EditText search;
+	private int height;
+    private boolean softkeyHidden;
+	
+	private FilterQueryProvider filterQueryProvider = new FilterQueryProvider() {
+		public Cursor runQuery(CharSequence constraint) {
+			// assuming you have your custom DBHelper instance
+			// ready to execute the DB request
+			
+			c_filtered = new SearchCursor(DB.getFilteredMember(constraint.toString())) ;
+			return c_filtered;
+
+		}
+	};
 
 	/**
 	 * Set up the {@link android.app.ActionBar}, if the API is available.
@@ -104,9 +110,6 @@ public class TurfSelectCustomerActivity extends Activity implements
 		// Show the Up button in the action bar.
 		setupActionBar();
 
-		nextButton = (Button) findViewById(R.selectCustomer.nextButton);
-		customerNameTV = (TextView) findViewById(R.selectCustomer.customer);
-
 		DB = DBHelper.getDBHelper(this);
 		c_leden = new SearchCursor(DB.getListMembers());
 		c_leden_aanwezig = new SearchCursor(DB.getFrequentVisitors());
@@ -115,8 +118,10 @@ public class TurfSelectCustomerActivity extends Activity implements
 				FROM_LEDEN, TO_LEDEN,
 				CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER, df,
 				R.ledenlijstrow.account);
+		
+		a_leden.setFilterQueryProvider(filterQueryProvider);
 
-		l_leden = (ListView) findViewById(R.selectCustomer.listViewleden);
+		l_leden = (ListView) findViewById(R.selectCustomer.listAllMembers);
 		l_leden.setAdapter(a_leden);
 		l_leden.setOnItemClickListener(this);
 
@@ -125,48 +130,44 @@ public class TurfSelectCustomerActivity extends Activity implements
 				CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER, df,
 				R.ledenlijstrow.account);
 
-		l_leden_aanwezig = (ListView) findViewById(R.selectCustomer.leden_aanwezig);
+		l_leden_aanwezig = (ListView) findViewById(R.selectCustomer.listFrequentMembers);
 		l_leden_aanwezig.setAdapter(a_leden_aanwezig);
 		l_leden_aanwezig.setOnItemClickListener(this);
 
-		autoCompleteAdapter = new SimpleCursorAdapter(this,
-				R.layout.autocomplete, c_filter_leden, new String[] {
-						DBHelper.MemberTable.COLUMN_FIRST_NAME,
-						DBHelper.MemberTable.COLUMN_LAST_NAME }, new int[] {
-						R.groupRow2.first, R.groupRow2.last },
-				CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
-
-		search = (AutoCompleteTextView) findViewById(R.selectCustomer.search);
-		search.setThreshold(2);
-		search.setAdapter(autoCompleteAdapter);
-		autoCompleteAdapter.setFilterQueryProvider(filterQueryProvider);
+		search = (EditText) findViewById(R.selectCustomer.search);
 
 		Resources res = getResources();
 		int color = res.getColor(android.R.color.black);
 		search.setTextColor(color);
+		search.addTextChangedListener(this);
 
-		search.setOnItemClickListener(this);
 	}
 	
 
 	@Override
 	public void onItemClick(AdapterView<?> adapterView, View view, int pos,
 			long id) {
+		
+		int customerId;
+		String customerName;
+		String customerType;
+		int customerAcount;
 
-		Log.i("Click",memberListClickable+"");
-		if (adapterView.equals(l_leden) ) {
-			if(memberListClickable){
-				
+		if (adapterView.equals(l_leden) ) {			
+			if(!c_leden.isClosed()){
 				c_leden.moveToPosition(pos);
 				customerId = c_leden.getInt(0);
 				customerName = c_leden.getString(1) + " " + c_leden.getString(2);
 				customerType = "individual";
 				customerAcount = c_leden.getInt(3);
-				customerNameTV.setText(customerName);
-				nextButton.setEnabled(true);
-			}
+			}else{
+				c_filtered.moveToId((int) id);
+				customerId = c_filtered.getInt(0);
+				customerName = c_filtered.getString(1) + " " + c_filtered.getString(2);
+				customerType = "individual";
+				customerAcount = c_filtered.getInt(3);
+			}			
 		}
-
 		else {
 
 			c_leden.moveToId((int) id);
@@ -174,19 +175,8 @@ public class TurfSelectCustomerActivity extends Activity implements
 			customerName = c_leden.getString(1) + " " + c_leden.getString(2);
 			customerType = "individual";
 			customerAcount = c_leden.getInt(3);
-			customerNameTV.setText(customerName);
-			nextButton.setEnabled(true);
-
-			search.setText(c_leden.getString(1) + " " + c_leden.getString(2));
 		}
-	}
-
-	public void annuleren(View view) {
-		this.finish();
-	}
-
-	public void next(View view) {
-
+		
 		Intent intent = new Intent(this, OrderActivity.class);
 		intent.putExtra("type", customerType);
 		intent.putExtra("ID", customerId);
@@ -194,8 +184,8 @@ public class TurfSelectCustomerActivity extends Activity implements
 		intent.putExtra("name", customerName);
 
 		startActivityForResult(intent, REQUEST_CODE);
-
 	}
+
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -208,20 +198,9 @@ public class TurfSelectCustomerActivity extends Activity implements
 		}
 	}
 
-	private FilterQueryProvider filterQueryProvider = new FilterQueryProvider() {
-		public Cursor runQuery(CharSequence constraint) {
-			// assuming you have your custom DBHelper instance
-			// ready to execute the DB request
-			return DB.getFilteredMember(constraint.toString());
-
-		}
-	};
-
-	
-	//gebeund!
 	public class MainSearchLayout extends LinearLayout {
 
-	    public MainSearchLayout(Context context, AttributeSet attributeSet) {
+		public MainSearchLayout(Context context, AttributeSet attributeSet) {
 	        super(context, attributeSet);
 	        LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 	        inflater.inflate(R.layout.activity_turf_select_customer, this);
@@ -232,17 +211,55 @@ public class TurfSelectCustomerActivity extends Activity implements
 	        Log.d("Search Layout", "Handling Keyboard Window shown");
 
 	        final int proposedheight = MeasureSpec.getSize(heightMeasureSpec);
-	        final int actualHeight = getHeight();
 
-	        if (actualHeight > proposedheight){
+	        if (height > proposedheight){
 	            // Keyboard is shown
-	        	a_leden.setAllChildrenEnabled(false);
+	        	Log.d("Search Layout", "Keyboard shown");
+	        	softkeyHidden = false;
+	        	height = proposedheight;
+	        	findViewById(R.selectCustomer.boxAllMembers).setVisibility(VISIBLE);
+	        	findViewById(R.selectCustomer.boxFrequentVisitiors).setVisibility(GONE);
 
-	        } else {
-	            // Keyboard is hidden
-	        	a_leden.setAllChildrenEnabled(true);
+	        } if(height < proposedheight){
+	        	
+	        	height = proposedheight;
+	        	 // Keyboard is hidden
+	        	softkeyHidden = true;
+	        	Log.d("Search Layout", "Keyboard hidden");
+	        	findViewById(R.selectCustomer.boxAllMembers).setVisibility(GONE);
+	        	findViewById(R.selectCustomer.boxFrequentVisitiors).setVisibility(VISIBLE);
 	        }
+	        
 	        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
 	    }
+	}
+
+	@Override
+	public void beforeTextChanged(CharSequence s, int start, int count,
+			int after) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onTextChanged(CharSequence s, int start, int before, int count) {
+		// TODO Auto-generated method stub
+		if(s.length()>0 && softkeyHidden==true){
+			findViewById(R.selectCustomer.boxAllMembers).setVisibility(View.VISIBLE);
+        	findViewById(R.selectCustomer.boxFrequentVisitiors).setVisibility(View.GONE);
+		}
+		if(s.length()==0 && softkeyHidden==true){
+			findViewById(R.selectCustomer.boxAllMembers).setVisibility(View.GONE);
+        	findViewById(R.selectCustomer.boxFrequentVisitiors).setVisibility(View.VISIBLE);
+		}
+		
+		a_leden.getFilter().filter(s);
+		a_leden.notifyDataSetChanged();
+	}
+
+	@Override
+	public void afterTextChanged(Editable s) {
+		// TODO Auto-generated method stub
+		
 	}
 }

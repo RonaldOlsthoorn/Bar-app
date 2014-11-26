@@ -44,9 +44,9 @@ public class BarBazzActivity extends Activity {
 		return super.onOptionsItemSelected(item);
 	}
 	
-	public void editTurflijst(View view){
+	public void orderOverview(View view){
 		
-		Intent intent = new Intent(this, EditTurfListActivity.class);
+		Intent intent = new Intent(this, OrderOverviewActivity.class);
 		startActivity(intent);
 		
 	}

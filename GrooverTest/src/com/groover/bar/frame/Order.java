@@ -27,8 +27,7 @@ public class Order {
 	
 	public int getCount() {
 		return orderUnits.length;
-	}
-	
+	}	
 
 	public OrderUnit getUnit(int position) {
 		return orderUnits[position];
@@ -51,7 +50,6 @@ public class Order {
 		
 		setAmount(position, getUnit(position).getAmount()+i);
 	}
-
 	
 	public double calculateTotal(){
 		
@@ -63,38 +61,50 @@ public class Order {
 		return total;
 	}
 	
+	public boolean isEmpty(){
+
+		for(int i=0; i<orderUnits.length;i++){
+			if(orderUnits[i].getAmount()!=0){return false;}				
+		}
+		return true;
+	}
+	
 	public boolean writeToDB(Context c){	
 		
 		DBHelper db = DBHelper.getDBHelper(c);
 		ContentValues v = new ContentValues();
 		
-		for(int i=0; i<orderUnits.length;i++){
+		if(!isEmpty()){
 			
-			if(orderUnits[i].getAmount()!=0){
+			v.clear();
+			v.put(DBHelper.Order.COLUMN_ACCOUNT, customer.getAccount());
+			v.put(DBHelper.Order.COLUMN_TOTAL,calculateTotal());
+			v.put(DBHelper.Order.COLUMN_TYPE, "consumption");
+			long id = db.insertOrIgnore(DBHelper.Order.TABLE_NAME, v);
+			
+			if(id == -1){
+				return false;
+			}
+			
+			for(int i=0; i<orderUnits.length;i++){
 				
-				v.clear();
-				v.put(DBHelper.Order.COLUMN_ACCOUNT, customer.getAccount());
-				v.put(DBHelper.Order.COLUMN_TOTAL,orderUnits[i].getSubtotal());
-				v.put(DBHelper.Order.COLUMN_TYPE, "consumption");
-				
-				long id = db.insertOrIgnore(DBHelper.Order.TABLE_NAME, v);
-				
-				if(id == -1){
-					return false;
-				}
-				
-				v.clear();
-				v.put(DBHelper.Consumption.COLUMN_ID, id);
-				v.put(DBHelper.Consumption.COLUMN_AMMOUNT, orderUnits[i].getAmount());
-				v.put(DBHelper.Consumption.COLUMN_ARTICLE_NAME, orderUnits[i].getArticle().getName());
-				v.put(DBHelper.Consumption.COLUMN_ARTICLE_PRICE, orderUnits[i].getArticle().getPrice());
+				if(orderUnits[i].getAmount()!=0){
+										
+					v.clear();
+					v.put(DBHelper.Consumption.COLUMN_ORDER_ID, id);
+					v.put(DBHelper.Consumption.COLUMN_ARTICLE_ID, orderUnits[i].getArticle().getId());
+					v.put(DBHelper.Consumption.COLUMN_AMMOUNT, orderUnits[i].getAmount());
+					v.put(DBHelper.Consumption.COLUMN_ARTICLE_NAME, orderUnits[i].getArticle().getName());
+					v.put(DBHelper.Consumption.COLUMN_ARTICLE_PRICE, orderUnits[i].getArticle().getPrice());
+					v.put(DBHelper.Consumption.COLUMN_SUBTOTAL, orderUnits[i].getSubtotal());	
 					
-				id =  db.insertOrIgnore(DBHelper.Consumption.TABLE_NAME, v);
-				
-				if(id == -1){
-					return false;
-				}		
-			}		
+					long res =  db.insertOrIgnore(DBHelper.Consumption.TABLE_NAME, v);
+					
+					if(res == -1){
+						return false;
+					}		
+				}				
+			}	
 		}
 		return true;
 	}
@@ -103,11 +113,14 @@ public class Order {
 		
 		String res="";	
 		
-		for(int i=0; i<orderUnits.length;i++){
-			if(orderUnits[i].getAmount()!=0){
-				res = res +orderUnits[i].getAmount()+" "+orderUnits[i].getArticle().getName()+",";
+		if(!isEmpty()){
+			for(int i=0; i<orderUnits.length;i++){
+				if(orderUnits[i].getAmount()!=0){
+					res = res +orderUnits[i].getAmount()+" "+orderUnits[i].getArticle().getName()+",";
+				}
 			}
+			return res.substring(0, res.length()-1)+" totaal: "+df.format(calculateTotal());
 		}
-		return res.substring(0, res.length()-1)+" totaal: "+df.format(calculateTotal());	
+		return "Niets besteld!";			
 	}
 }

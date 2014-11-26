@@ -1,48 +1,35 @@
 package com.groover.bar.gui;
 
-import java.text.DecimalFormat;
 
 import com.groover.bar.R;
+import com.groover.bar.frame.Article;
 import com.groover.bar.frame.DBHelper;
+import com.groover.bar.frame.ArticleAdapter;
 
 import android.os.Bundle;
 import android.app.Activity;
 import android.content.ContentValues;
 import android.database.Cursor;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.support.v4.app.NavUtils;
-import android.support.v4.widget.CursorAdapter;
-import android.support.v4.widget.SimpleCursorAdapter;
 
-public class ArticleActivity extends Activity implements OnItemClickListener {
+public class ArticleActivity extends Activity implements ArticleAdapter.UpdateListener {
 
 	private DBHelper DB;
 	private ListView artikellijst;
 
 	private EditText et_naam;
 	private EditText et_prijs;
-	private View editPane;
+	private View addPane;
 	private Button voegToe;
-
-	private int current;
-
-	private SimpleCursorAdapter adapter;
+	private ArticleAdapter adapter;
 	private Cursor c_articles;
-
-	private String[] FROM = new String[] { DBHelper.ItemList.COLUMN_NAME_ITEM,
-			DBHelper.ItemList.COLUMN_NAME_PRICE,
-			DBHelper.ItemList.COLUMN_NAME_CAT };
-
-	private int[] TO = new int[] { R.articlerow.naam, R.articlerow.price,
-			R.articlerow.category };
-
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -53,26 +40,18 @@ public class ArticleActivity extends Activity implements OnItemClickListener {
 
 		DB = DBHelper.getDBHelper(this);
 
-		artikellijst = (ListView) findViewById(R.artikelen.listview);
+		artikellijst = (ListView) findViewById(R.articles.listview);
 
-		et_naam = (EditText) findViewById(R.artikelen.vt_naam);
-		et_prijs = (EditText) findViewById(R.artikelen.vt_prijs);
-		voegToe = (Button) findViewById(R.artikelen.voegtoe_button);
+		et_naam = (EditText) findViewById(R.articles.name);
+		et_prijs = (EditText) findViewById(R.articles.price);
+		voegToe = (Button) findViewById(R.articles.add_button);
 
-		editPane = findViewById(R.artikelen.editPane);
+		addPane = findViewById(R.articles.addPane);
 
 		c_articles = DB.getArticles();
 
-		adapter = new SimpleCursorAdapter(this, R.layout.article_row,
-				c_articles, FROM, TO,
-				CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
-
-		artikellijst.setOnItemClickListener(this);
+		adapter = new ArticleAdapter(this, DB.getArticles(), this);
 		artikellijst.setAdapter(adapter);
-
-		DB.close();
-		
-
 	}
 
 	@Override
@@ -99,24 +78,15 @@ public class ArticleActivity extends Activity implements OnItemClickListener {
 		return super.onOptionsItemSelected(item);
 	}
 
-	@Override
-	public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
-		// TODO Auto-generated method stub
-
-		c_articles.moveToPosition(arg2);
-		current = c_articles.getInt(0);
-		et_naam.setText(c_articles.getString(1));
-		et_prijs.setText("" + c_articles.getDouble(2));
-
-		voegToe.setVisibility(View.GONE);
-		editPane.setVisibility(View.VISIBLE);
-
-	}
-
 	public void vt_article(View v) {
 
 		boolean checks = true;
-		// CHECKS
+		Button b = (Button) v;
+		if(b.getText().equals("Voeg artikel toe")){
+			addPane.setVisibility(View.VISIBLE);
+			b.setText("Artikel opslaan");
+			return;
+		}
 
 		if (et_prijs.getText().toString().trim().equals("")) {
 
@@ -143,6 +113,8 @@ public class ArticleActivity extends Activity implements OnItemClickListener {
 
 		if(checks){
 			
+			Log.d("add",c_articles.isClosed()+"");
+			
 			String naam = et_naam.getText().toString();
 			double prijs = Double.parseDouble(et_prijs.getText().toString());
 
@@ -150,10 +122,10 @@ public class ArticleActivity extends Activity implements OnItemClickListener {
 			values.put(DBHelper.ItemList.COLUMN_NAME_ITEM, naam);
 			values.put(DBHelper.ItemList.COLUMN_NAME_PRICE, prijs);
 			values.put(DBHelper.ItemList.COLUMN_NAME_CAT, "all");
+			values.put(DBHelper.ItemList.COLUMN_ORDER, c_articles.getCount()+1);			
 
 			DB.insertOrIgnore(DBHelper.ItemList.TABLE_NAME, values);
 
-			c_articles.close();
 			c_articles = DB.getArticles();
 			adapter.swapCursor(c_articles);
 
@@ -161,85 +133,46 @@ public class ArticleActivity extends Activity implements OnItemClickListener {
 		}
 	}
 
-	public void w_article(View v) {
-		
-		boolean checks = true;
-		// CHECKS
-
-		if (et_prijs.getText().toString() == null) {
-
-			et_prijs.setError(getString(R.string.err_field_empty));
-			et_prijs.requestFocus();
-			checks = false;
-		} else {
-			try {
-				double prijs = Double
-						.parseDouble(et_prijs.getText().toString());
-			} catch (NumberFormatException e) {
-				et_prijs.setError("Field must be a number!");
-				et_prijs.requestFocus();
-				checks = false;
-			}
-		}
-		
-		if (et_naam.getText().toString().trim().equals("")) {
-
-			et_naam.setError(getString(R.string.err_field_empty));
-			
-			et_naam.requestFocus();
-			checks = false;
-		}
-
-		if(checks){
-			
-			String naam = et_naam.getText().toString();
-			double prijs = Double.parseDouble(et_prijs.getText().toString());
-
-			ContentValues values = new ContentValues();
-			values.put(DBHelper.ItemList.COLUMN_NAME_ITEM, naam);
-			values.put(DBHelper.ItemList.COLUMN_NAME_PRICE, prijs);
-
-			DB.updateOrIgnore(DBHelper.ItemList.TABLE_NAME, current, values);
-
-			et_naam.setError(null);
-			et_prijs.setError(null);
-			
-			c_articles.close();
-			c_articles = DB.getArticles();
-			adapter.swapCursor(c_articles);
-			
-			
-		}
-
-	}
-
-	public void v_article(View v) {
-
-		DB.deleteOrIgnore(DBHelper.ItemList.TABLE_NAME, current);
-
-		c_articles.close();
-		c_articles = DB.getArticles();
-		adapter.swapCursor(c_articles);
-
-		setToDefault();
-
-	}
-
-	public void annuleren(View v) {
-
-		setToDefault();
-	}
-
 	public void setToDefault() {
 
-		editPane.setVisibility(View.GONE);
+		addPane.setVisibility(View.GONE);
 		et_naam.setText("");
 		et_prijs.setText("");
-		current = -1;
-		voegToe.setVisibility(View.VISIBLE);
+		voegToe.setText("Voeg artikel toe");
 		
 		et_naam.setError(null);
 		et_prijs.setError(null);
+	}
 
+	@Override
+	public void delete(int id) {
+		// TODO Auto-generated method stub
+		DB.deleteOrIgnore(DBHelper.ItemList.TABLE_NAME, id);
+		adapter.swapCursor(DB.getArticles());
+		adapter.notifyDataSetChanged();
+	}
+
+	@Override
+	public void swap(int id1, int id2, int pos1, int pos2) {
+		// TODO Auto-generated method stub
+		ContentValues v = new ContentValues();
+		v.put(DBHelper.ItemList.COLUMN_ORDER, pos2);
+		DB.updateOrIgnore(DBHelper.ItemList.TABLE_NAME, id1, v);
+		v.clear();
+		v.put(DBHelper.ItemList.COLUMN_ORDER, pos1);
+		DB.updateOrIgnore(DBHelper.ItemList.TABLE_NAME, id2, v);
+		adapter.swapCursor(DB.getArticles());
+		adapter.notifyDataSetChanged();
+	}
+
+	@Override
+	public void edit(int pos, Article a) {
+		// TODO Auto-generated method stub
+		ContentValues v = new ContentValues();
+		v.put(DBHelper.ItemList.COLUMN_NAME_ITEM, a.getName());
+		v.put(DBHelper.ItemList.COLUMN_NAME_PRICE, a.getPrice());
+		DB.updateOrIgnore(DBHelper.ItemList.TABLE_NAME, a.getId(), v);
+		adapter.swapCursor(DB.getArticles());
+		adapter.notifyDataSetChanged();
 	}
 }

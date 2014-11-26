@@ -18,5 +18,14 @@ public class Article {
 	public int getId(){return art_id;}
 	public double getPrice(){return price;}
 	public String getName(){return name;}
+
+	public void setName(String n) {
+
+		name = n;
+	}
+	public void setPrice(double p) {
+
+		price = p;
+	}
 	
 }

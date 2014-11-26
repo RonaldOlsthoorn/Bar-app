@@ -174,7 +174,7 @@ public class OrderExporter {
 		while (c.getPosition() < c.getCount()) {
 			// open tag: <member>
 			
-			Cursor orders = DB.getConsumptions(c.getInt(3));
+			Cursor orders = DB.getConsumptionsByMember(c.getInt(3));
 			
 			
 			xmlSerializer.startTag(null, "member");

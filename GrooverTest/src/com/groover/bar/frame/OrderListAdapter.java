@@ -1,36 +1,45 @@
 package com.groover.bar.frame;
 
 import java.text.DecimalFormat;
+
 import com.groover.bar.R;
+
 import android.app.Activity;
 import android.content.Context;
+import android.database.Cursor;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.View.OnClickListener;
 import android.widget.BaseAdapter;
 import android.widget.Button;
-
 import android.widget.TextView;
 
 public class OrderListAdapter extends BaseAdapter{
 	
 	private Context context;
 	private int layout;
-	private Order source;
+	private Cursor source;
 	private DecimalFormat df = new DecimalFormat("0.00");
-	private UpdateListener notice;
+	private ListActionListener notice;
 	
-	public interface UpdateListener{
+	public interface ListActionListener{
 		
-		public void Update(Order o);
+		public void edit(int id,int pos);
+		public void delete(int id);
 	}
 	
-	public OrderListAdapter(Context context, int layout, Order o, UpdateListener l){
+	public void changeCursor(Cursor c){
+		
+		source = c;
+	}
+	
+	public OrderListAdapter(Context context, int layout, Cursor c, ListActionListener l){
 		
 		this.context = context;
 		this.layout = layout;
-		source = o;
+		source = c;
 		notice = l;
 
 	}
@@ -42,119 +51,101 @@ public class OrderListAdapter extends BaseAdapter{
 	}
 
 	@Override
-	public Object getItem(int arg0) {
+	public Object getItem(int pos) {
 		// TODO Auto-generated method stub
-		return source.getUnit(arg0);
+		source.moveToPosition(pos);
+		return source;
 	}
 
 	@Override
 	public long getItemId(int position) {
-		return source.getId(position);
+		
+		source.moveToPosition(position);
+		return (long) source.getInt(0);
 	}
 	
 	private class ViewHolder {
-        TextView txtName;
-        TextView txtAmount;
-        TextView txtPrice;
-        TextView txtSub;
-		Button btCancel;
-		Button btAdd;
-		Button btSubstr;
+        TextView txtFirst;
+        TextView txtLast;
+        TextView txtTotal;
+        TextView txtDate;
+		Button btDelete;
+		Button btEdit;
     }
 
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
 		// TODO Auto-generated method stub
 			
-		OrderUnit s = source.getUnit(position);
+		source.moveToPosition(position);
 		LayoutInflater mInflater = (LayoutInflater)
         context.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
-		
+		int id = source.getInt(0);
+		Log.d("cursor",source.getCount()+"");
+
 		ViewHolder holder;
 		
 	    if (convertView == null) {
 	    	convertView = mInflater.inflate(layout, null);
 	    	holder = new ViewHolder();
-	    	holder.txtName = (TextView) convertView.findViewById(R.orderRow.article);
-	    	holder.txtAmount = (TextView) convertView.findViewById(R.orderRow.amount);
-	    	holder.txtPrice = (TextView) convertView.findViewById(R.orderRow.price);
-	    	holder.txtSub = (TextView) convertView.findViewById(R.orderRow.sub);
-	    	holder.btCancel = (Button) convertView.findViewById(R.orderRow.cancel);
-	    	holder.btAdd = (Button) convertView.findViewById(R.orderRow.addition);
-	    	holder.btSubstr = (Button) convertView.findViewById(R.orderRow.substract);
+	    	holder.txtFirst = (TextView) convertView.findViewById(R.orderOverViewRow.first);
+	    	holder.txtLast = (TextView) convertView.findViewById(R.orderOverViewRow.last);
+	    	holder.txtTotal = (TextView) convertView.findViewById(R.orderOverViewRow.subtotal);
+	    	holder.txtDate = (TextView) convertView.findViewById(R.orderOverViewRow.date);
+	    	holder.btDelete = (Button) convertView.findViewById(R.orderOverViewRow.delete);
+	    	holder.btEdit = (Button) convertView.findViewById(R.orderOverViewRow.edit);
 		    convertView.setTag(holder);
 	    }
 	    else{
-	    	holder = (ViewHolder) convertView.getTag();
-	    	
+	    	holder = (ViewHolder) convertView.getTag();    	
 	    }
 	    
-	    holder.txtName.setText(s.getArticle().getName());
-	    holder.txtAmount.setText(s.getAmount()+"");
-	    holder.txtPrice.setText(df.format(s.getArticle().getPrice()));
-	    holder.txtSub.setText(df.format(s.getSubtotal()));
-	    holder.btCancel.setOnClickListener(new deleteAdapter(position,notice));
-	    holder.btAdd.setOnClickListener(new additionAdapter(position, notice));
-	    holder.btSubstr.setOnClickListener(new substractionAdapter(position, notice));
+
+	    holder.txtFirst.setText(source.getString(2));
+	    holder.txtLast.setText(source.getString(3));
+	    holder.txtTotal.setText(df.format(source.getDouble(5)));
+	    holder.txtDate.setText(source.getString(6));
+	    holder.btDelete.setOnClickListener(new deleteAdapter(id, notice));
+	    holder.btEdit.setOnClickListener(new editAdapter(id, position, notice));
 	    return convertView;
 
 	}
 	
 	private class deleteAdapter implements OnClickListener{
 
-		int position;
-		UpdateListener l;
+		int id;
+		ListActionListener l;
 		
-		public deleteAdapter(int pos, UpdateListener l){
-			this.position = pos;
+		public deleteAdapter(int id, ListActionListener l){
+			this.id = id;
 			this.l=l;
 		}
 		
 		@Override
 		public void onClick(View arg0) {
-			// TODO Auto-generated method stub
-			source.deleteOrder(position);
-            OrderListAdapter.this.notifyDataSetChanged();
-            l.Update(source);
+			// TODO Auto-generated method stub			
+			l.delete(id);
+			OrderListAdapter.this.notifyDataSetChanged();     
 		}		
 	}
 	
-	private class additionAdapter implements OnClickListener{
+	private class editAdapter implements OnClickListener{
 
-		int position;
-		UpdateListener l;
+		int id;
+		int pos;
+		ListActionListener l;
 		
-		public additionAdapter(int pos, UpdateListener l){
-			this.position = pos;
+		public editAdapter(int id, int pos, ListActionListener l){
+			this.id = id;
 			this.l=l;
+			this.pos = pos;
 		}
 		
 		@Override
 		public void onClick(View arg0) {
 			// TODO Auto-generated method stub
-			source.addAmmountToOrderUnit(position,1);
+            l.edit(id,pos);
             OrderListAdapter.this.notifyDataSetChanged();
-            l.Update(source);
 		}		
 	}
-	
-	private class substractionAdapter implements OnClickListener{
-
-		int position;
-		UpdateListener l;
-		
-		public substractionAdapter(int pos, UpdateListener l){
-			this.position = pos;
-			this.l=l;
-		}
-		
-		@Override
-		public void onClick(View arg0) {
-			// TODO Auto-generated method stub
-			source.addAmmountToOrderUnit(position,-1);
-            OrderListAdapter.this.notifyDataSetChanged();
-            l.Update(source);
-		}		
-	}
-	
 }
