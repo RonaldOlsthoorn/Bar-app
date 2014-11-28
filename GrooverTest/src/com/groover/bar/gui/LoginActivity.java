@@ -9,6 +9,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 
 import com.groover.bar.R;
+import com.groover.bar.frame.DBHelper;
+import com.groover.bar.frame.MD5Hash;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -16,6 +18,7 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -39,7 +42,6 @@ public class LoginActivity extends Activity {
 	 */
 	private static final String[] DUMMY_CREDENTIALS = new String[] { "admin:mcallen" };
 
-	private String[] creds = new String[] { "admin", "mcallen" };
 	/**
 	 * The default email to populate the email field with.
 	 */
@@ -60,14 +62,15 @@ public class LoginActivity extends Activity {
 	private View mLoginFormView;
 	private View mLoginStatusView;
 	private TextView mLoginStatusMessageView;
-
-	private String FilePath = "sec/main";
+	private DBHelper db;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
 		setContentView(R.layout.activity_login);
+		
+		db= DBHelper.getDBHelper(this);
 
 		// Set up the login form.
 		mUsername = getIntent().getStringExtra(EXTRA_EMAIL);
@@ -100,47 +103,6 @@ public class LoginActivity extends Activity {
 					}
 				});
 
-		if (!(new File(this.getFilesDir(), "sec/main").exists())) {
-
-			File f = new File(this.getFilesDir(), "sec");
-
-			if (!f.exists()) {
-				f.mkdirs();
-			}
-
-			f = new File(this.getFilesDir(), "sec/main");
-			if (!f.exists()) {
-				FileOutputStream outputStream;
-				try {
-					outputStream = new FileOutputStream(f);
-					String out = creds[0] + "\n" + creds[1];
-					byte[] buffer = out.getBytes();
-					outputStream.write(buffer);
-					outputStream.close();
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		}
-
-		File f = new File(this.getFilesDir(), "sec/main");
-
-		if (f.exists()) {
-			FileInputStream fis;
-			try {
-				fis = new FileInputStream(f);
-				InputStreamReader in = new InputStreamReader(fis);
-				BufferedReader br = new BufferedReader(in);
-				creds[0] = br.readLine();
-				creds[1] = br.readLine();
-			} catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
 	}
 
 	@Override
@@ -176,12 +138,7 @@ public class LoginActivity extends Activity {
 			mPasswordView.setError(getString(R.string.error_field_required));
 			focusView = mPasswordView;
 			cancel = true;
-		} else if (mPassword.length() < 4) {
-			mPasswordView.setError(getString(R.string.error_invalid_password));
-			focusView = mPasswordView;
-			cancel = true;
-		}
-
+		} 
 		// Check for a valid email address.
 		if (TextUtils.isEmpty(mUsername)) {
 			mUsernameView.setError(getString(R.string.error_field_required));
@@ -258,13 +215,17 @@ public class LoginActivity extends Activity {
 			 */
 			Boolean[] res = new Boolean[2];
 			res[0] = res[1] = false;
-
-			if (creds[0].equals(mUsername)) {
+			
+			Cursor c = db.getCredentials();
+			c.moveToFirst();
+			
+			if (c.getString(1).equals(mUsername)) {
 				// Account exists, return true if the password matches.
 				res[0] = true;
 			}
-			if (creds[1].equals(mPassword)) {
-
+			c.moveToNext();
+						
+			if (MD5Hash.md5(mPassword).equals(c.getString(1))) {
 				res[1] = true;
 			}
 
@@ -300,7 +261,6 @@ public class LoginActivity extends Activity {
 							.setError(getString(R.string.error_incorrect_password));
 					mPasswordView.requestFocus();
 				}
-
 			}
 		}
 

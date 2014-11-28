@@ -1,9 +1,7 @@
 package com.groover.bar.frame;
 
 import java.text.DecimalFormat;
-
 import com.groover.bar.R;
-
 import android.app.Activity;
 import android.content.Context;
 import android.text.Editable;
@@ -72,6 +70,7 @@ public class OrderAdapter extends BaseAdapter {
 		TextView txtPrice;
 		TextView txtSub;
 		LinearLayout linLayout;
+		EditText txtAmount;
 		Button btCancel;
 		Button btAdd;
 		Button btSubstr;
@@ -104,15 +103,17 @@ public class OrderAdapter extends BaseAdapter {
 					.findViewById(R.orderRow.substract);
 			holder.linLayout = (LinearLayout) convertView.findViewById(R.orderRow.lin_layout);
 			convertView.setTag(holder);
+			holder.txtAmount = (EditText) convertView.findViewById(R.orderRow.amount);
 		} else {
 			holder = (ViewHolder) convertView.getTag();
 		}
-		
+		 
 		EditText et = new EditText(context);
-		et.setInputType(InputType.TYPE_NUMBER_FLAG_SIGNED);
-		et.setTextAppearance(context, android.R.style.TextAppearance_Medium);
+		et.setInputType(InputType.TYPE_CLASS_NUMBER);
 		et.setLayoutParams(layoutParams);
 		et.setHint("NumPad");
+		et.setTextAppearance(context, android.R.style.TextAppearance_Medium);
+		et.addTextChangedListener(new TextAdapter(position, holder.txtSub, notice));
 		
 		holder.linLayout.removeViewAt(1);
 		holder.linLayout.addView(et, 1);
@@ -124,13 +125,7 @@ public class OrderAdapter extends BaseAdapter {
 		holder.btAdd.setOnClickListener(new additionAdapter(position, et));
 		holder.btSubstr
 				.setOnClickListener(new substractionAdapter(position, et));
-
-		TextAdapter watcher = new TextAdapter(position, holder.txtSub, notice);
-
-		et.addTextChangedListener(watcher);
-
-		Log.d("getView", "Position: " + position);
-
+		
 		return convertView;
 
 	}
@@ -158,7 +153,6 @@ public class OrderAdapter extends BaseAdapter {
 		public additionAdapter(int pos, EditText txtAmount) {
 			amount = txtAmount;
 			this.position = pos;
-
 		}
 
 		@Override
@@ -217,10 +211,6 @@ public class OrderAdapter extends BaseAdapter {
 						.getSubtotal()));
 				l.Update(source);
 			}
-
-			Log.d("onText", "pos: " + position + " s: " + s.toString()
-					+ " amount: " + amount);
-
 		}
 
 		@Override

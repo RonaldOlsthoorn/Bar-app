@@ -9,6 +9,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 
 import com.groover.bar.R;
+import com.groover.bar.frame.DBHelper;
+import com.groover.bar.frame.MD5Hash;
 
 import android.os.Bundle;
 import android.app.Activity;
@@ -18,8 +20,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.support.v4.app.NavUtils;
 import android.annotation.TargetApi;
+import android.content.ContentValues;
+import android.database.Cursor;
 import android.os.Build;
 
 public class EditCredentialsActivity extends Activity {
@@ -30,6 +35,7 @@ public class EditCredentialsActivity extends Activity {
 	private TextView newP;
 	private TextView newPRepeat;
 	private Button save;
+	private DBHelper db;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -44,6 +50,8 @@ public class EditCredentialsActivity extends Activity {
 		newP = (TextView) findViewById(R.editCredentials.newP);
 		newPRepeat = (TextView) findViewById(R.editCredentials.newPRepeat);
 		save = (Button) findViewById(R.editCredentials.save);
+		
+		db = DBHelper.getDBHelper(this);
 
 	}
 
@@ -82,88 +90,55 @@ public class EditCredentialsActivity extends Activity {
 	}
 
 	public void saveOrDont(View view) {
+		
+		
 
+		Cursor c = db.getCredentials();
+		c.moveToFirst();
+		
 		String oldUsername = oldU.getText().toString();
 		String oldPassword = oldP.getText().toString();
 		String newUsername = newU.getText().toString();
 		String newPassword = newP.getText().toString();
 		String newPasswordRepeat = newPRepeat.getText().toString();
 
-		String credentials[] = getCreds();
-
 		boolean checks = true;
 		
-		if(!oldUsername.equals(credentials[0]) || !oldPassword.equals(credentials[1])){
+		if(!oldUsername.equals(c.getString(1))){
 			
-			oldP.setError("Wrong username/password");
+			oldU.setError("Wrong username");
 			checks = false;
 			
+		}
+		c.moveToNext();
+		
+		if(!c.getString(1).equals(MD5Hash.md5(oldPassword))){
+			oldP.setError("Wrong password");
+			checks = false;
 		}
 		
 		if(!newPassword.equals(newPasswordRepeat)){
 			
-		newPRepeat.setError("no match");
+			newPRepeat.setError("no match");
 			checks = false;
 		}
 		
-		
-	}
-
-	private boolean saveNewCredentials(String newUsername, String newPassword) {
-		// TODO Auto-generated method stub
-		
-		oldP.setError(null);
-		newPRepeat.setError(null);
-		
-		File f = new File(this.getFilesDir(), "sec");
-
-		if (!f.exists()) {
-			f.mkdirs();
-		}
-
-		f = new File(this.getFilesDir(), "sec/main");
-		FileOutputStream outputStream;
-
-		try {
-			outputStream = new FileOutputStream(f);
-			String out = newUsername + "\n" + newPassword;
-			byte[] buffer = out.getBytes();
-			outputStream.write(buffer);
-			outputStream.close();
-			return true;
-		} catch (Exception e) {
-			e.printStackTrace();
-			return false;
-		}
-
-	}
-
-	public String[] getCreds() {
-
-		String credentials[] = new String[2];
-		File f = new File(this.getFilesDir(), "sec/main");
-
-		if (f.exists()) {
-			FileInputStream fis;
-			try {
-				fis = new FileInputStream(f);
-				InputStreamReader in = new InputStreamReader(fis);
-				BufferedReader br = new BufferedReader(in);
-				credentials[0] = br.readLine();
-				credentials[1] = br.readLine();
-				fis.close();
-				return credentials;
-
-			} catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			return credentials;
-		} else {
-			return credentials;
-		}
+		if(checks){
+			
+			boolean res = db.updateCredentials(newUsername, newPassword);				
+			Log.d("editCreds",res+"");
+			oldP.setText("");
+			oldP.setError(null);
+			newP.setText("");
+			newP.setError(null);
+			oldU.setText("");
+			oldU.setError(null);
+			newU.setText("");
+			newU.setError(null);
+			newPRepeat.setText("");
+			newPRepeat.setError(null);
+			Toast t =Toast.makeText(this, "Wijzigingen opgeslagen", Toast.LENGTH_LONG);
+			t.show();
+		}		
 	}
 }

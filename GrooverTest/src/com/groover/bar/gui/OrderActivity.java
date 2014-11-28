@@ -3,6 +3,7 @@ package com.groover.bar.gui;
 import java.text.DecimalFormat;
 
 import com.groover.bar.R;
+import com.groover.bar.frame.CustomListview;
 import com.groover.bar.frame.Customer;
 import com.groover.bar.frame.DBHelper;
 import com.groover.bar.frame.Order;
@@ -25,12 +26,12 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.os.Build;
 
-public class OrderActivity extends Activity implements OnItemClickListener,
+public class OrderActivity extends Activity implements 
 		OrderAdapter.UpdateListener {
 
 	private TextView customerName;
 	private Customer customer;
-	private ListView l_order;
+	private CustomListview l_order;
 	private OrderAdapter a_order;
 	private DecimalFormat df = new DecimalFormat("0.00");
 	private DBHelper DB;
@@ -60,12 +61,11 @@ public class OrderActivity extends Activity implements OnItemClickListener,
 		c_Articles = DB.getArticles();
 		c_Order = OrderFactory.createEmptyOrder(customer, c_Articles);
 
-		l_order = (ListView) findViewById(R.order.orderList);
+		l_order = (CustomListview) findViewById(R.order.orderList);
 
 		a_order = new OrderAdapter(this, R.layout.order_row, c_Order, this);
 
 		l_order.setAdapter(a_order);
-		l_order.setOnItemClickListener(this);
 	}
 
 	/**
@@ -100,11 +100,6 @@ public class OrderActivity extends Activity implements OnItemClickListener,
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
-	}
-
-	@Override
-	public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
-		updateTotal();
 	}
 
 	public void toOrderOverview(View view) {

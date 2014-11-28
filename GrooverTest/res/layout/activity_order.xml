@@ -57,7 +57,18 @@
                 android:text="Bestelling"
                 android:textAppearance="?android:attr/textAppearanceLarge" />
 
-            <ListView
+            <view
+                android:id="@+order/orderList"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                class="com.groover.bar.frame.CustomListview"
+                 />
+
+            <!--
+          <ListView
                 android:id="@+order/orderList"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -65,6 +76,8 @@
                 android:layout_weight="1"
                 android:choiceMode="singleChoice" >
             </ListView>
+            -->
+
         </LinearLayout>
 
         <LinearLayout
@@ -88,9 +101,7 @@
                 android:layout_weight="0"
                 android:gravity="right"
                 android:textAppearance="?android:attr/textAppearanceLarge" />
-
         </LinearLayout>
-
     </LinearLayout>
 
     <LinearLayout
@@ -119,7 +130,6 @@
             android:layout_weight="0.5"
             android:onClick="saveOrder"
             android:text="Bestelling afronden" />
-
     </LinearLayout>
 
 </LinearLayout>

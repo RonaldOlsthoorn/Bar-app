@@ -81,7 +81,6 @@ public class OrderListAdapter extends BaseAdapter{
 		LayoutInflater mInflater = (LayoutInflater)
         context.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
 		int id = source.getInt(0);
-		Log.d("cursor",source.getCount()+"");
 
 		ViewHolder holder;
 		

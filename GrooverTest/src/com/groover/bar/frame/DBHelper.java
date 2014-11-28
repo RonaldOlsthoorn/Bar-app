@@ -138,7 +138,7 @@ public class DBHelper extends SQLiteOpenHelper {
 		db = getReadableDatabase();
 
 		return db.query(ItemList.TABLE_NAME, null, null, null, null, null,
-				 ItemList.COLUMN_ORDER);
+				ItemList.COLUMN_ORDER);
 	}
 
 	/*
@@ -198,7 +198,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
 		return db.rawQuery(query, null);
 	}
-	
+
 	public Cursor getOrdersCust(int id) {
 
 		SQLiteDatabase db = getReadableDatabase();
@@ -212,14 +212,14 @@ public class DBHelper extends SQLiteOpenHelper {
 				+ Order.TABLE_NAME + " , " + MemberTable.TABLE_NAME + " WHERE "
 				+ Order.TABLE_NAME + "." + Order.COLUMN_ACCOUNT + "="
 				+ MemberTable.TABLE_NAME + "." + MemberTable.COLUMN_ACCOUNT
-				+ " AND "
-				+ MemberTable.TABLE_NAME + "." + MemberTable.COLUMN_GR_ID
-				+" = "+id
-				+ " ORDER BY " + Order.COLUMN_TS_CREATED;
+				+ " AND " + MemberTable.TABLE_NAME + "."
+				+ MemberTable.COLUMN_GR_ID + " = " + id + " ORDER BY "
+				+ Order.COLUMN_TS_CREATED;
+
+		Log.d(TAG, query);
 
 		return db.rawQuery(query, null);
 	}
-
 
 	public Cursor getOrder(int id) {
 		// TODO Auto-generated method stub
@@ -239,6 +239,18 @@ public class DBHelper extends SQLiteOpenHelper {
 				+ "=" + id;
 
 		return db.rawQuery(query, null);
+	}
+
+	public Cursor getCredentials() {
+		// TODO Auto-generated method stub
+
+		SQLiteDatabase db = getReadableDatabase();
+
+		return db.query(KeyValueLog.TABLE_NAME, new String[] {
+				KeyValueLog.COLUMN_ID, KeyValueLog.COLUMN_VALUE },
+				KeyValueLog.COLUMN_KEY + "='username' OR "
+						+ KeyValueLog.COLUMN_KEY + " ='password'", null, null,
+				null, null);
 	}
 
 	/*
@@ -287,6 +299,21 @@ public class DBHelper extends SQLiteOpenHelper {
 			db.close();
 			return res;
 		}
+	}
+	
+	public boolean updateCredentials(String username, String passwordUnhashed){
+		
+		SQLiteDatabase db = getWritableDatabase();
+		
+		ContentValues v = new ContentValues();
+		v.put(KeyValueLog.COLUMN_VALUE, username);
+		int i = db.update(KeyValueLog.TABLE_NAME, v, KeyValueLog.COLUMN_KEY+"='username'", null);
+		v.clear();
+		v.put(KeyValueLog.COLUMN_VALUE, MD5Hash.md5(passwordUnhashed));
+		int j = db.update(KeyValueLog.TABLE_NAME, v, KeyValueLog.COLUMN_KEY+"='password'", null);
+		
+		return (i+j)!=0;
+		
 	}
 
 	/*
@@ -516,6 +543,9 @@ public class DBHelper extends SQLiteOpenHelper {
 		db.execSQL(Order.SQL_TRIGGER_UPDATE_TOTAL_4);
 		db.execSQL(Consumption.SQL_CREATE_TABLE);
 		db.execSQL(BackupLog.SQL_CREATE_TABLE);
+
+		db.execSQL(KeyValueLog.SQL_CREATE_TABLE);
+		db.execSQL(KeyValueLog.SQL_INSERT_CRED);
 	}
 
 	/*
@@ -537,6 +567,8 @@ public class DBHelper extends SQLiteOpenHelper {
 		db.execSQL(Order.SQL_DELETE_ENTRIES);
 		db.execSQL(Consumption.SQL_DELETE_ENTRIES);
 		db.execSQL(BackupLog.SQL_DELETE_ENTRIES);
+		db.execSQL(KeyValueLog.SQL_DELETE_ENTRIES);
+
 		onCreate(db);
 		DATABASE_VERSION = newVersion;
 	}
@@ -635,7 +667,7 @@ public class DBHelper extends SQLiteOpenHelper {
 				+ " TEXT DEFAULT 'overig', "
 				+ COLUMN_ORDER
 				+ " INTEGER )";
-				
+
 		public static final String SQL_DELETE_ENTRIES = "DROP TABLE IF EXISTS "
 				+ TABLE_NAME;
 
@@ -894,4 +926,36 @@ public class DBHelper extends SQLiteOpenHelper {
 		}
 	}
 
+	/*
+	 * Inner class representing the table containing a log of all the backups
+	 */
+	public static abstract class KeyValueLog implements BaseColumns {
+
+		public static final String TABLE_NAME = "keyvalue_logs";
+		public static final String COLUMN_ID = _ID;
+		public static final String COLUMN_KEY = "key";
+		public static final String COLUMN_VALUE = "value";
+
+		public static final String SQL_CREATE_TABLE = "CREATE TABLE  IF NOT EXISTS "
+				+ TABLE_NAME
+				+ " ("
+				+ COLUMN_ID
+				+ " INTEGER PRIMARY KEY AUTOINCREMENT"
+				+ ","
+				+ COLUMN_KEY
+				+ " TEXT NOT NULL" + "," + COLUMN_VALUE + " TEXT " + ")";
+
+		public static final String SQL_INSERT_CRED = "INSERT INTO "
+				+ TABLE_NAME + " (" + COLUMN_KEY + "," + COLUMN_VALUE + ") "
+				+ "VALUES " + "('username','admin')"+"," 
+				+ "('password','"+ MD5Hash.md5("mcallen") + "')";
+
+		public static final String SQL_DELETE_ENTRIES = "DROP TABLE IF EXISTS "
+				+ TABLE_NAME;
+
+		public static String getIdColumnName() {
+			// TODO Auto-generated method stub
+			return COLUMN_KEY;
+		}
+	}
 }
