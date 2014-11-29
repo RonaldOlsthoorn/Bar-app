@@ -3,7 +3,7 @@
     android:id="@+id/LinearLayout1"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/ronald_request_barapp"
+    android:background="@drawable/background"
     android:orientation="vertical"
     android:paddingBottom="@dimen/activity_vertical_no_margin"
     android:paddingLeft="@dimen/activity_horizontal_margin"
@@ -36,7 +36,8 @@
                     android:layout_margin="10dp"
                     android:layout_weight="0"
                     android:text="Klant:  "
-                    android:textAppearance="?android:attr/textAppearanceLarge" />
+                    android:textAppearance="?android:attr/textAppearanceLarge" 
+                    />
 
                 <TextView
                     android:id="@+order/custName"
@@ -57,15 +58,13 @@
                 android:text="Bestelling"
                 android:textAppearance="?android:attr/textAppearanceLarge" />
 
-            <view
+            <ListView
                 android:id="@+order/orderList"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="5dp"
                 android:layout_weight="1"
-                android:orientation="vertical"
-                class="com.groover.bar.frame.CustomListview"
-                 />
+                android:orientation="vertical"/>
 
             <!--
           <ListView

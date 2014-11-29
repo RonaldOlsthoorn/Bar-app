@@ -40,11 +40,11 @@ public class OrderAdapter extends BaseAdapter {
 		this.layout = layout;
 		source = o;
 		notice = l;
-		
+
 		final float scale = context.getResources().getDisplayMetrics().density;
 		int width = (int) (100 * scale + 0.5f);
-		
-		layoutParams = new LayoutParams(width,LayoutParams.WRAP_CONTENT);
+
+		layoutParams = new LayoutParams(width, LayoutParams.WRAP_CONTENT);
 		layoutParams.gravity = Gravity.CENTER;
 	}
 
@@ -69,7 +69,6 @@ public class OrderAdapter extends BaseAdapter {
 		TextView txtName;
 		TextView txtPrice;
 		TextView txtSub;
-		LinearLayout linLayout;
 		EditText txtAmount;
 		Button btCancel;
 		Button btAdd;
@@ -85,49 +84,34 @@ public class OrderAdapter extends BaseAdapter {
 
 		// Log.d("adapter",holder.txtAdapter.toString()+" "+watcher.toString());
 
-		if (convertView == null) {
-			LayoutInflater mInflater = (LayoutInflater) context
-					.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
-			convertView = mInflater.inflate(layout, null);
-			holder = new ViewHolder();
-			holder.txtName = (TextView) convertView
-					.findViewById(R.orderRow.article);
-			holder.txtPrice = (TextView) convertView
-					.findViewById(R.orderRow.price);
-			holder.txtSub = (TextView) convertView.findViewById(R.orderRow.sub);
-			holder.btCancel = (Button) convertView
-					.findViewById(R.orderRow.cancel);
-			holder.btAdd = (Button) convertView
-					.findViewById(R.orderRow.addition);
-			holder.btSubstr = (Button) convertView
-					.findViewById(R.orderRow.substract);
-			holder.linLayout = (LinearLayout) convertView.findViewById(R.orderRow.lin_layout);
-			convertView.setTag(holder);
-			holder.txtAmount = (EditText) convertView.findViewById(R.orderRow.amount);
-		} else {
-			holder = (ViewHolder) convertView.getTag();
-		}
-		 
-		EditText et = new EditText(context);
-		et.setInputType(InputType.TYPE_CLASS_NUMBER);
-		et.setLayoutParams(layoutParams);
-		et.setHint("NumPad");
-		et.setTextAppearance(context, android.R.style.TextAppearance_Medium);
-		et.addTextChangedListener(new TextAdapter(position, holder.txtSub, notice));
+		LayoutInflater mInflater = (LayoutInflater) context
+				.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
+		convertView = mInflater.inflate(layout, null);
 		
-		holder.linLayout.removeViewAt(1);
-		holder.linLayout.addView(et, 1);
-		
+		holder = new ViewHolder();
+		holder.txtName = (TextView) convertView
+				.findViewById(R.orderRow.article);
+		holder.txtPrice = (TextView) convertView.findViewById(R.orderRow.price);
+		holder.txtSub = (TextView) convertView.findViewById(R.orderRow.sub);
+		holder.btCancel = (Button) convertView.findViewById(R.orderRow.cancel);
+		holder.btAdd = (Button) convertView.findViewById(R.orderRow.addition);
+		holder.btSubstr = (Button) convertView
+				.findViewById(R.orderRow.substract);
+		holder.txtAmount = (EditText) convertView
+				.findViewById(R.orderRow.amount);
+
+		holder.txtAmount.addTextChangedListener(new TextAdapter(position,
+				holder.txtSub, notice));
 		holder.txtName.setText(s.getArticle().getName());
 		holder.txtPrice.setText(df.format(s.getArticle().getPrice()));
 		holder.txtSub.setText(df.format(s.getSubtotal()));
-		holder.btCancel.setOnClickListener(new deleteAdapter(et));
-		holder.btAdd.setOnClickListener(new additionAdapter(position, et));
-		holder.btSubstr
-				.setOnClickListener(new substractionAdapter(position, et));
-		
-		return convertView;
+		holder.btCancel.setOnClickListener(new deleteAdapter(holder.txtAmount));
+		holder.btAdd.setOnClickListener(new additionAdapter(position,
+				holder.txtAmount));
+		holder.btSubstr.setOnClickListener(new substractionAdapter(position,
+				holder.txtAmount));
 
+		return convertView;
 	}
 
 	private class deleteAdapter implements OnClickListener {

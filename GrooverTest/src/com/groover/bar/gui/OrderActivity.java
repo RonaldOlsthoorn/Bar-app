@@ -31,7 +31,7 @@ public class OrderActivity extends Activity implements
 
 	private TextView customerName;
 	private Customer customer;
-	private CustomListview l_order;
+	private ListView l_order;
 	private OrderAdapter a_order;
 	private DecimalFormat df = new DecimalFormat("0.00");
 	private DBHelper DB;
@@ -61,7 +61,7 @@ public class OrderActivity extends Activity implements
 		c_Articles = DB.getArticles();
 		c_Order = OrderFactory.createEmptyOrder(customer, c_Articles);
 
-		l_order = (CustomListview) findViewById(R.order.orderList);
+		l_order = (ListView) findViewById(R.order.orderList);
 
 		a_order = new OrderAdapter(this, R.layout.order_row, c_Order, this);
 

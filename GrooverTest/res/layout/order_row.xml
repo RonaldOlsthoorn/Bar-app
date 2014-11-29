@@ -3,10 +3,10 @@
     android:id="@+orderRow/lin_layout"
     android:layout_width="match_parent"
     android:layout_height="70dp"
-    android:minHeight="70dp"
     android:focusable="false"
     android:focusableInTouchMode="false"
     android:gravity="right"
+    android:minHeight="70dp"
     android:orientation="horizontal" >
 
     <LinearLayout
@@ -36,19 +36,12 @@
 
     <EditText
         android:id="@+orderRow/amount"
-        android:layout_width="80dp"
+        android:layout_width="100dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:inputType="numberSigned"
+        android:hint="numPad"
+        android:inputType="number"
         android:textAppearance="?android:attr/textAppearanceMedium" />
-
-    <Button
-        android:id="@+orderRow/substract"
-        android:layout_width="45dp"
-        android:layout_height="45dp"
-        android:layout_gravity="center"
-        android:focusable="false"
-        android:text="-1" />
 
     <Button
         android:id="@+orderRow/addition"
@@ -58,6 +51,14 @@
         android:layout_marginLeft="5dp"
         android:focusable="false"
         android:text="+1" />
+
+    <Button
+        android:id="@+orderRow/substract"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:layout_gravity="center"
+        android:focusable="false"
+        android:text="-1" />
 
     <TextView
         android:id="@+id/textView3"
