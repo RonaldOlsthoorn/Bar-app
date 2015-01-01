@@ -1,7 +1,9 @@
 package com.groover.bar.frame;
 
 import java.text.DecimalFormat;
+
 import com.groover.bar.R;
+
 import android.app.Activity;
 import android.content.Context;
 import android.text.Editable;
@@ -159,7 +161,9 @@ public class OrderAdapter extends BaseAdapter {
 		@Override
 		public void onClick(View arg0) {
 			// TODO Auto-generated method stub
-			amount.setText((source.getUnit(position).getAmount() - 1) + "");
+			if(source.getUnit(position).getAmount()>=1){
+				amount.setText((source.getUnit(position).getAmount() - 1) + "");
+			}		
 		}
 	}
 

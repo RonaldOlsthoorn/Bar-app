@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="70dp"
+    android:layout_height="wrap_content"
     android:focusable="false"
     android:focusableInTouchMode="false"
     android:gravity="right"
@@ -21,7 +21,8 @@
             android:layout_gravity="center"
             android:layout_weight="1"
             android:ems="10"
-            android:enabled="false" />
+            android:enabled="false"
+            android:textSize="25sp" />
 
         <TextView
             android:id="@+id/textView1"
@@ -40,7 +41,8 @@
             android:layout_weight="1"
             android:ems="10"
             android:enabled="false"
-            android:inputType="numberDecimal" >
+            android:inputType="numberDecimal"
+            android:textSize="25sp" >
 
             <requestFocus />
         </EditText>
@@ -48,35 +50,43 @@
 
     <Button
         android:id="@+articleRow/down"
-        android:layout_width="45dp"
-        android:layout_height="45dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:focusable="false"
-        android:text="▼" />
+        android:padding="5dp"
+        android:text="▼"
+        android:textSize="25sp" />
 
     <Button
         android:id="@+articleRow/up"
-        android:layout_width="45dp"
-        android:layout_height="45dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_marginLeft="5dp"
         android:focusable="false"
-        android:text="▲" />
+        android:padding="5dp"
+        android:text="▲"
+        android:textSize="25sp" />
 
     <Button
         android:id="@+articleRow/edit"
         android:layout_width="wrap_content"
-        android:layout_height="45dp"
+        android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:focusable="false"
-        android:text="Aanpassen" />
+        android:padding="10dp"
+        android:text="Aanpassen"
+        android:textSize="25sp" />
 
     <Button
         android:id="@+articleRow/delete"
         android:layout_width="wrap_content"
-        android:layout_height="45dp"
+        android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:focusable="false"
-        android:text="Verwijderen" />
+        android:padding="10dp"
+        android:text="Verwijderen"
+        android:textSize="25sp" />
 
 </LinearLayout>

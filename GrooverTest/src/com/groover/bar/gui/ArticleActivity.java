@@ -1,13 +1,14 @@
 package com.groover.bar.gui;
 
-
 import com.groover.bar.R;
 import com.groover.bar.frame.Article;
 import com.groover.bar.frame.DBHelper;
 import com.groover.bar.frame.ArticleAdapter;
+import com.groover.bar.frame.InfoDialog;
 
 import android.os.Bundle;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.util.Log;
@@ -19,7 +20,8 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.support.v4.app.NavUtils;
 
-public class ArticleActivity extends Activity implements ArticleAdapter.UpdateListener {
+public class ArticleActivity extends Activity implements
+		ArticleAdapter.UpdateListener {
 
 	private DBHelper DB;
 	private ListView artikellijst;
@@ -30,7 +32,7 @@ public class ArticleActivity extends Activity implements ArticleAdapter.UpdateLi
 	private Button voegToe;
 	private ArticleAdapter adapter;
 	private Cursor c_articles;
-	
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -82,7 +84,7 @@ public class ArticleActivity extends Activity implements ArticleAdapter.UpdateLi
 
 		boolean checks = true;
 		Button b = (Button) v;
-		if(b.getText().equals("Voeg artikel toe")){
+		if (b.getText().equals("Voeg artikel toe")) {
 			addPane.setVisibility(View.VISIBLE);
 			b.setText("Artikel opslaan");
 			return;
@@ -103,7 +105,7 @@ public class ArticleActivity extends Activity implements ArticleAdapter.UpdateLi
 				checks = false;
 			}
 		}
-		
+
 		if (et_naam.getText().toString().trim().equals("")) {
 
 			et_naam.setError(getString(R.string.err_field_empty));
@@ -111,10 +113,10 @@ public class ArticleActivity extends Activity implements ArticleAdapter.UpdateLi
 			checks = false;
 		}
 
-		if(checks){
-			
-			Log.d("add",c_articles.isClosed()+"");
-			
+		if (checks) {
+
+			Log.d("add", c_articles.isClosed() + "");
+
 			String naam = et_naam.getText().toString();
 			double prijs = Double.parseDouble(et_prijs.getText().toString());
 
@@ -122,7 +124,8 @@ public class ArticleActivity extends Activity implements ArticleAdapter.UpdateLi
 			values.put(DBHelper.ItemList.COLUMN_NAME_ITEM, naam);
 			values.put(DBHelper.ItemList.COLUMN_NAME_PRICE, prijs);
 			values.put(DBHelper.ItemList.COLUMN_NAME_CAT, "all");
-			values.put(DBHelper.ItemList.COLUMN_ORDER, c_articles.getCount()+1);			
+			values.put(DBHelper.ItemList.COLUMN_ORDER,
+					c_articles.getCount() + 1);
 
 			DB.insertOrIgnore(DBHelper.ItemList.TABLE_NAME, values);
 
@@ -139,22 +142,43 @@ public class ArticleActivity extends Activity implements ArticleAdapter.UpdateLi
 		et_naam.setText("");
 		et_prijs.setText("");
 		voegToe.setText("Voeg artikel toe");
-		
+
 		et_naam.setError(null);
 		et_prijs.setError(null);
 	}
 
 	@Override
-	public void delete(int id) {
-		// TODO Auto-generated method stub
-		DB.deleteOrIgnore(DBHelper.ItemList.TABLE_NAME, id);
-		adapter.swapCursor(DB.getArticles());
-		adapter.notifyDataSetChanged();
+	public void delete(Article a) {
+
+		if (!a.getEditable()) {
+			AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
+					this);
+
+			// set title
+			alertDialogBuilder.setTitle("Warning");
+
+			// set dialog message
+			alertDialogBuilder
+					.setMessage("Kan artikel niet verwijderen want er zijn al bestellingen geplaatst. Eerst afrekenen!");
+
+			// set dialog message
+			alertDialogBuilder.setPositiveButton("Ok", null);
+			// create alert dialog
+			AlertDialog alertDialog = alertDialogBuilder.create();
+
+			// show it
+			alertDialog.show();
+
+		} else {
+			DB.deleteOrIgnore(DBHelper.ItemList.TABLE_NAME, a.getId());
+			adapter.swapCursor(DB.getArticles());
+			adapter.notifyDataSetChanged();
+		}
+
 	}
 
 	@Override
 	public void swap(int id1, int id2, int pos1, int pos2) {
-		// TODO Auto-generated method stub
 		ContentValues v = new ContentValues();
 		v.put(DBHelper.ItemList.COLUMN_ORDER, pos2);
 		DB.updateOrIgnore(DBHelper.ItemList.TABLE_NAME, id1, v);
@@ -167,12 +191,74 @@ public class ArticleActivity extends Activity implements ArticleAdapter.UpdateLi
 
 	@Override
 	public void edit(int pos, Article a) {
-		// TODO Auto-generated method stub
+
 		ContentValues v = new ContentValues();
 		v.put(DBHelper.ItemList.COLUMN_NAME_ITEM, a.getName());
 		v.put(DBHelper.ItemList.COLUMN_NAME_PRICE, a.getPrice());
 		DB.updateOrIgnore(DBHelper.ItemList.TABLE_NAME, a.getId(), v);
 		adapter.swapCursor(DB.getArticles());
 		adapter.notifyDataSetChanged();
+		setEditable(-1, null);
+	}
+
+	@Override
+	public void setEditable(int pos, Article a) {
+
+		Log.d("article", "pos: "+pos+" editable: "+a.getEditable());
+		
+		if (pos == -1) {
+			for (int i = 0; i < adapter.getCount(); i++) {
+				artikellijst.getChildAt(i).findViewById(R.articleRow.delete)
+						.setEnabled(true);
+				artikellijst.getChildAt(i).findViewById(R.articleRow.edit)
+						.setEnabled(true);
+				artikellijst.getChildAt(i).findViewById(R.articleRow.up)
+						.setEnabled(true);
+				artikellijst.getChildAt(i).findViewById(R.articleRow.down)
+						.setEnabled(true);
+			}
+			return;
+		}
+
+		if (!a.getEditable()) {
+			Log.d("article", "not editable");
+			AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
+					this);
+
+			// set title
+			alertDialogBuilder.setTitle("Warning");
+			// set dialog message
+			alertDialogBuilder
+					.setMessage("Kan artikel niet aanpassen want er zijn al bestellingen geplaatst. Eerst afrekenen!");
+			// set dialog message
+			alertDialogBuilder.setPositiveButton("Ok", null);
+			// create alert dialog
+			AlertDialog alertDialog = alertDialogBuilder.create();
+			// show it
+			alertDialog.show();
+			
+			return;
+
+		} else {
+
+			for (int i = 0; i < adapter.getCount(); i++) {
+				if (i != pos) {
+					artikellijst.getChildAt(i)
+							.findViewById(R.articleRow.delete)
+							.setEnabled(false);
+					artikellijst.getChildAt(i).findViewById(R.articleRow.edit)
+							.setEnabled(false);
+					artikellijst.getChildAt(i).findViewById(R.articleRow.up)
+							.setEnabled(false);
+					artikellijst.getChildAt(i).findViewById(R.articleRow.down)
+							.setEnabled(false);
+				} else {
+					artikellijst.getChildAt(i).findViewById(R.articleRow.up)
+							.setEnabled(false);
+					artikellijst.getChildAt(i).findViewById(R.articleRow.down)
+							.setEnabled(false);
+				}
+			}
+		}
 	}
 }

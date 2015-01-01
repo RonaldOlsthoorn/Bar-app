@@ -53,10 +53,9 @@ public class LedenMainActivity extends FragmentActivity implements
 	private Cursor c;
 	private String[] FROM = new String[] {
 			DBHelper.MemberTable.COLUMN_FIRST_NAME,
-			DBHelper.MemberTable.COLUMN_LAST_NAME,
-			DBHelper.MemberTable.COLUMN_GR_ID };
-	private int[] TO = new int[] { R.ledenlijstrow.voornaam,
-			R.ledenlijstrow.achternaam, R.ledenlijstrow.account };
+			DBHelper.MemberTable.COLUMN_LAST_NAME };
+	private int[] TO = new int[] { R.ledenlijstrow2.voornaam,
+			R.ledenlijstrow2.achternaam };
 
 	private View editPane;
 	private int REQUEST_FILE = 1;
@@ -84,7 +83,7 @@ public class LedenMainActivity extends FragmentActivity implements
 
 		c = DB.getMembers();
 
-		adapter = new SimpleCursorAdapter(this, R.layout.ledenlijstrow, c,
+		adapter = new SimpleCursorAdapter(this, R.layout.ledenlijstrow2, c,
 				FROM, TO, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
 
 		ledenlijst.setOnItemClickListener(this);
@@ -413,7 +412,6 @@ public class LedenMainActivity extends FragmentActivity implements
 	@Override
 	public void onDialogPositiveClick(DialogFragment dialog) {
 		// TODO Auto-generated method stub
-		Log.i("positiveClick","Hello");
 		LoadData memberLoader = new LoadData();
 		memberLoader.doInBackground(new File(targetPath));
 		

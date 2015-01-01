@@ -1,6 +1,6 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/LinearLayout1"
+    android:id="@+id/RelativeLayout1"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/background"
@@ -12,61 +12,66 @@
     tools:context=".OrderActivity" >
 
     <LinearLayout
+        android:id="@+id/linLayoutTop"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginBottom="10dp"
-        android:layout_weight="0.5"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
         android:orientation="vertical" >
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical" >
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="0" >
-
-                <TextView
-                    android:id="@+id/textView4"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="10dp"
-                    android:layout_weight="0"
-                    android:text="Klant:  "
-                    android:textAppearance="?android:attr/textAppearanceLarge" 
-                    />
-
-                <TextView
-                    android:id="@+order/custName"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="10dp"
-                    android:layout_marginTop="10dp"
-                    android:layout_weight="0"
-                    android:textAppearance="?android:attr/textAppearanceLarge" />
-            </LinearLayout>
+            android:layout_weight="0" >
 
             <TextView
-                android:id="@+id/textView1"
+                android:id="@+id/textView4"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_margin="5dp"
+                android:layout_margin="10dp"
                 android:layout_weight="0"
-                android:text="Bestelling"
-                android:textAppearance="?android:attr/textAppearanceLarge" />
+                android:text="Klant:  "
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:textSize="40sp" />
 
-            <ListView
-                android:id="@+order/orderList"
+            <TextView
+                android:id="@+order/custName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="5dp"
-                android:layout_weight="1"
-                android:orientation="vertical"/>
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="10dp"
+                android:layout_weight="0"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:textSize="40sp" />
 
-            <!--
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/textView1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/linLayoutTop"
+            android:layout_below="@+id/linLayoutTop"
+            android:layout_margin="5dp"
+            android:text="Bestelling"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textSize="30sp" />
+
+    </LinearLayout>
+
+    <view
+        class="com.groover.bar.frame.CustomListview" 
+        android:id="@+order/orderList"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/linLayoutBottom"
+        android:layout_alignLeft="@+id/linLayoutTop"
+        android:layout_below="@+id/linLayoutTop"
+        android:layout_marginLeft="5dp"
+        android:orientation="vertical"
+         />
+
+    <!--
           <ListView
                 android:id="@+order/orderList"
                 android:layout_width="match_parent"
@@ -75,9 +80,15 @@
                 android:layout_weight="1"
                 android:choiceMode="singleChoice" >
             </ListView>
-            -->
+    -->
 
-        </LinearLayout>
+    <LinearLayout
+        android:id="@+id/linLayoutBottom"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:orientation="vertical" >
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -90,7 +101,8 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="0"
                 android:text="Totaal"
-                android:textAppearance="?android:attr/textAppearanceLarge" />
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:textSize="40sp" />
 
             <TextView
                 android:id="@+order/total"
@@ -99,36 +111,42 @@
                 android:layout_gravity="right"
                 android:layout_weight="0"
                 android:gravity="right"
-                android:textAppearance="?android:attr/textAppearanceLarge" />
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:textSize="40sp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="0"
+            android:gravity="top"
+            android:orientation="horizontal" >
+
+            <Button
+                android:id="@+id/button5"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:layout_weight="0.5"
+                android:onClick="toOrderOverview"
+                android:padding="20dp"
+                android:text="Eerdere bestellingen"
+                android:textSize="35sp" />
+
+            <Button
+                android:id="@+id/button4"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:layout_weight="0.5"
+                android:onClick="saveOrder"
+                android:padding="20dp"
+                android:text="Bestelling afronden"
+                android:textSize="35sp" />
+
         </LinearLayout>
     </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="0"
-        android:gravity="top"
-        android:orientation="horizontal" >
-
-        <Button
-            android:id="@+id/button5"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
-            android:layout_weight="0.5"
-            android:onClick="toOrderOverview"
-            android:text="Eerdere bestellingen" />
-
-        <Button
-            android:id="@+id/button4"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
-            android:layout_weight="0.5"
-            android:onClick="saveOrder"
-            android:text="Bestelling afronden" />
-    </LinearLayout>
-
-</LinearLayout>
+</RelativeLayout>

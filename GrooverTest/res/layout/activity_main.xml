@@ -17,18 +17,23 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_margin="5dp"
+            android:layout_margin="25dp"
             android:onClick="toBarBazz"
-            android:text="BarBazz" />
+            android:padding="40dp"
+            android:text="BarBazz"
+            android:textSize="35sp" />
 
         <Button
             android:id="@+main/beheer"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_margin="5dp"
+            android:layout_margin="25dp"
             android:onClick="toBeheer"
-            android:text="Bar beheer" />
+            android:padding="40dp"
+            android:text="Bar beheer"
+            android:textSize="35sp" />
+
     </LinearLayout>
 
 </RelativeLayout>

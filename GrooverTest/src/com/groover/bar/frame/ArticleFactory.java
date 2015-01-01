@@ -22,7 +22,7 @@ public class ArticleFactory {
 		while(source.getPosition()<source.getCount()){
 			
 			if(source.getInt(0)==id){
-				return new Article(id,source.getDouble(2),source.getString(1));
+				return new Article(id,source.getDouble(2),source.getString(1),source.getInt(3)<1);
 			}
 			
 			source.moveToNext();

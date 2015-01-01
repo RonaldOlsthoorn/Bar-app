@@ -20,7 +20,9 @@
             android:layout_gravity="center"
             android:layout_margin="5dp"
             android:onClick="toLeden"
-            android:text="Leden" />
+            android:padding="40dp"
+            android:text="Leden"
+            android:textSize="35sp" />
 
         <Button
             android:id="@+beheer/Artikelen"
@@ -29,7 +31,9 @@
             android:layout_gravity="center"
             android:layout_margin="5dp"
             android:onClick="toArtikelen"
-            android:text="Artikelen" />
+            android:padding="40dp"
+            android:text="Artikelen"
+            android:textSize="35sp" />
 
         <Button
             android:id="@+beheer/Penning"
@@ -38,15 +42,19 @@
             android:layout_gravity="center"
             android:layout_margin="5dp"
             android:onClick="toPenning"
-            android:text="Penning" />
+            android:padding="40dp"
+            android:text="Penning"
+            android:textSize="35sp" />
 
         <Button
             android:id="@+beheer/credentials"
-            android:layout_width="130dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="5dp"
             android:onClick="editCredentials"
-            android:text="Gebruikersnaam wachtwoord wijzigen" />
+            android:padding="40dp"
+            android:text="Gebruikersnaam \n wachtwoord wijzigen"
+            android:textSize="35sp" />
     </LinearLayout>
 
 </RelativeLayout>

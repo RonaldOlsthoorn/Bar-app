@@ -80,9 +80,7 @@ public class MainActivity extends Activity {
 	
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		
-		Log.i("main","hello");
-		
+				
 		if (requestCode == 123) {
 			if (resultCode == RESULT_OK) {
 				Intent intent = new Intent(this, BeheerActivity.class);

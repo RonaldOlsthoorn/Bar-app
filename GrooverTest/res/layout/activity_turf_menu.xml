@@ -18,7 +18,9 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:onClick="toTurflijst"
-            android:text="Turven" />
+            android:padding="20dp"
+            android:text="Turven"
+            android:textSize="35sp" />
 
         <Button
             android:id="@+id/button2"
@@ -26,7 +28,9 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:onClick="aanpassen"
-            android:text="Turflijst aanpassen" />
+            android:padding="20dp"
+            android:text="Turflijst aanpassen"
+            android:textSize="35sp" />
 
     </LinearLayout>
 

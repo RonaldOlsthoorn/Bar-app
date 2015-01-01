@@ -2,7 +2,9 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+orderRow/lin_layout"
     android:layout_width="match_parent"
-    android:layout_height="70dp"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="5dp"
+    android:layout_marginTop="5dp"
     android:focusable="false"
     android:focusableInTouchMode="false"
     android:gravity="right"
@@ -23,7 +25,8 @@
             android:layout_weight="1"
             android:gravity="bottom"
             android:text="Medium Text"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textSize="30sp" />
 
         <TextView
             android:id="@+orderRow/price"
@@ -31,7 +34,9 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="Small Text"
-            android:textAppearance="?android:attr/textAppearanceSmall" />
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textSize="20sp" />
+
     </LinearLayout>
 
     <EditText
@@ -39,49 +44,59 @@
         android:layout_width="100dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:hint="numPad"
+        android:hint="num"
         android:inputType="number"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textSize="30sp" />
 
     <Button
         android:id="@+orderRow/addition"
-        android:layout_width="45dp"
-        android:layout_height="45dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:layout_marginLeft="5dp"
+        android:layout_marginLeft="15dp"
         android:focusable="false"
-        android:text="+1" />
-
-    <Button
-        android:id="@+orderRow/substract"
-        android:layout_width="45dp"
-        android:layout_height="45dp"
-        android:layout_gravity="center"
-        android:focusable="false"
-        android:text="-1" />
+        android:padding="20dp"
+        android:text="+1"
+        android:textSize="35sp" />
 
     <TextView
         android:id="@+id/textView3"
         android:layout_width="30dp"
         android:layout_height="wrap_content"
-        android:layout_gravity="left|center_vertical"
+        android:layout_gravity="center"
         android:text=" €"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textSize="30sp" />
 
     <TextView
         android:id="@+orderRow/sub"
-        android:layout_width="50dp"
+        android:layout_width="100dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:gravity="right"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
-
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textSize="30sp" />
+    
     <Button
-        android:id="@+orderRow/cancel"
-        android:layout_width="45dp"
-        android:layout_height="45dp"
+        android:padding="20dp"
+        android:id="@+orderRow/substract"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:focusable="false"
-        android:text="X" />
+        android:text="-1"
+        android:textSize="35sp" />
+
+    <Button
+        android:padding="20dp"
+        android:id="@+orderRow/cancel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="15dp"
+        android:layout_gravity="center"
+        android:focusable="false"
+        android:text="X"
+        android:textSize="35sp" />
 
 </LinearLayout>

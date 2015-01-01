@@ -89,13 +89,21 @@ public class OrderExporter {
 				src.close();
 				dst.close();
 
-				File xml = new File(mainFolder, "afrekening "
+				File xml1 = new File(mainFolder, "bestellingen "
 						+ ts_settled + ".xml");
 
-				BufferedOutputStream buf = new BufferedOutputStream(
-						new FileOutputStream(xml));
-				extractFromDB(buf);
-				buf.close();
+				BufferedOutputStream buf1 = new BufferedOutputStream(
+						new FileOutputStream(xml1));
+				extractOrdersFromDB(buf1);
+				buf1.close();
+				
+				File xml2 = new File(mainFolder, "afrekening "
+						+ ts_settled + ".xml");
+
+				BufferedOutputStream buf2 = new BufferedOutputStream(
+						new FileOutputStream(xml2));
+				extractReceiptFromDB(buf2);
+				buf2.close();
 				
 				//backup success. note to database.
 				ContentValues v = new ContentValues();
@@ -148,11 +156,11 @@ public class OrderExporter {
 
 		BufferedOutputStream buf = new BufferedOutputStream(
 				new FileOutputStream(xml));
-		extractFromDB(buf);
+		extractOrdersFromDB(buf);
 		buf.close();
 	}
 
-	private void extractFromDB(BufferedOutputStream buf)
+	private void extractOrdersFromDB(BufferedOutputStream buf)
 			throws IllegalArgumentException, IllegalStateException, IOException {
 		
 		XmlSerializer xmlSerializer = Xml.newSerializer();
@@ -161,12 +169,14 @@ public class OrderExporter {
 		xmlSerializer.startDocument("UTF-8", true);
 
 		// open tag: <root>
-		xmlSerializer.startTag(null, "afrekening");
+		xmlSerializer.startTag(null, "bestellingen");
 		xmlSerializer.attribute(null, "datum_afrekening", ts_settled);
 		
 		
 		xmlSerializer.startTag(null, "list");
 		xmlSerializer.attribute(null, "id", "members");
+		
+		
 		
 		Cursor c = DB.getMembers();
 		c.moveToFirst();
@@ -208,6 +218,82 @@ public class OrderExporter {
 			xmlSerializer.endTag(null, "member");
 
 			c.moveToNext();
+
+		}
+		
+		xmlSerializer.endTag(null,"list");
+		
+		xmlSerializer.endTag(null, "bestellingen");
+
+		xmlSerializer.endDocument();
+		xmlSerializer.flush();
+
+	}
+	
+	private void extractReceiptFromDB(BufferedOutputStream buf)
+			throws IllegalArgumentException, IllegalStateException, IOException {
+		
+		XmlSerializer xmlSerializer = Xml.newSerializer();
+		xmlSerializer.setOutput(buf, "UTF-8");
+		// start DOCUMENT
+		xmlSerializer.startDocument("UTF-8", true);
+
+		// open tag: <root>
+		xmlSerializer.startTag(null, "afrekening");
+		xmlSerializer.attribute(null, "datum_afrekening", ts_settled);
+		
+		Cursor articles = DB.getArticles();
+		articles.moveToFirst();
+		
+		xmlSerializer.startTag(null, "list");
+		xmlSerializer.attribute(null, "id", "articles");
+		
+		while(articles.getPosition()<articles.getCount()){
+			
+			xmlSerializer.startTag(null, "article");
+			xmlSerializer.attribute(null, "id", ""+articles.getInt(0));
+			xmlSerializer.attribute(null, "name", articles.getString(1));
+			xmlSerializer.attribute(null, "price", df.format(articles.getDouble(2)));
+			xmlSerializer.endTag(null, "article");			
+			
+			articles.moveToNext();			
+		}
+		
+		xmlSerializer.endTag(null,"list");
+		
+		xmlSerializer.startTag(null, "list");
+		xmlSerializer.attribute(null, "id", "members");
+		
+		Cursor members = DB.getMembers();
+		members.moveToFirst();
+
+		while (members.getPosition() < members.getCount()) {
+			// open tag: <member>		
+			Cursor consumptions = DB.getTotalConsumptionsByMember(members.getInt(3));
+				
+			xmlSerializer.startTag(null, "member");
+
+			xmlSerializer.attribute(null, "GR_ID", "" + members.getInt(0));
+			xmlSerializer.attribute(null, "first_name", members.getString(1));
+			xmlSerializer.attribute(null, "last_name", "" + members.getString(2));
+			xmlSerializer.attribute(null, "total", df.format(members.getDouble(4)));
+			
+			consumptions.moveToFirst();
+			
+			while(consumptions.getPosition() < consumptions.getCount()){
+				
+				xmlSerializer.startTag(null, "article");
+				xmlSerializer.attribute(null, "id", ""+consumptions.getInt(0));
+				xmlSerializer.attribute(null, "name", consumptions.getString(1));
+				xmlSerializer.attribute(null, "price", df.format(consumptions.getDouble(2)));
+				xmlSerializer.attribute(null, "amount", "" + consumptions.getInt(3));
+				xmlSerializer.endTag(null, "article");			
+				consumptions.moveToNext();				
+			}
+			consumptions.close();
+			xmlSerializer.endTag(null, "member");
+
+			members.moveToNext();
 
 		}
 		

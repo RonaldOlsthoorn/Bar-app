@@ -3,12 +3,12 @@
     android:id="@+id/LinearLayout1"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="horizontal"
     android:background="@drawable/background"
+    android:orientation="horizontal"
     tools:context=".LedenMainActivity" >
 
     <LinearLayout
-        android:layout_width="200dp"
+        android:layout_width="300dp"
         android:layout_height="match_parent"
         android:layout_margin="5dp"
         android:orientation="vertical" >
@@ -25,7 +25,8 @@
             android:id="@+leden/id"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="numberSigned" />
+            android:inputType="numberSigned"
+            android:textSize="30sp" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -37,8 +38,8 @@
             android:id="@+leden/voegtoe_voornaam"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="textPersonName" >
-
+            android:inputType="textPersonName"
+            android:textSize="30sp" >
         </EditText>
 
         <TextView
@@ -51,7 +52,8 @@
             android:id="@+leden/voegtoe_achternaam"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="textPersonName" />
+            android:inputType="textPersonName"
+            android:textSize="30sp" />
 
         <LinearLayout
             android:id="@+leden/editPane"
@@ -60,51 +62,53 @@
             android:orientation="vertical"
             android:visibility="gone" >
 
-            <LinearLayout
+            <Button
+                android:id="@+id/button1"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:visibility="visible" >
+                android:onClick="wijzigLid"
+                android:padding="20dp"
+                android:text="Wijzigen"
+                android:textSize="30sp" />
 
-                <Button
-                    android:id="@+id/button1"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:onClick="wijzigLid"
-                    android:text="Wijzigen" />
-
-                <Button
-                    android:id="@+id/button2"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:onClick="verwijderLid"
-                    android:text="Verwijderen" />
-
-            </LinearLayout>
+            <Button
+                android:id="@+id/button2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:onClick="verwijderLid"
+                android:padding="20dp"
+                android:text="Verwijderen"
+                android:textSize="30sp" />
 
             <Button
                 android:id="@+id/button3"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:onClick="annuleren"
-                android:text="Annuleren" />
+                android:padding="20dp"
+                android:text="Annuleren"
+                android:textSize="30sp" />
 
         </LinearLayout>
 
         <Button
             android:id="@+leden/voegtoe_button"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:onClick="voegToeLid"
-            android:text="Voeg toe" />
+            android:padding="20dp"
+            android:text="Voeg toe"
+            android:textSize="30sp" />
 
         <Button
             android:id="@+id/button4"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
             android:onClick="importMembers"
-            android:text="Import leden" />
-
+            android:padding="20dp"
+            android:text="Import leden"
+            android:textSize="30sp" />
     </LinearLayout>
 
     <ListView
@@ -114,7 +118,6 @@
         android:layout_margin="5dp"
         android:layout_marginLeft="10dp"
         android:layout_weight="1" >
-
     </ListView>
 
 </LinearLayout>

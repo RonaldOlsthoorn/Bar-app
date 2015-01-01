@@ -55,8 +55,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
 		return db.rawQuery("SELECT * FROM " + MemberTable.TABLE_NAME
 				+ " WHERE " + MemberTable.COLUMN_FIRST_NAME + " LIKE \""
-				+ constraint + "%\" OR " + MemberTable.COLUMN_LAST_NAME
-				+ " LIKE \"" + constraint + "%\"", null);
+				+ constraint + "%\" ", null);
 
 	}
 
@@ -136,9 +135,25 @@ public class DBHelper extends SQLiteOpenHelper {
 
 		SQLiteDatabase db;
 		db = getReadableDatabase();
+		
+		String t1 = "t1";
+		String t2 = "t2";
+		
+		String query = "SELECT " + t1+"."+ItemList.COLUMN_ID+ ","
+				+ t1+"."+ItemList.COLUMN_NAME_ITEM+","+t1+"."+ItemList.COLUMN_NAME_PRICE
+				+ ","+t2+"."+"sum_amount"
+				+" FROM "+ ItemList.TABLE_NAME +" "+t1+" " 
+				+" LEFT OUTER JOIN "
+				+"(SELECT "+Consumption.COLUMN_ARTICLE_ID+","
+				+ "SUM("+Consumption.COLUMN_AMMOUNT+") AS sum_amount"
+				+ " FROM "+ Consumption.TABLE_NAME
+				+ " GROUP BY "+Consumption.COLUMN_ARTICLE_ID 
+				+ " ) "+t2
+				+" ON "+t1+"."+ItemList.COLUMN_ID + "="+Consumption.COLUMN_ARTICLE_ID
+				+ " ORDER BY "+t1+"."+ItemList.COLUMN_ORDER
+				;
 
-		return db.query(ItemList.TABLE_NAME, null, null, null, null, null,
-				ItemList.COLUMN_ORDER);
+		return db.rawQuery(query, null);
 	}
 
 	/*
@@ -177,6 +192,38 @@ public class DBHelper extends SQLiteOpenHelper {
 				+ "=" + Consumption.TABLE_NAME + "."
 				+ Consumption.COLUMN_ORDER_ID + " ORDER BY "
 				+ Order.COLUMN_TS_CREATED;
+
+		return db.rawQuery(query, null);
+	}
+	
+	
+	/*
+	 * Returns a cursor containing all consumptions, sorted by article. Note that group clearances
+	 * ("groeps afrekeningen") are stored in another table. In this version the
+	 * groups version is disabled so it does not matter.
+	 */
+	public Cursor getTotalConsumptionsByMember(int memberId) {
+
+		SQLiteDatabase db = getReadableDatabase();
+
+		String t1 = "t1";
+		String t2 = "t2";
+		
+		String query = "SELECT " + t1+"."+ItemList.COLUMN_ID+ ","
+				+ t1+"."+ItemList.COLUMN_NAME_ITEM+","+t1+"."+ItemList.COLUMN_NAME_PRICE
+				+ ","+t2+"."+"sum_amount"
+				+" FROM "+ ItemList.TABLE_NAME +" "+t1+" " 
+				+" LEFT OUTER JOIN "
+				+"(SELECT "+Consumption.COLUMN_ARTICLE_ID+","
+				+ "SUM("+Consumption.COLUMN_AMMOUNT+") AS sum_amount"
+				+ " FROM "+ Consumption.TABLE_NAME+","+Order.TABLE_NAME
+				+ " WHERE "+ Order.TABLE_NAME+"."+Order.COLUMN_ID+"="+Consumption.TABLE_NAME+"."+Consumption.COLUMN_ORDER_ID
+				+ " AND "+ Order.COLUMN_ACCOUNT+"="+memberId
+				+ " GROUP BY "+Consumption.COLUMN_ARTICLE_ID
+				+ " ) "+t2
+				+" ON "+t1+"."+ItemList.COLUMN_ID + "="+Consumption.COLUMN_ARTICLE_ID
+				+ " ORDER BY "+t1+"."+ItemList.COLUMN_ORDER
+				;
 
 		return db.rawQuery(query, null);
 	}
@@ -300,20 +347,22 @@ public class DBHelper extends SQLiteOpenHelper {
 			return res;
 		}
 	}
-	
-	public boolean updateCredentials(String username, String passwordUnhashed){
-		
+
+	public boolean updateCredentials(String username, String passwordUnhashed) {
+
 		SQLiteDatabase db = getWritableDatabase();
-		
+
 		ContentValues v = new ContentValues();
 		v.put(KeyValueLog.COLUMN_VALUE, username);
-		int i = db.update(KeyValueLog.TABLE_NAME, v, KeyValueLog.COLUMN_KEY+"='username'", null);
+		int i = db.update(KeyValueLog.TABLE_NAME, v, KeyValueLog.COLUMN_KEY
+				+ "='username'", null);
 		v.clear();
 		v.put(KeyValueLog.COLUMN_VALUE, MD5Hash.md5(passwordUnhashed));
-		int j = db.update(KeyValueLog.TABLE_NAME, v, KeyValueLog.COLUMN_KEY+"='password'", null);
-		
-		return (i+j)!=0;
-		
+		int j = db.update(KeyValueLog.TABLE_NAME, v, KeyValueLog.COLUMN_KEY
+				+ "='password'", null);
+
+		return (i + j) != 0;
+
 	}
 
 	/*
@@ -672,7 +721,6 @@ public class DBHelper extends SQLiteOpenHelper {
 				+ TABLE_NAME;
 
 		public static String getIdColumnName() {
-			// TODO Auto-generated method stub
 			return COLUMN_ID;
 		}
 
@@ -947,8 +995,8 @@ public class DBHelper extends SQLiteOpenHelper {
 
 		public static final String SQL_INSERT_CRED = "INSERT INTO "
 				+ TABLE_NAME + " (" + COLUMN_KEY + "," + COLUMN_VALUE + ") "
-				+ "VALUES " + "('username','admin')"+"," 
-				+ "('password','"+ MD5Hash.md5("mcallen") + "')";
+				+ "VALUES " + "('username','admin')" + "," + "('password','"
+				+ MD5Hash.md5("mcallen") + "')";
 
 		public static final String SQL_DELETE_ENTRIES = "DROP TABLE IF EXISTS "
 				+ TABLE_NAME;

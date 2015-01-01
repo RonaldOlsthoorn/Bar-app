@@ -101,6 +101,7 @@
             android:name=".gui.OrderActivity"
             android:label="@string/title_activity_order"
             android:parentActivityName=".gui.TurfSelectCustomerActivity"
+            android:windowSoftInputMode="stateHidden"
             android:screenOrientation="portrait" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
