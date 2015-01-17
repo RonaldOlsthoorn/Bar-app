@@ -95,8 +95,10 @@ public class EditOrderActivity extends Activity implements OnItemClickListener,
 		// Handle action bar item clicks here. The action bar will
 		// automatically handle clicks on the Home/Up button, so long
 		// as you specify a parent activity in AndroidManifest.xml.
+		
 		int id = item.getItemId();
-		if (id == R.id.action_settings) {
+		if (id == R.id.action_place_order) {
+			saveOrderDB();
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
@@ -112,7 +114,12 @@ public class EditOrderActivity extends Activity implements OnItemClickListener,
 		finish();
 	}
 
-	public void saveOrder(View view) {
+	public void saveOrder(){
+		
+		saveOrderDB();
+	}
+	
+	public void saveOrderDB() {
 
 		DB.deleteOrder(orderId);
 
