@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:focusable="false"
+    android:focusableInTouchMode="false"
+    android:gravity="right"
+    android:minHeight="70dp"
+    android:orientation="horizontal" >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical" >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal" >
+
+            <TextView
+                android:id="@+orderOverViewRow/first"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:text="Ronald"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:textSize="25sp" />
+
+            <TextView
+                android:id="@+orderOverViewRow/last"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:text="Olsthoorn"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:textSize="25sp" />
+
+            <TextView
+                android:id="@+id/textView2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:text=" | "
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:textSize="25sp" />
+
+            <TextView
+                android:id="@+id/textView3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:text="€ "
+                android:textAppearance="?android:attr/textAppearanceLarge" />
+
+            <TextView
+                android:id="@+orderOverViewRow/subtotal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:text="2,20"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:textSize="25sp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
+
+            <TextView
+                android:id="@+orderOverViewRow/date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:text="11/12/1990"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textSize="20sp" />
+
+        </LinearLayout>
+    </LinearLayout>
+
+    <Button
+        android:id="@+orderOverViewRow/edit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+        android:padding="10dp"
+        android:text="Aanpassen"
+        android:textSize="30sp" />
+
+    <Button
+        android:id="@+orderOverViewRow/delete"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+        android:padding="10dp"
+        android:text="verwijderen"
+        android:textSize="30sp" />
+
+</LinearLayout>

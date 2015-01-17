@@ -269,7 +269,6 @@ public class DBHelper extends SQLiteOpenHelper {
 	}
 
 	public Cursor getOrder(int id) {
-		// TODO Auto-generated method stub
 		SQLiteDatabase db = getReadableDatabase();
 
 		String query = "SELECT " + Consumption.TABLE_NAME + "."
@@ -365,7 +364,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
 	}
 
-	/*
+	/**
 	 * Deletes row from table with identifier id
 	 * 
 	 * Returns true if the operation succeeded otherwise false
@@ -395,7 +394,6 @@ public class DBHelper extends SQLiteOpenHelper {
 	 * are deleted. Usually done after making the balance.
 	 */
 	public void deleteAllOrders() {
-		// TODO Auto-generated method stub
 		SQLiteDatabase db = getWritableDatabase();
 		db.delete(Order.TABLE_NAME, null, null);
 		db.delete(Consumption.TABLE_NAME, null, null);
@@ -403,7 +401,6 @@ public class DBHelper extends SQLiteOpenHelper {
 	}
 
 	public boolean deleteOrder(int id) {
-		// TODO Auto-generated method stub
 		SQLiteDatabase db = getWritableDatabase();
 		boolean res = false;
 
@@ -418,10 +415,9 @@ public class DBHelper extends SQLiteOpenHelper {
 		} catch (SQLException e) {
 			Log.d(TAG, "deleteOrIgnore on " + id + " fail");
 			res = false;
-		} finally {
+		} 
 			db.close();
 			return res;
-		}
 	}
 
 	/*
@@ -458,7 +454,7 @@ public class DBHelper extends SQLiteOpenHelper {
 		return null;
 	}
 
-	/*
+	/**
 	 * Returns whether on not a backup needs to be made based on the number of
 	 * orders since the last update. Returns true if an update needs to be made
 	 * otherwise false
@@ -501,7 +497,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
 	}
 
-	/*
+	/**
 	 * Returns whether on not a backup needs to be made based on the number of
 	 * orders since the last update. Only SD balances are considered. Returns
 	 * true if an update needs to be made otherwise false.
@@ -549,7 +545,7 @@ public class DBHelper extends SQLiteOpenHelper {
 		return false;
 	}
 
-	/*
+	/**
 	 * Returns whether a certain id is present in a table. Useful for checking
 	 * valid updates on for instance members.
 	 */
@@ -567,7 +563,7 @@ public class DBHelper extends SQLiteOpenHelper {
 		return true;
 	}
 
-	/*
+	/**
 	 * Called when the database is first created. Creates all the tables and
 	 * triggers.
 	 * 
@@ -579,7 +575,6 @@ public class DBHelper extends SQLiteOpenHelper {
 	 */
 	@Override
 	public void onCreate(SQLiteDatabase db) {
-		// TODO Auto-generated method stub
 		db.execSQL(MemberTable.SQL_CREATE_TABLE);
 		db.execSQL(MemberTable.TRIGGER_NEW_ACCOUNT);
 		db.execSQL(ItemList.SQL_CREATE_TABLE);
@@ -597,7 +592,7 @@ public class DBHelper extends SQLiteOpenHelper {
 		db.execSQL(KeyValueLog.SQL_INSERT_CRED);
 	}
 
-	/*
+	/**
 	 * Called when the database is updated. Simply removes all the tables and
 	 * recreates them
 	 * 
@@ -609,7 +604,6 @@ public class DBHelper extends SQLiteOpenHelper {
 	 */
 	@Override
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-		// TODO Auto-generated method stub
 		db.execSQL(MemberTable.SQL_DELETE_ENTRIES);
 		db.execSQL(ItemList.SQL_DELETE_ENTRIES);
 		db.execSQL(AccountList.SQL_DELETE_ENTRIES);
@@ -622,7 +616,7 @@ public class DBHelper extends SQLiteOpenHelper {
 		DATABASE_VERSION = newVersion;
 	}
 
-	/*
+	/**
 	 * Inner class representing the table containing all the members
 	 */
 	public static abstract class MemberTable implements BaseColumns {
@@ -691,7 +685,7 @@ public class DBHelper extends SQLiteOpenHelper {
 		}
 	}
 
-	/*
+	/**
 	 * Inner class representing the table containing all the articles
 	 */
 	public static abstract class ItemList implements BaseColumns {
@@ -726,7 +720,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
 	}
 
-	/*
+	/**
 	 * Inner class representing the table containing all the accounts belonging
 	 * to both members and groups
 	 */
@@ -769,13 +763,12 @@ public class DBHelper extends SQLiteOpenHelper {
 				+ " ; " + "END";
 
 		public static String getIdColumnName() {
-			// TODO Auto-generated method stub
 			return COLUMN_ACCOUNT;
 		}
 
 	}
 
-	/*
+	/**
 	 * Inner class representing the table containing all the orders
 	 */
 	public static abstract class Order implements BaseColumns {
@@ -891,7 +884,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
 	}
 
-	/*
+	/**
 	 * Inner class representing the table containing all the consumptions
 	 */
 	public static abstract class Consumption implements BaseColumns {
@@ -932,13 +925,12 @@ public class DBHelper extends SQLiteOpenHelper {
 				+ TABLE_NAME;
 
 		public static String getIdColumnName() {
-			// TODO Auto-generated method stub
 			return COLUMN_ID;
 		}
 
 	}
 
-	/*
+	/**
 	 * Inner class representing the table containing a log of all the backups
 	 */
 	public static abstract class BackupLog implements BaseColumns {
@@ -974,7 +966,7 @@ public class DBHelper extends SQLiteOpenHelper {
 		}
 	}
 
-	/*
+	/**
 	 * Inner class representing the table containing a log of all the backups
 	 */
 	public static abstract class KeyValueLog implements BaseColumns {
@@ -1002,7 +994,6 @@ public class DBHelper extends SQLiteOpenHelper {
 				+ TABLE_NAME;
 
 		public static String getIdColumnName() {
-			// TODO Auto-generated method stub
 			return COLUMN_KEY;
 		}
 	}
