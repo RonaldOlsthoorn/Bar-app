@@ -15,8 +15,7 @@ public class IOReport {
 	public IOReport(boolean s, String c ){
 		
 		succes = s;
-		cause = c;
-		
+		cause = c;	
 	}
 	
 	public boolean getSucces(){return succes;}

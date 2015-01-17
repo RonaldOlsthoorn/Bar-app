@@ -11,21 +11,13 @@ public class CustomListview extends LinearLayout {
 	private BaseAdapter adapter;
 	private Context context;
 
-	// public CustomListview(Context context, AttributeSet attrs, int
-	// defStyleAttr) {
-	// super(context, attrs, defStyleAttr);
-	// TODO Auto-generated constructor stub
-	// }
-
 	public CustomListview(Context context, AttributeSet attrs) {
 		super(context, attrs);
-		// TODO Auto-generated constructor stub
 		this.context = context;
 	}
 
 	public CustomListview(Context context) {
 		super(context);
-		// TODO Auto-generated constructor stub
 		this.context = context;
 	}
 

@@ -32,8 +32,7 @@ public class OrderExporter {
 	public OrderExporter(Context c) {
 
 		context = c;
-		DB = DBHelper.getDBHelper(context);
-		
+		DB = DBHelper.getDBHelper(context);	
 	}
 
 	public IOReport exportSD(){
@@ -218,16 +217,12 @@ public class OrderExporter {
 			xmlSerializer.endTag(null, "member");
 
 			c.moveToNext();
-
 		}
 		
 		xmlSerializer.endTag(null,"list");
-		
 		xmlSerializer.endTag(null, "bestellingen");
-
 		xmlSerializer.endDocument();
 		xmlSerializer.flush();
-
 	}
 	
 	private void extractReceiptFromDB(BufferedOutputStream buf)

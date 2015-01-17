@@ -5,8 +5,8 @@
     android:versionName="1.0" >
 
     <uses-sdk
-        android:minSdkVersion="7"
-        android:targetSdkVersion="17" />
+        android:minSdkVersion="18"
+        android:targetSdkVersion="21" />
 
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
@@ -145,14 +145,6 @@
         <activity
             android:name=".gui.OrderOverviewActivity"
             android:label="@string/title_activity_order_overview"
-            android:parentActivityName=".gui.BarBazzActivity" >
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.groover.bar.gui.BarBazzActivity" />
-        </activity>
-        <activity
-            android:name=".gui.OrderOverviewActivity"
-            android:label="@string/title_activity_orcer_overview"
             android:parentActivityName=".gui.BarBazzActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"

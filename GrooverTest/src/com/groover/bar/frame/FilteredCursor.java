@@ -7,7 +7,7 @@ import java.util.List;
 import android.database.Cursor;
 import android.database.CursorWrapper;
 
-/*
+/**
  * Cursor with extra functionality. Able to Hide/Show rows of the cursor 
  */
 public class FilteredCursor extends CursorWrapper{
@@ -27,7 +27,7 @@ public class FilteredCursor extends CursorWrapper{
 		return base;
 	}
 	
-	/*
+	/**
 	 * Set all rows to visible
 	 */
 	public void setAll(){
@@ -39,7 +39,7 @@ public class FilteredCursor extends CursorWrapper{
 		}
 	}
 
-	/*
+	/**
 	 * Set all rows to invisible
 	 */
 	public void clearAllRows(){
@@ -47,7 +47,7 @@ public class FilteredCursor extends CursorWrapper{
 		filterMap.clear();
 	}
 
-	/*
+	/**
 	 * Set a row at position pos to visible. pos is the position on 
 	 * the base cursor.
 	 * 
@@ -76,7 +76,7 @@ public class FilteredCursor extends CursorWrapper{
 		
 	}
 	
-	/*
+	/**
 	 * Set a row at with identifier id to visible. Assumed is that 
 	 * There is an identifier column at column 0. Otherwise this 
 	 * function crashes like a meteor.
@@ -86,8 +86,6 @@ public class FilteredCursor extends CursorWrapper{
 	 * Otherwise false is returned.
 	 */
 	public boolean addId(int id) {
-		// TODO Auto-generated method stub
-				
 		super.moveToFirst();	
 		
 		
@@ -103,7 +101,7 @@ public class FilteredCursor extends CursorWrapper{
 		return false;
 	}
 	
-	/*
+	/**
 	 * Sets a row at position pos to invisible. pos is the position of
 	 * the filtered cursor.
 	 */
@@ -120,13 +118,11 @@ public class FilteredCursor extends CursorWrapper{
 		
 		if(!filterMap.isEmpty() && mPos>-1){
 			
-			super.moveToPosition(filterMap.get(mPos));
-			
+			super.moveToPosition(filterMap.get(mPos));	
 		}
-
 	}
 	
-	/*
+	/**
 	 * Sets a row at position pos to invisible. pos is the position of
 	 * the base cursor.
 	 */
@@ -146,13 +142,11 @@ public class FilteredCursor extends CursorWrapper{
 		}		
 	}
 	
-	/*
+	/**
 	 * Sets a row at with identifier id to invisible. Assumed is that the 
 	 * identifier column is at column position 0.
 	 */
 	public void filterId(int id) {
-		// TODO Auto-generated method stub
-		
 		super.moveToFirst();	
 		
 		while(super.getPosition()<super.getCount()){
@@ -166,7 +160,7 @@ public class FilteredCursor extends CursorWrapper{
 		}
 	}
 	
-	/*
+	/**
 	 * Sorts the filtered cursor
 	 */
 	public void sort(){
@@ -174,14 +168,14 @@ public class FilteredCursor extends CursorWrapper{
 		Collections.sort(filterMap);
 	}
 	
-	/*
+	/**
 	 * Returns the position of the base cursor
 	 */
 	public int getUnfilteredPosition(){
 		return filterMap.get(mPos);
 	}
 
-	/*
+	/**
 	 * Returns a filtered cursor with all the 
 	 * invisible entries of current cursor visible and vice versa
 	 */
@@ -289,7 +283,6 @@ public class FilteredCursor extends CursorWrapper{
 	}
 
 	public List<Integer> getMap() {
-		// TODO Auto-generated method stub
 		return filterMap;
 	}
 	

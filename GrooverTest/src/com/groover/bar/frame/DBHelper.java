@@ -288,7 +288,6 @@ public class DBHelper extends SQLiteOpenHelper {
 	}
 
 	public Cursor getCredentials() {
-		// TODO Auto-generated method stub
 
 		SQLiteDatabase db = getReadableDatabase();
 

@@ -84,7 +84,7 @@ public class LedenMainActivity extends FragmentActivity implements
 		c = DB.getMembers();
 
 		adapter = new SimpleCursorAdapter(this, R.layout.ledenlijstrow2, c,
-				FROM, TO, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
+				FROM, TO, 0);
 
 		ledenlijst.setOnItemClickListener(this);
 		ledenlijst.setAdapter(adapter);

@@ -39,7 +39,7 @@ public class TurfSelectCustomerActivity extends Activity implements
 	private SearchCursor c_leden;
 	private SearchCursor c_leden_aanwezig;
 	private SearchCursor c_filtered;
-	
+
 	private FormatTextAdapter a_leden_aanwezig;
 	private ListView l_leden_aanwezig;
 
@@ -54,14 +54,15 @@ public class TurfSelectCustomerActivity extends Activity implements
 	private ListView l_leden;
 	private EditText search;
 	private int height;
-    private boolean softkeyHidden;
-	
+	private boolean softkeyHidden;
+
 	private FilterQueryProvider filterQueryProvider = new FilterQueryProvider() {
 		public Cursor runQuery(CharSequence constraint) {
 			// assuming you have your custom DBHelper instance
 			// ready to execute the DB request
-			
-			c_filtered = new SearchCursor(DB.getFilteredMember(constraint.toString())) ;
+
+			c_filtered = new SearchCursor(DB.getFilteredMember(constraint
+					.toString()));
 			return c_filtered;
 
 		}
@@ -105,7 +106,7 @@ public class TurfSelectCustomerActivity extends Activity implements
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		MainSearchLayout searchLayout = new MainSearchLayout(this, null);
-        setContentView(searchLayout);
+		setContentView(searchLayout);
 
 		// Show the Up button in the action bar.
 		setupActionBar();
@@ -115,10 +116,8 @@ public class TurfSelectCustomerActivity extends Activity implements
 		c_leden_aanwezig = new SearchCursor(DB.getFrequentVisitors());
 
 		a_leden = new FormatTextAdapter(this, R.layout.ledenlijstrow, c_leden,
-				FROM_LEDEN, TO_LEDEN,
-				CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER, df,
-				R.ledenlijstrow.account);
-		
+				FROM_LEDEN, TO_LEDEN, 0, df, R.ledenlijstrow.account);
+
 		a_leden.setFilterQueryProvider(filterQueryProvider);
 
 		l_leden = (ListView) findViewById(R.selectCustomer.listAllMembers);
@@ -126,8 +125,7 @@ public class TurfSelectCustomerActivity extends Activity implements
 		l_leden.setOnItemClickListener(this);
 
 		a_leden_aanwezig = new FormatTextAdapter(this, R.layout.ledenlijstrow,
-				c_leden_aanwezig, FROM_LEDEN, TO_LEDEN,
-				CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER, df,
+				c_leden_aanwezig, FROM_LEDEN, TO_LEDEN, 0, df,
 				R.ledenlijstrow.account);
 
 		l_leden_aanwezig = (ListView) findViewById(R.selectCustomer.listFrequentMembers);
@@ -140,35 +138,34 @@ public class TurfSelectCustomerActivity extends Activity implements
 		int color = res.getColor(android.R.color.black);
 		search.setTextColor(color);
 		search.addTextChangedListener(this);
-
 	}
-	
 
 	@Override
 	public void onItemClick(AdapterView<?> adapterView, View view, int pos,
 			long id) {
-		
+
 		int customerId;
 		String customerName;
 		String customerType;
 		int customerAcount;
 
-		if (adapterView.equals(l_leden) ) {			
-			if(!c_leden.isClosed()){
+		if (adapterView.equals(l_leden)) {
+			if (!c_leden.isClosed()) {
 				c_leden.moveToPosition(pos);
 				customerId = c_leden.getInt(0);
-				customerName = c_leden.getString(1) + " " + c_leden.getString(2);
+				customerName = c_leden.getString(1) + " "
+						+ c_leden.getString(2);
 				customerType = "individual";
 				customerAcount = c_leden.getInt(3);
-			}else{
+			} else {
 				c_filtered.moveToId((int) id);
 				customerId = c_filtered.getInt(0);
-				customerName = c_filtered.getString(1) + " " + c_filtered.getString(2);
+				customerName = c_filtered.getString(1) + " "
+						+ c_filtered.getString(2);
 				customerType = "individual";
 				customerAcount = c_filtered.getInt(3);
-			}			
-		}
-		else {
+			}
+		} else {
 
 			c_leden.moveToId((int) id);
 			customerId = c_leden.getInt(0);
@@ -176,7 +173,7 @@ public class TurfSelectCustomerActivity extends Activity implements
 			customerType = "individual";
 			customerAcount = c_leden.getInt(3);
 		}
-		
+
 		Intent intent = new Intent(this, OrderActivity.class);
 		intent.putExtra("type", customerType);
 		intent.putExtra("ID", customerId);
@@ -185,7 +182,6 @@ public class TurfSelectCustomerActivity extends Activity implements
 
 		startActivityForResult(intent, REQUEST_CODE);
 	}
-
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -201,65 +197,70 @@ public class TurfSelectCustomerActivity extends Activity implements
 	public class MainSearchLayout extends LinearLayout {
 
 		public MainSearchLayout(Context context, AttributeSet attributeSet) {
-	        super(context, attributeSet);
-	        LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-	        inflater.inflate(R.layout.activity_turf_select_customer, this);
-	    }
+			super(context, attributeSet);
+			LayoutInflater inflater = (LayoutInflater) context
+					.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+			inflater.inflate(R.layout.activity_turf_select_customer, this);
+		}
 
-	    @Override
-	    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-	        Log.d("Search Layout", "Handling Keyboard Window shown");
+		@Override
+		protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+			Log.d("Search Layout", "Handling Keyboard Window shown");
 
-	        final int proposedheight = MeasureSpec.getSize(heightMeasureSpec);
+			final int proposedheight = MeasureSpec.getSize(heightMeasureSpec);
 
-	        if (height > proposedheight){
-	            // Keyboard is shown
-	        	Log.d("Search Layout", "Keyboard shown");
-	        	softkeyHidden = false;
-	        	height = proposedheight;
-	        	findViewById(R.selectCustomer.boxAllMembers).setVisibility(VISIBLE);
-	        	findViewById(R.selectCustomer.boxFrequentVisitiors).setVisibility(GONE);
+			if (height > proposedheight) {
+				// Keyboard is shown
+				Log.d("Search Layout", "Keyboard shown");
+				softkeyHidden = false;
+				height = proposedheight;
+				findViewById(R.selectCustomer.boxAllMembers).setVisibility(
+						VISIBLE);
+				findViewById(R.selectCustomer.boxFrequentVisitiors)
+						.setVisibility(GONE);
 
-	        } if(height < proposedheight){
-	        	
-	        	height = proposedheight;
-	        	 // Keyboard is hidden
-	        	softkeyHidden = true;
-	        	Log.d("Search Layout", "Keyboard hidden");
-	        	findViewById(R.selectCustomer.boxAllMembers).setVisibility(GONE);
-	        	findViewById(R.selectCustomer.boxFrequentVisitiors).setVisibility(VISIBLE);
-	        }
-	        
-	        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-	    }
+			}
+			if (height < proposedheight) {
+
+				height = proposedheight;
+				// Keyboard is hidden
+				softkeyHidden = true;
+				Log.d("Search Layout", "Keyboard hidden");
+				findViewById(R.selectCustomer.boxAllMembers)
+						.setVisibility(GONE);
+				findViewById(R.selectCustomer.boxFrequentVisitiors)
+						.setVisibility(VISIBLE);
+			}
+
+			super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+		}
 	}
 
 	@Override
 	public void beforeTextChanged(CharSequence s, int start, int count,
 			int after) {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void onTextChanged(CharSequence s, int start, int before, int count) {
-		// TODO Auto-generated method stub
-		if(s.length()>0 && softkeyHidden==true){
-			findViewById(R.selectCustomer.boxAllMembers).setVisibility(View.VISIBLE);
-        	findViewById(R.selectCustomer.boxFrequentVisitiors).setVisibility(View.GONE);
+		if (s.length() > 0 && softkeyHidden == true) {
+			findViewById(R.selectCustomer.boxAllMembers).setVisibility(
+					View.VISIBLE);
+			findViewById(R.selectCustomer.boxFrequentVisitiors).setVisibility(
+					View.GONE);
 		}
-		if(s.length()==0 && softkeyHidden==true){
-			findViewById(R.selectCustomer.boxAllMembers).setVisibility(View.GONE);
-        	findViewById(R.selectCustomer.boxFrequentVisitiors).setVisibility(View.VISIBLE);
+		if (s.length() == 0 && softkeyHidden == true) {
+			findViewById(R.selectCustomer.boxAllMembers).setVisibility(
+					View.GONE);
+			findViewById(R.selectCustomer.boxFrequentVisitiors).setVisibility(
+					View.VISIBLE);
 		}
-		
+
 		a_leden.getFilter().filter(s);
 		a_leden.notifyDataSetChanged();
 	}
 
 	@Override
 	public void afterTextChanged(Editable s) {
-		// TODO Auto-generated method stub
-		
 	}
 }

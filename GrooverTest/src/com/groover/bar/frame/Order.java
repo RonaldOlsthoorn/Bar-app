@@ -10,7 +10,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.util.SparseArray;
 
-/*
+/**
  * proxy class representing consumptions.
  */
 public class Order {

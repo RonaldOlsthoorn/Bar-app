@@ -11,7 +11,6 @@ public class OrderUnit {
 		subject = a;
 		amount = 0;
 		subtotal = 0;
-		
 	}
 	
 	public OrderUnit(Article a, int n){

@@ -1,12 +1,10 @@
 package com.groover.bar.frame;
 
-
 import java.io.IOException;
 import com.groover.bar.frame.DBHelper.BackupLog;
 import android.app.IntentService;
 import android.content.ContentValues;
 import android.content.Intent;
-import android.util.Log;
 
 // BackupService class is used every hour to make backups of the database.
 // If there is not internet connection to store.
@@ -17,7 +15,6 @@ public class BackupService extends IntentService {
 	
 	public BackupService() {
 		super("BackupService");
-		// TODO Auto-generated constructor stub
 		DB = DBHelper.getDBHelper(this);		
 	}
 

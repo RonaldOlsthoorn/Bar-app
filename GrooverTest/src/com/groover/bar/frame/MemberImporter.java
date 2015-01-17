@@ -34,7 +34,7 @@ public class MemberImporter {
 	private File file;
 	private Context context;
 
-	/*
+	/**
 	 * Constructs importer object. Context c used for access database.
 	 */
 	public MemberImporter(Context c) {
@@ -43,7 +43,7 @@ public class MemberImporter {
 		DB = DBHelper.getDBHelper(context);
 	}
 
-	/*
+	/**
 	 * Imports members returns true if all succeeded. Otherwise false.
 	 * DELETES ALL ORDERS IN THE PROCESS
 	 */
@@ -88,7 +88,7 @@ public class MemberImporter {
 		return res;
 	}
 
-	/* Imports members in xml file f. returns true if all succeeded. Otherwise false.
+	/** Imports members in xml file f. returns true if all succeeded. Otherwise false.
 	 * DELETES ALL ORDERS IN THE PROCESS
 	 * 
 	 */

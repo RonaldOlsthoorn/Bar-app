@@ -46,13 +46,11 @@ public class OrderListAdapter extends BaseAdapter{
 
 	@Override
 	public int getCount() {
-		// TODO Auto-generated method stub
 		return source.getCount();
 	}
 
 	@Override
 	public Object getItem(int pos) {
-		// TODO Auto-generated method stub
 		source.moveToPosition(pos);
 		return source;
 	}
@@ -75,8 +73,6 @@ public class OrderListAdapter extends BaseAdapter{
 
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
-		// TODO Auto-generated method stub
-			
 		source.moveToPosition(position);
 		LayoutInflater mInflater = (LayoutInflater)
         context.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
@@ -122,7 +118,6 @@ public class OrderListAdapter extends BaseAdapter{
 		
 		@Override
 		public void onClick(View arg0) {
-			// TODO Auto-generated method stub			
 			l.delete(id);
 			OrderListAdapter.this.notifyDataSetChanged();     
 		}		
@@ -142,8 +137,7 @@ public class OrderListAdapter extends BaseAdapter{
 		
 		@Override
 		public void onClick(View arg0) {
-			// TODO Auto-generated method stub
-            l.edit(id,pos);
+		    l.edit(id,pos);
             OrderListAdapter.this.notifyDataSetChanged();
 		}		
 	}

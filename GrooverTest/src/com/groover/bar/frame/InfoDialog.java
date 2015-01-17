@@ -24,5 +24,4 @@ public class InfoDialog extends AlertDialog {
 		AlertDialog dialog = builder.create();
 		return builder.create();
 	}
-
 }

@@ -52,13 +52,11 @@ public class OrderAdapter extends BaseAdapter {
 
 	@Override
 	public int getCount() {
-		// TODO Auto-generated method stub
 		return source.getCount();
 	}
 
 	@Override
 	public Object getItem(int arg0) {
-		// TODO Auto-generated method stub
 		return source.getUnit(arg0);
 	}
 
@@ -79,17 +77,13 @@ public class OrderAdapter extends BaseAdapter {
 
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
-		// TODO Auto-generated method stub
-
 		OrderUnit s = source.getUnit(position);
 		ViewHolder holder;
-
-		// Log.d("adapter",holder.txtAdapter.toString()+" "+watcher.toString());
 
 		LayoutInflater mInflater = (LayoutInflater) context
 				.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
 		convertView = mInflater.inflate(layout, null);
-		
+
 		holder = new ViewHolder();
 		holder.txtName = (TextView) convertView
 				.findViewById(R.orderRow.article);
@@ -126,7 +120,6 @@ public class OrderAdapter extends BaseAdapter {
 
 		@Override
 		public void onClick(View arg0) {
-			// TODO Auto-generated method stub
 			amount.setText("0");
 		}
 	}
@@ -143,7 +136,6 @@ public class OrderAdapter extends BaseAdapter {
 
 		@Override
 		public void onClick(View arg0) {
-			// TODO Auto-generated method stub
 			amount.setText((source.getUnit(position).getAmount() + 1) + "");
 		}
 	}
@@ -161,9 +153,9 @@ public class OrderAdapter extends BaseAdapter {
 		@Override
 		public void onClick(View arg0) {
 			// TODO Auto-generated method stub
-			if(source.getUnit(position).getAmount()>=1){
+			if (source.getUnit(position).getAmount() >= 1) {
 				amount.setText((source.getUnit(position).getAmount() - 1) + "");
-			}		
+			}
 		}
 	}
 
@@ -182,7 +174,6 @@ public class OrderAdapter extends BaseAdapter {
 		@Override
 		public void beforeTextChanged(CharSequence s, int start, int count,
 				int after) {
-			// TODO Auto-generated method stub
 		}
 
 		@Override
@@ -203,7 +194,6 @@ public class OrderAdapter extends BaseAdapter {
 
 		@Override
 		public void afterTextChanged(Editable s) {
-			// TODO Auto-generated method stub
 		}
 	}
 }

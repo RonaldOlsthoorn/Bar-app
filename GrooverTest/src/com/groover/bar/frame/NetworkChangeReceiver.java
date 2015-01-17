@@ -8,7 +8,7 @@ import android.util.Log;
 
 public class NetworkChangeReceiver extends BroadcastReceiver {
 	
-	/*
+	/**
 	 * Called whenever a change of status occurs in the network.
 	 * Try to upload backups if there are any.
 	 */

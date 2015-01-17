@@ -7,7 +7,6 @@ public class SearchCursor extends CursorWrapper{
 
 	public SearchCursor(Cursor cursor) {
 		super(cursor);
-		// TODO Auto-generated constructor stub
 	}
 	
 	public boolean moveToId(int id){

@@ -1,13 +1,10 @@
 package com.groover.bar.frame;
 
 import java.text.DecimalFormat;
-
 import com.groover.bar.R;
-
 import android.app.Activity;
 import android.content.Context;
 import android.database.Cursor;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -174,7 +171,6 @@ public class ArticleAdapter extends BaseAdapter {
 
 			boolean checks = true;
 			// CHECKS
-
 			if (price.getText().toString() == null) {
 
 				price.setError("Field must not be empty!");
