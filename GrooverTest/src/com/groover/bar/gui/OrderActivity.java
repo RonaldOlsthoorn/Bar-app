@@ -87,16 +87,13 @@ public class OrderActivity extends Activity implements
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		switch (item.getItemId()) {
-		case android.R.id.home:
-			// This ID represents the Home or Up button. In the case of this
-			// activity, the Up button is shown. Use NavUtils to allow users
-			// to navigate up one level in the application structure. For
-			// more details, see the Navigation pattern on Android Design:
-			//
-			// http://developer.android.com/design/patterns/navigation.html#up-vs-back
-			//
-			NavUtils.navigateUpFromSameTask(this);
+		// Handle action bar item clicks here. The action bar will
+		// automatically handle clicks on the Home/Up button, so long
+		// as you specify a parent activity in AndroidManifest.xml.
+		
+		int id = item.getItemId();
+		if (id == R.id.action_place_order) {
+			saveOrderDB();
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
@@ -108,8 +105,13 @@ public class OrderActivity extends Activity implements
 		intent.putExtra("custId", customer.getId());
 		startActivity(intent);
 	}
+	
+	public void saveOrder(View view){
+		
+		saveOrderDB();
+	}
 
-	public void saveOrder(View view) {
+	public void saveOrderDB() {
 
 		boolean res = c_Order.writeToDB(this);
 		if (res) {

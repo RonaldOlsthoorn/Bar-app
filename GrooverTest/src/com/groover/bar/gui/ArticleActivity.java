@@ -203,8 +203,6 @@ public class ArticleActivity extends Activity implements
 
 	@Override
 	public void setEditable(int pos, Article a) {
-
-		Log.d("article", "pos: "+pos+" editable: "+a.getEditable());
 		
 		if (pos == -1) {
 			for (int i = 0; i < adapter.getCount(); i++) {
