@@ -24,8 +24,9 @@
             android:id="@+articles/addPane"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_gravity="center"
             android:layout_weight="1"
-            android:visibility="gone" >
+            android:visibility="visible" >
 
             <EditText
                 android:id="@+articles/name"
@@ -33,7 +34,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_weight="1"
-                android:ems="10" >
+                android:textSize="30sp" >
 
                 <requestFocus />
             </EditText>
@@ -54,7 +55,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_weight="1"
-                android:ems="10"
+                android:textSize="30sp"
                 android:inputType="numberDecimal" />
         </LinearLayout>
 
