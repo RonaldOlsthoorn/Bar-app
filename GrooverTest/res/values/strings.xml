@@ -39,5 +39,6 @@
     <string name="title_activity_order_overview">Bestelling overzicht</string>
     <string name="title_activity_orcer_overview">Bestelling overzicht</string>
     <string name="title_activity_edit_order">Bestelling aanpassen</string>
+    <string name="title_activity_backup">Backups</string>
 
 </resources>

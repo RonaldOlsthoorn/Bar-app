@@ -198,9 +198,7 @@ public class DBHelper extends SQLiteOpenHelper {
 	
 	
 	/*
-	 * Returns a cursor containing all consumptions, sorted by article. Note that group clearances
-	 * ("groeps afrekeningen") are stored in another table. In this version the
-	 * groups version is disabled so it does not matter.
+	 * Returns a cursor containing all consumptions, sorted by article. 
 	 */
 	public Cursor getTotalConsumptionsByMember(int memberId) {
 
@@ -213,7 +211,7 @@ public class DBHelper extends SQLiteOpenHelper {
 				+ t1+"."+ItemList.COLUMN_NAME_ITEM+","+t1+"."+ItemList.COLUMN_NAME_PRICE
 				+ ","+t2+"."+"sum_amount"
 				+" FROM "+ ItemList.TABLE_NAME +" "+t1+" " 
-				+" LEFT OUTER JOIN "
+				+" JOIN "
 				+"(SELECT "+Consumption.COLUMN_ARTICLE_ID+","
 				+ "SUM("+Consumption.COLUMN_AMMOUNT+") AS sum_amount"
 				+ " FROM "+ Consumption.TABLE_NAME+","+Order.TABLE_NAME
@@ -298,7 +296,7 @@ public class DBHelper extends SQLiteOpenHelper {
 				null, null);
 	}
 
-	/*
+	/**
 	 * inserts a row in a table denoted by String table. The contentvalues are
 	 * inserted. Any Error is ignored. Returns the inserted row id (_id in most
 	 * cases) or -1 if the operation failed.

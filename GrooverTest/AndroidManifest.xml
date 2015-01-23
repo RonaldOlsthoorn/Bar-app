@@ -101,8 +101,8 @@
             android:name=".gui.OrderActivity"
             android:label="@string/title_activity_order"
             android:parentActivityName=".gui.TurfSelectCustomerActivity"
-            android:windowSoftInputMode="stateHidden"
-            android:screenOrientation="portrait" >
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateHidden" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.groovertest.TurfSelectCustomerActivity" />
@@ -151,9 +151,17 @@
                 android:value="com.groover.bar.gui.BarBazzActivity" />
         </activity>
         <activity
-            android:name="com.groover.bar.gui.EditOrderActivity"
+            android:name=".gui.EditOrderActivity"
             android:label="@string/title_activity_edit_order"
             android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:name="com.groover.bar.gui.BackupActivity"
+            android:label="@string/title_activity_backup"
+            android:parentActivityName=".gui.BeheerActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.groover.bar.gui.BeheerActivity" />
         </activity>
     </application>
 
