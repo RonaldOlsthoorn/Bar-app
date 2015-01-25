@@ -17,8 +17,6 @@ import android.support.v4.app.NavUtils;
 
 public class MainActivity extends Activity {
 
-	private AlarmManager alarmMgr;
-	private PendingIntent alarmIntent;
 	private int REQUEST_CODE=123;
 	
 	@Override
@@ -28,18 +26,6 @@ public class MainActivity extends Activity {
 		// Show the Up button in the action bar.
 		//getActionBar().setDisplayHomeAsUpEnabled(true);
 		
-		setupBackupService();
-	}
-
-	private void setupBackupService() {
-		// TODO Auto-generated method stub
-			
-		alarmMgr = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
-		Intent intent = new Intent(this, BackupService.class);
-		PendingIntent pIntent = PendingIntent.getService(this, 0, intent, 0);
-		alarmMgr.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() +
-		        20 * 1000, AlarmManager.INTERVAL_HOUR , pIntent);
-				
 	}
 
 	@Override

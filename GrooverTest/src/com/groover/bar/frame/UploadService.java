@@ -1,5 +1,4 @@
 package com.groover.bar.frame;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -12,7 +11,9 @@ import com.groover.bar.frame.DBHelper.BackupLog;
 
 import android.app.IntentService;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.util.Log;
 
 public class UploadService extends IntentService {
@@ -28,11 +29,17 @@ public class UploadService extends IntentService {
 	protected void onHandleIntent(Intent arg0) {
 		FTPClient client = new FTPClient();
 		FileInputStream fis = null;
+		
+		SharedPreferences backupSP = getSharedPreferences(PrefConstants.BACKUP_PREFS, Context.MODE_PRIVATE);
+		
+		String url = backupSP.getString(PrefConstants.BACKUP_PREFS_FTP_URL, "");
+		String uName = backupSP.getString(PrefConstants.BACKUP_PREFS_UNAME, "");
+		String passWord = backupSP.getString(PrefConstants.BACKUP_PREFS_PASSWORD, "");
 
 		try {
 
 			int reply;
-			client.connect("ftp.grooverjazz.nl");
+			client.connect(url);
 			client.enterLocalPassiveMode();
 
 			Log.i("ftp", "reply " + client.getReplyString());

@@ -15,7 +15,7 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
         android:layout_margin="10dp"
-        android:text="ftp backups: "
+        android:text="backups: "
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:textSize="30sp" />
 
@@ -28,6 +28,36 @@
         android:text="ToggleButton" />
 
     <TextView
+        android:id="@+id/TextView04"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignTop="@+backup/timePicker"
+        android:layout_margin="10dp"
+        android:text="backup interval:  "
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textSize="30sp" />
+
+    <TimePicker
+        android:id="@+backup/timePicker"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/textView1"
+        android:layout_centerHorizontal="true"
+        android:layout_margin="10dp" />
+
+    <TextView
+        android:id="@+id/TextView05"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+backup/timePicker"
+        android:layout_margin="10dp"
+        android:text="backup type: "
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textSize="30sp" />
+
+    <TextView
         android:id="@+id/TextView01"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -36,7 +66,7 @@
         android:layout_marginBottom="10dp"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
-        android:layout_marginTop="50dp"
+        android:layout_marginTop="100dp"
         android:text="ftp adres: "
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:textSize="30sp" />
@@ -92,23 +122,37 @@
         android:layout_toRightOf="@+id/TextView02"
         android:ems="10" />
 
-    <TextView
-        android:id="@+id/TextView04"
+    <RadioGroup
+        android:id="@+backup/backuptype"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignTop="@+backup/timePicker"
-        android:layout_margin="10dp"
-        android:text="backup interval:  "
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:textSize="30sp" />
+        android:layout_alignLeft="@+backup/timePicker"
+        android:layout_alignTop="@+id/TextView05" >
+ 
+        <RadioButton
+            android:id="@+backup/radioLocal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked="true"
+            android:onClick="onRadioButton"
+            android:text="Local backup"
+            android:textAppearance="?android:attr/textAppearanceLarge" />
+ 
+        <RadioButton
+            android:id="@+backup/radioInternet"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Internet backup"
+            android:textAppearance="?android:attr/textAppearanceLarge" />
+ 
+    </RadioGroup>
 
-    <TimePicker
-        android:id="@+backup/timePicker"
+    <Button
+        android:id="@+backup/testconnection"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/textView1"
-        android:layout_centerHorizontal="true"
-        android:layout_margin="10dp" />
+        android:layout_alignRight="@+backup/password"
+        android:layout_below="@+id/TextView03"
+        android:text="Test connection" />
 
 </RelativeLayout>
