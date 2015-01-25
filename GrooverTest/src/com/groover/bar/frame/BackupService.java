@@ -9,11 +9,13 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.util.Log;
 
 // BackupService class is used every hour to make backups of the database.
 // If there is not internet connection to store.
 public class BackupService extends IntentService {
 
+	private static final String TAG = BackupService.class.getSimpleName();
 	private DBHelper DB;
 	private OrderExporter ex;
 
@@ -26,6 +28,7 @@ public class BackupService extends IntentService {
 	@Override
 	protected void onHandleIntent(Intent intent) {
 
+		Log.v(TAG,"onBackupService");
 		// Check whether it needed to make a back up
 		boolean check = DB.checkNeedToBackup();
 
@@ -70,9 +73,7 @@ public class BackupService extends IntentService {
 					v.put(BackupLog.COLUMN_TYPE, "backup");
 					v.put(BackupLog.COLUMN_SUCCESS, false);
 					DB.insertOrIgnore(BackupLog.TABLE_NAME, v);
-				}
-				
-				
+				}				
 			}			
 		}
 	}

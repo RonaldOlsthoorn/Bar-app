@@ -38,8 +38,6 @@ public class BackupActivity extends Activity {
 	private EditText mPassword;
 	private Button mTestconnection;
 	private RadioGroup mBackupType;
-	private Intent intent = new Intent(this, BackupService.class);
-
 	private SharedPreferences backupSP;
 
 	@Override
@@ -81,9 +79,9 @@ public class BackupActivity extends Activity {
 		mUname = (EditText) findViewById(R.backup.username);
 		mUrl.setText(backupSP.getString(PrefConstants.BACKUP_PREFS_UNAME, ""));
 
-		mUname = (EditText) findViewById(R.backup.password);
-		mUrl.setText(backupSP
-				.getString(PrefConstants.BACKUP_PREFS_PASSWORD, ""));
+		mPassword = (EditText) findViewById(R.backup.password);
+		mPassword.setText(backupSP.getString(PrefConstants.BACKUP_PREFS_PASSWORD, ""));
+		
 		mTestconnection = (Button) findViewById(R.backup.testconnection);
 
 	}
@@ -154,13 +152,14 @@ public class BackupActivity extends Activity {
 
 		saveBackupSettings();
 
+		Intent intent = new Intent(this, BackupService.class);
 		AlarmManager alarmMgr = (AlarmManager) this
 				.getSystemService(Context.ALARM_SERVICE);
 		PendingIntent pIntent = PendingIntent.getService(this, 0, intent, 0);
 
 		if (backupSP.getBoolean(PrefConstants.BACKUP_ENABLED, false)) {
 			alarmMgr.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP,
-					SystemClock.elapsedRealtime() + 5 * 1000, backupSP.getLong(
+					SystemClock.elapsedRealtime() + 5 * 1000, backupSP.getInt(
 							PrefConstants.BACKUP_PREFS_INTERVAL, 3600 * 1000),
 					pIntent);
 		}else{

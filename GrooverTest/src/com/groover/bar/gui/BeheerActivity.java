@@ -68,4 +68,10 @@ public class BeheerActivity extends Activity {
 		Intent intent = new Intent(this, PenningActivity.class);
 		startActivity(intent);
 	}
+	
+	public void toBackups(View view){
+		
+		Intent intent = new Intent(this, BackupActivity.class);
+		startActivity(intent);
+	}
 }
