@@ -35,6 +35,93 @@ public class OrderExporter {
 		context = c;
 		DB = DBHelper.getDBHelper(context);
 	}
+	
+	public IOReport exportSD(){
+
+		boolean mExternalStorageAvailable = false;
+		boolean mExternalStorageWriteable = false;
+		String state = Environment.getExternalStorageState();
+		
+		if (Environment.MEDIA_MOUNTED.equals(state)) {
+			// We can read and write the media
+			mExternalStorageAvailable = mExternalStorageWriteable = true;
+			
+		} else if (Environment.MEDIA_MOUNTED_READ_ONLY.equals(state)) {
+			// We can only read the media
+			mExternalStorageAvailable = true;
+			mExternalStorageWriteable = false;
+
+		} else {
+			// Something else is wrong. It may be one of many other states, but
+			// all we need
+			// to know is we can neither read nor write
+			mExternalStorageAvailable = mExternalStorageWriteable = false;
+
+		}
+		
+		if(!mExternalStorageAvailable){
+			return new IOReport(false,IOReport.CAUSE_NO_SD_MOUNTED);			
+		}
+		if(!mExternalStorageWriteable){
+			return new IOReport(false,IOReport.CAUSE_WRITING_EXCEPTION);			
+		}
+		
+		else {
+			
+			Calendar c = Calendar.getInstance();
+			SimpleDateFormat df1 = new SimpleDateFormat("dd-MM-yy hh.mm.ss");
+			ts_settled = df1.format(c.getTime());
+			
+			File sdRoot = Environment.getExternalStorageDirectory();
+			File mainFolder = new File(sdRoot,
+					"Groover Bar/afrekeningen/afrekening "+ts_settled);
+			mainFolder.mkdirs();
+			
+			
+			try{
+				
+				File currentDB = context.getDatabasePath(DBHelper.DATABASE_NAME);
+				File backupDB = new File(mainFolder, "DB.db");
+				backupDB.createNewFile();
+				FileChannel src = new FileInputStream(currentDB).getChannel();
+				FileChannel dst = new FileOutputStream(backupDB).getChannel();
+				dst.transferFrom(src, 0, src.size());
+				src.close();
+				dst.close();
+
+				File xml1 = new File(mainFolder, "bestellingen "
+						+ ts_settled + ".xml");
+
+				BufferedOutputStream buf1 = new BufferedOutputStream(
+						new FileOutputStream(xml1));
+				extractOrdersFromDB(buf1);
+				buf1.close();
+				
+				File xml2 = new File(mainFolder, "afrekening "
+						+ ts_settled + ".xml");
+
+				BufferedOutputStream buf2 = new BufferedOutputStream(
+						new FileOutputStream(xml2));
+				extractReceiptFromDB(buf2);
+				buf2.close();
+				
+				//backup success. note to database.
+				ContentValues v = new ContentValues();
+				v.put(DBHelper.BackupLog.COLUMN_SUCCESS, true);
+				v.put(DBHelper.BackupLog.COLUMN_TYPE, "SD");
+				
+				DB.insertOrIgnore(DBHelper.BackupLog.TABLE_NAME, v);
+				DB.deleteAllOrders();
+				
+				return new IOReport(true,null);
+				
+			}catch(IOException e){
+				
+				return new IOReport(false,IOReport.CAUSE_WRITING_EXCEPTION);
+
+			}
+		}
+	}
 
 	public void backupSD() throws IOException {
 

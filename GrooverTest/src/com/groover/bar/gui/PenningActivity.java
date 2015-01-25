@@ -67,7 +67,7 @@ public class PenningActivity extends FragmentActivity {
 	public void processDB(View v) {
 
 		OrderExporter ex = new OrderExporter(this);	
-		IOReport report = ex.backupSD();
+		IOReport report = ex.exportSD();
 		
 		if(report.getSucces()){
 			Toast toast = Toast.makeText(this, "Succesfully made afrekening", Toast.LENGTH_SHORT);
