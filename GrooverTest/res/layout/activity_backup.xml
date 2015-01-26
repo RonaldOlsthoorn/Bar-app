@@ -128,7 +128,7 @@
         android:layout_height="wrap_content"
         android:layout_alignLeft="@+backup/timePicker"
         android:layout_alignTop="@+id/TextView05" >
- 
+
         <RadioButton
             android:id="@+backup/radioLocal"
             android:layout_width="wrap_content"
@@ -137,14 +137,14 @@
             android:onClick="onRadioButton"
             android:text="Local backup"
             android:textAppearance="?android:attr/textAppearanceLarge" />
- 
+
         <RadioButton
             android:id="@+backup/radioInternet"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:onClick="onRadioButton"
             android:text="Internet backup"
             android:textAppearance="?android:attr/textAppearanceLarge" />
- 
     </RadioGroup>
 
     <Button

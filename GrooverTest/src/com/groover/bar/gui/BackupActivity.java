@@ -16,6 +16,7 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
 import android.os.SystemClock;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -31,6 +32,7 @@ import android.widget.CompoundButton;
 
 public class BackupActivity extends Activity {
 
+	private static final String TAG = BackupActivity.class.getSimpleName();
 	private TimePicker mTimePicker;
 	private ToggleButton mBackupsEnabled;
 	private EditText mUrl;
@@ -49,6 +51,8 @@ public class BackupActivity extends Activity {
 				Context.MODE_PRIVATE);
 
 		mBackupsEnabled = (ToggleButton) findViewById(R.backup.toggle);
+		mBackupsEnabled.setChecked(backupSP.getBoolean(
+				PrefConstants.BACKUP_ENABLED, false));
 		mBackupsEnabled
 				.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 
@@ -57,6 +61,7 @@ public class BackupActivity extends Activity {
 							boolean isChecked) {
 
 						setBackupSettingsEnabled(isChecked);
+
 					}
 				});
 
@@ -71,17 +76,25 @@ public class BackupActivity extends Activity {
 				* mTimePicker.getCurrentHour());
 
 		mBackupType = (RadioGroup) findViewById(R.backup.backuptype);
+		if (backupSP.getString(PrefConstants.BACKUP_TYPE,
+				PrefConstants.BACKUP_TYPE_LOCAL).equals(
+				PrefConstants.BACKUP_TYPE_LOCAL)) {
+			mBackupType.check(R.backup.radioLocal);
+		} else {
+			mBackupType.check(R.backup.radioInternet);
+		}
 
 		mUrl = (EditText) findViewById(R.backup.ftpUrl);
 		mUrl.setText(backupSP.getString(PrefConstants.BACKUP_PREFS_FTP_URL,
-				"ftp://"));
+				"ftp.grooverjazz.nl"));
 
 		mUname = (EditText) findViewById(R.backup.username);
-		mUrl.setText(backupSP.getString(PrefConstants.BACKUP_PREFS_UNAME, ""));
+		mUname.setText(backupSP.getString(PrefConstants.BACKUP_PREFS_UNAME, ""));
 
 		mPassword = (EditText) findViewById(R.backup.password);
-		mPassword.setText(backupSP.getString(PrefConstants.BACKUP_PREFS_PASSWORD, ""));
-		
+		mPassword.setText(backupSP.getString(
+				PrefConstants.BACKUP_PREFS_PASSWORD, ""));
+
 		mTestconnection = (Button) findViewById(R.backup.testconnection);
 
 	}
@@ -101,20 +114,14 @@ public class BackupActivity extends Activity {
 		return super.onOptionsItemSelected(item);
 	}
 
-	public void onRadioButtonClicked(View radioButton) {
-
-		Editor backupSettingsEditor = backupSP.edit();
+	public void onRadioButton(View radioButton) {
 
 		if (((RadioButton) radioButton).getText().equals("Local backup")) {
-			backupSettingsEditor.putString(PrefConstants.BACKUP_TYPE,
-					PrefConstants.BACKUP_TYPE_LOCAL);
+			setInternetSettingsEnabled(false);
 		}
 		if (((RadioButton) radioButton).getText().equals("Internet backup")) {
-			backupSettingsEditor.putString(PrefConstants.BACKUP_TYPE,
-					PrefConstants.BACKUP_TYPE_INTERNET);
+			setInternetSettingsEnabled(true);
 		}
-
-		backupSettingsEditor.commit();
 	}
 
 	public void saveBackupSettings() {
@@ -150,6 +157,7 @@ public class BackupActivity extends Activity {
 	protected void onStop() {
 		super.onStop(); // Always call the superclass method first
 
+		Log.v(TAG,"backup settings saved");
 		saveBackupSettings();
 
 		Intent intent = new Intent(this, BackupService.class);
@@ -162,7 +170,7 @@ public class BackupActivity extends Activity {
 					SystemClock.elapsedRealtime() + 5 * 1000, backupSP.getInt(
 							PrefConstants.BACKUP_PREFS_INTERVAL, 3600 * 1000),
 					pIntent);
-		}else{
+		} else {
 			alarmMgr.cancel(pIntent);
 		}
 	}
@@ -170,11 +178,18 @@ public class BackupActivity extends Activity {
 	public void setBackupSettingsEnabled(boolean enable) {
 
 		mTimePicker.setEnabled(enable);
-		mBackupType.setEnabled(enable);
+		
+		for (int i = 0; i < mBackupType.getChildCount(); i++) {
+			mBackupType.getChildAt(i).setEnabled(enable);
+		}
 
-		setInternetSettingsEnabled(backupSP.getString(
-				PrefConstants.BACKUP_TYPE, PrefConstants.BACKUP_TYPE_LOCAL)
-				.equals(PrefConstants.BACKUP_TYPE_INTERNET));
+		if (enable) {
+			setInternetSettingsEnabled(backupSP.getString(
+					PrefConstants.BACKUP_TYPE, PrefConstants.BACKUP_TYPE_LOCAL)
+					.equals(PrefConstants.BACKUP_TYPE_INTERNET));
+		} else {
+			setInternetSettingsEnabled(false);
+		}
 	}
 
 	public void setInternetSettingsEnabled(boolean enable) {
@@ -182,5 +197,6 @@ public class BackupActivity extends Activity {
 		mUrl.setEnabled(enable);
 		mUname.setEnabled(enable);
 		mPassword.setEnabled(enable);
+		mTestconnection.setEnabled(enable);
 	}
 }

@@ -42,7 +42,7 @@ public class UploadService extends IntentService {
 			client.connect(url);
 			client.enterLocalPassiveMode();
 
-			Log.i("ftp", "reply " + client.getReplyString());
+			Log.i("ftp log in: ", "reply " + client.getReplyString());
 
 			reply = client.getReplyCode();
 
@@ -51,7 +51,7 @@ public class UploadService extends IntentService {
 				Log.i("ftp", "disconnect");
 			}
 
-			client.login("grooverjazz.nl", "oMKtePGi");
+			client.login(uName, passWord);
 			boolean res = client.changeWorkingDirectory("bar/backups");
 			Log.i("ftp", "" + res);
 
