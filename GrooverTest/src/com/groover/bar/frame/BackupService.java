@@ -24,7 +24,6 @@ public class BackupService extends IntentService {
 		DB = DBHelper.getDBHelper(this);
 	}
 
-	// called by broadcastreceiver every hour to make backups of the database.
 	@Override
 	protected void onHandleIntent(Intent intent) {
 
@@ -50,7 +49,7 @@ public class BackupService extends IntentService {
 					// in the database
 					e.printStackTrace();
 					ContentValues v = new ContentValues();
-					v.put(BackupLog.COLUMN_TYPE, "backup");
+					v.put(BackupLog.COLUMN_TYPE, "backup SD");
 					v.put(BackupLog.COLUMN_SUCCESS, false);
 					DB.insertOrIgnore(BackupLog.TABLE_NAME, v);
 				}
@@ -70,7 +69,7 @@ public class BackupService extends IntentService {
 					// in the database
 					e.printStackTrace();
 					ContentValues v = new ContentValues();
-					v.put(BackupLog.COLUMN_TYPE, "backup");
+					v.put(BackupLog.COLUMN_TYPE, "backup ftp");
 					v.put(BackupLog.COLUMN_SUCCESS, false);
 					DB.insertOrIgnore(BackupLog.TABLE_NAME, v);
 				}				

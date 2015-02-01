@@ -1,20 +1,32 @@
 package com.groover.bar.gui;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+
+import org.apache.commons.net.ftp.FTPClient;
+import org.apache.commons.net.ftp.FTPReply;
+
 import com.groover.bar.R;
-import com.groover.bar.R.id;
-import com.groover.bar.R.layout;
-import com.groover.bar.R.menu;
 import com.groover.bar.frame.BackupService;
+import com.groover.bar.frame.DBHelper;
+import com.groover.bar.frame.InfoDialog;
+import com.groover.bar.frame.OrderExporter;
 import com.groover.bar.frame.PrefConstants;
+import com.groover.bar.frame.DBHelper.BackupLog;
 
 import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.SystemClock;
 import android.util.Log;
 import android.view.Menu;
@@ -26,9 +38,7 @@ import android.widget.EditText;
 import android.widget.RadioGroup;
 import android.widget.RadioButton;
 import android.widget.TimePicker;
-import android.widget.TimePicker.OnTimeChangedListener;
 import android.widget.ToggleButton;
-import android.widget.CompoundButton;
 
 public class BackupActivity extends Activity {
 
@@ -41,12 +51,14 @@ public class BackupActivity extends Activity {
 	private Button mTestconnection;
 	private RadioGroup mBackupType;
 	private SharedPreferences backupSP;
+	private DBHelper DB;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_backup);
 
+		DB = DBHelper.getDBHelper(this);
 		backupSP = getSharedPreferences(PrefConstants.BACKUP_PREFS,
 				Context.MODE_PRIVATE);
 
@@ -123,6 +135,18 @@ public class BackupActivity extends Activity {
 			setInternetSettingsEnabled(true);
 		}
 	}
+	
+	public void onTestConnection(View view){
+		
+		if (mBackupType.getCheckedRadioButtonId() == R.backup.radioLocal) {
+			TestLocalBackupTask task = new TestLocalBackupTask();
+			task.doInBackground();
+			
+		} else {
+			TestInternetBackupTask task = new TestInternetBackupTask();
+			task.doInBackground();			
+		}
+	}
 
 	public void saveBackupSettings() {
 
@@ -157,7 +181,7 @@ public class BackupActivity extends Activity {
 	protected void onStop() {
 		super.onStop(); // Always call the superclass method first
 
-		Log.v(TAG,"backup settings saved");
+		Log.v(TAG, "backup settings saved");
 		saveBackupSettings();
 
 		Intent intent = new Intent(this, BackupService.class);
@@ -178,7 +202,7 @@ public class BackupActivity extends Activity {
 	public void setBackupSettingsEnabled(boolean enable) {
 
 		mTimePicker.setEnabled(enable);
-		
+
 		for (int i = 0; i < mBackupType.getChildCount(); i++) {
 			mBackupType.getChildAt(i).setEnabled(enable);
 		}
@@ -199,4 +223,140 @@ public class BackupActivity extends Activity {
 		mPassword.setEnabled(enable);
 		mTestconnection.setEnabled(enable);
 	}
+
+	private class TestInternetBackupTask extends AsyncTask<Void, Void, String> {
+
+		public static final String RESULT_LOGIN_FAILED = "Backup test failed. Failed to log in";
+		public static final String RESULT_OK = "Backup test successfull";
+		public static final String RESULT_UPLOAD_FAILED = "Backup test failed. Failed upload.";
+		public static final String RESULT_UNKNOWN_ERROR = "Backup test faild. Unknown error";
+
+		@Override
+		protected String doInBackground(Void... params) {
+			String response = "";
+			
+			String url = mUrl.getText().toString();
+			String uName = mUname.getText().toString();
+			String passWord = mPassword.getText().toString();
+			
+			FTPClient client = new FTPClient();
+			FileInputStream fis = null;
+			
+			try {
+				int reply;
+				client.connect(url);
+				client.enterLocalPassiveMode();
+
+				Log.i("ftp log in: ", "reply " + client.getReplyString());
+
+				reply = client.getReplyCode();
+
+				if (!FTPReply.isPositiveCompletion(reply)) {
+					client.disconnect();
+					Log.i("ftp", "disconnect");
+					return RESULT_LOGIN_FAILED;
+				}
+
+				client.login(uName, passWord);
+				boolean res = client.changeWorkingDirectory("bar/backups");
+
+				if (!res) {
+					client.makeDirectory("bar");
+					client.changeWorkingDirectory("bar");
+					client.makeDirectory("backups");
+					res = client.changeWorkingDirectory("backups");
+
+				}
+				
+				if(!res){
+					
+					client.logout();
+					return RESULT_UPLOAD_FAILED;
+				}
+
+				res = client.storeFile("test", new InputStream() {
+					
+					@Override
+					public int read() throws IOException {
+						return 0;
+					}
+				});
+				
+				if(!res){
+					
+					client.logout();
+					return RESULT_UPLOAD_FAILED;
+				}
+							
+				client.logout();
+				client.disconnect();
+				return RESULT_OK;
+
+			} catch (IOException e) {
+
+				return RESULT_UNKNOWN_ERROR;
+
+			} finally {
+
+				try {
+					client.disconnect();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+
+		@Override
+		protected void onPostExecute(String result) {
+			displayTestResult(result);
+		}
+	}
+
+	private class TestLocalBackupTask extends AsyncTask<Void, Void, String> {
+
+		public static final String RESULT_NO_SD = "Backup test failed. No SD card available";
+		public static final String RESULT_SD_NOT_WRITABLE = "Backup test failed. SD not writable";
+		public static final String RESULT_OK = "Backup test successfull";
+		public static final String RESULT_UNKNOWN_ERROR = "Backup test failed. Unknown error";
+
+		@Override
+		protected String doInBackground(Void... params) {
+
+			String state = Environment.getExternalStorageState();
+
+			if (Environment.MEDIA_MOUNTED_READ_ONLY.equals(state)) {
+				return RESULT_SD_NOT_WRITABLE;
+			} else if (!Environment.MEDIA_MOUNTED.equals(state)) {
+				return RESULT_NO_SD;
+			}
+
+			try {
+
+				OrderExporter ex = new OrderExporter(BackupActivity.this);
+				ex.backupSD();
+
+				return RESULT_OK;
+
+			} catch (IOException e) {
+
+				ContentValues v = new ContentValues();
+				v.put(BackupLog.COLUMN_TYPE, "backup SD");
+				v.put(BackupLog.COLUMN_SUCCESS, false);
+				DB.insertOrIgnore(BackupLog.TABLE_NAME, v);
+
+				return RESULT_UNKNOWN_ERROR;
+			}
+		}
+
+		@Override
+		protected void onPostExecute(String result) {
+			displayTestResult(result);
+		}
+	}
+
+	public void displayTestResult(String res) {
+		InfoDialog id= new InfoDialog(this, "res");
+		id.show();
+	}
+
 }

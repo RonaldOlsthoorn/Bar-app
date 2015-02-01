@@ -98,6 +98,10 @@ public class OrderAdapter extends BaseAdapter {
 
 		holder.txtAmount.addTextChangedListener(new TextAdapter(position,
 				holder.txtSub, notice));
+		
+		if(s.getAmount()>0){
+			holder.txtAmount.setText(s.getAmount()+"");
+		}
 		holder.txtName.setText(s.getArticle().getName());
 		holder.txtPrice.setText(df.format(s.getArticle().getPrice()));
 		holder.txtSub.setText(df.format(s.getSubtotal()));
@@ -152,7 +156,6 @@ public class OrderAdapter extends BaseAdapter {
 
 		@Override
 		public void onClick(View arg0) {
-			// TODO Auto-generated method stub
 			if (source.getUnit(position).getAmount() >= 1) {
 				amount.setText((source.getUnit(position).getAmount() - 1) + "");
 			}

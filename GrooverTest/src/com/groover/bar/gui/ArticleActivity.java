@@ -1,15 +1,16 @@
 package com.groover.bar.gui;
 
+import com.larswerkman.holocolorpicker.ColorPicker;
 import com.groover.bar.R;
 import com.groover.bar.frame.Article;
 import com.groover.bar.frame.DBHelper;
 import com.groover.bar.frame.ArticleAdapter;
-import com.groover.bar.frame.InfoDialog;
 
 import android.os.Bundle;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ContentValues;
+import android.content.Intent;
 import android.database.Cursor;
 import android.util.Log;
 import android.view.Menu;
@@ -23,6 +24,7 @@ import android.support.v4.app.NavUtils;
 public class ArticleActivity extends Activity implements
 		ArticleAdapter.UpdateListener {
 
+	private static final String ARTICLE_ID = "article_id";
 	private DBHelper DB;
 	private ListView artikellijst;
 
@@ -32,6 +34,8 @@ public class ArticleActivity extends Activity implements
 	private Button voegToe;
 	private ArticleAdapter adapter;
 	private Cursor c_articles;
+
+	private final int REQUEST_CODE = 123;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -201,9 +205,27 @@ public class ArticleActivity extends Activity implements
 		setEditable(-1, null);
 	}
 
+	public void pickColor(int pos, Article a) {
+
+		Intent intent = new Intent(this, ColorPicker.class);
+		intent.putExtra(ARTICLE_ID, a.getId());
+		startActivityForResult(intent, REQUEST_CODE);
+	}
+
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		if (requestCode == 123) {
+			if (resultCode == RESULT_OK) {
+				Intent intent = getIntent();
+				finish();
+				startActivity(intent);
+			}
+		}
+	}
+
 	@Override
 	public void setEditable(int pos, Article a) {
-		
+
 		if (pos == -1) {
 			for (int i = 0; i < adapter.getCount(); i++) {
 				artikellijst.getChildAt(i).findViewById(R.articleRow.delete)
@@ -234,7 +256,7 @@ public class ArticleActivity extends Activity implements
 			AlertDialog alertDialog = alertDialogBuilder.create();
 			// show it
 			alertDialog.show();
-			
+
 			return;
 
 		} else {

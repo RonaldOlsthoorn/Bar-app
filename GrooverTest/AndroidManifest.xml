@@ -156,12 +156,16 @@
             android:screenOrientation="portrait" >
         </activity>
         <activity
-            android:name="com.groover.bar.gui.BackupActivity"
+            android:name=".gui.BackupActivity"
             android:label="@string/title_activity_backup"
             android:parentActivityName=".gui.BeheerActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.groover.bar.gui.BeheerActivity" />
+        </activity>
+        <activity
+            android:name="com.groover.bar.gui.ColorPickerActivity"
+            android:label="@string/title_activity_color_picker" >
         </activity>
     </application>
 

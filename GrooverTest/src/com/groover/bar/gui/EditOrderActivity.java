@@ -71,6 +71,8 @@ public class EditOrderActivity extends Activity implements OnItemClickListener,
 
 		l_order.setAdapter(a_order);
 		l_order.setOnItemClickListener(this);
+		
+		a_order.notifyDataSetChanged();
 	}
 
 	/**
@@ -114,7 +116,7 @@ public class EditOrderActivity extends Activity implements OnItemClickListener,
 		finish();
 	}
 
-	public void saveOrder(){
+	public void saveOrder(View saveOrderButton){
 		
 		saveOrderDB();
 	}

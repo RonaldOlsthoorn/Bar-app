@@ -85,7 +85,6 @@ public class OrderOverviewActivity extends Activity implements
 
 	@Override
 	public void edit(int id, int pos) {
-		// TODO Auto-generated method stub
 		c.moveToPosition(pos);
 
 		Intent intent = new Intent(this, EditOrderActivity.class);
@@ -93,7 +92,7 @@ public class OrderOverviewActivity extends Activity implements
 		intent.putExtra("type", "individual");
 		intent.putExtra("ID", c.getString(1));
 		intent.putExtra("account", c.getInt(4));
-		intent.putExtra("name", c.getString(2) + c.getString(3));
+		intent.putExtra("name", c.getString(2) +" " +c.getString(3));
 
 		startActivityForResult(intent, REQUEST_CODE);
 	}
@@ -133,14 +132,13 @@ public class OrderOverviewActivity extends Activity implements
 		alertDialog.show();
 	}
 
-	public void onItemClick(AdapterView<?> parent, View view, int position,
-			long id) {
-		// TODO Auto-generated method stub
-
-		Log.d("itemclick", "click");
-
-		if ((view.equals(findViewById(R.orderOverViewRow.edit)))) {
-			Log.d("itemclick", "found item");
-		}
-	}
+//	public void onItemClick(AdapterView<?> parent, View view, int position,
+//			long id) {
+//
+//		Log.d("itemclick", "click");
+//
+//		if ((view.equals(findViewById(R.orderOverViewRow.edit)))) {
+//			Log.d("itemclick", "found item");
+//		}
+//	}
 }

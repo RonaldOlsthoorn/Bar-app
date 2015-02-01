@@ -34,7 +34,7 @@ import android.os.Build;
 public class TurfSelectCustomerActivity extends Activity implements
 		OnItemClickListener, TextWatcher {
 
-	private int REQUEST_CODE = 123;
+	private final int REQUEST_CODE = 123;
 	private DBHelper DB;
 	private SearchCursor c_leden;
 	private SearchCursor c_leden_aanwezig;

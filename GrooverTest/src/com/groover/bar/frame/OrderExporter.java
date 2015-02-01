@@ -56,7 +56,6 @@ public class OrderExporter {
 			// all we need
 			// to know is we can neither read nor write
 			mExternalStorageAvailable = mExternalStorageWriteable = false;
-
 		}
 		
 		if(!mExternalStorageAvailable){
