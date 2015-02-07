@@ -141,7 +141,7 @@ public class DBHelper extends SQLiteOpenHelper {
 		
 		String query = "SELECT " + t1+"."+ItemList.COLUMN_ID+ ","
 				+ t1+"."+ItemList.COLUMN_NAME_ITEM+","+t1+"."+ItemList.COLUMN_NAME_PRICE
-				+ ","+t2+"."+"sum_amount"
+				+ ","+t2+"."+"sum_amount"+","+t1+"."+ItemList.COLUMN_NAME_COLOR
 				+" FROM "+ ItemList.TABLE_NAME +" "+t1+" " 
 				+" LEFT OUTER JOIN "
 				+"(SELECT "+Consumption.COLUMN_ARTICLE_ID+","
@@ -150,7 +150,7 @@ public class DBHelper extends SQLiteOpenHelper {
 				+ " GROUP BY "+Consumption.COLUMN_ARTICLE_ID 
 				+ " ) "+t2
 				+" ON "+t1+"."+ItemList.COLUMN_ID + "="+Consumption.COLUMN_ARTICLE_ID
-				+ " ORDER BY "+t1+"."+ItemList.COLUMN_ORDER
+				+ " ORDER BY "+t1+"."+ItemList.COLUMN_NAME_ORDER
 				;
 
 		return db.rawQuery(query, null);
@@ -220,7 +220,7 @@ public class DBHelper extends SQLiteOpenHelper {
 				+ " GROUP BY "+Consumption.COLUMN_ARTICLE_ID
 				+ " ) "+t2
 				+" ON "+t1+"."+ItemList.COLUMN_ID + "="+Consumption.COLUMN_ARTICLE_ID
-				+ " ORDER BY "+t1+"."+ItemList.COLUMN_ORDER
+				+ " ORDER BY "+t1+"."+ItemList.COLUMN_NAME_ORDER
 				;
 
 		return db.rawQuery(query, null);
@@ -692,7 +692,8 @@ public class DBHelper extends SQLiteOpenHelper {
 		public static final String COLUMN_NAME_ITEM = "item_name";
 		public static final String COLUMN_NAME_PRICE = "item_price";
 		public static final String COLUMN_NAME_CAT = "item_category";
-		public static final String COLUMN_ORDER = "item_order";
+		public static final String COLUMN_NAME_ORDER = "item_order";
+		public static final String COLUMN_NAME_COLOR = "item_color";
 
 		public static final String SQL_CREATE_TABLE = "CREATE TABLE IF NOT EXISTS "
 				+ TABLE_NAME
@@ -705,11 +706,14 @@ public class DBHelper extends SQLiteOpenHelper {
 				+ " DECIMAL(10,2) ,"
 				+ COLUMN_NAME_CAT
 				+ " TEXT DEFAULT 'overig', "
-				+ COLUMN_ORDER
-				+ " INTEGER )";
+				+ COLUMN_NAME_ORDER
+				+ " INTEGER ,"
+				+ COLUMN_NAME_COLOR
+				+ " INTEGER)";
 
 		public static final String SQL_DELETE_ENTRIES = "DROP TABLE IF EXISTS "
 				+ TABLE_NAME;
+		
 
 		public static String getIdColumnName() {
 			return COLUMN_ID;

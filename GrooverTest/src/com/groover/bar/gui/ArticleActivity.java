@@ -1,6 +1,5 @@
 package com.groover.bar.gui;
 
-import com.larswerkman.holocolorpicker.ColorPicker;
 import com.groover.bar.R;
 import com.groover.bar.frame.Article;
 import com.groover.bar.frame.DBHelper;
@@ -128,7 +127,7 @@ public class ArticleActivity extends Activity implements
 			values.put(DBHelper.ItemList.COLUMN_NAME_ITEM, naam);
 			values.put(DBHelper.ItemList.COLUMN_NAME_PRICE, prijs);
 			values.put(DBHelper.ItemList.COLUMN_NAME_CAT, "all");
-			values.put(DBHelper.ItemList.COLUMN_ORDER,
+			values.put(DBHelper.ItemList.COLUMN_NAME_ORDER,
 					c_articles.getCount() + 1);
 
 			DB.insertOrIgnore(DBHelper.ItemList.TABLE_NAME, values);
@@ -184,10 +183,10 @@ public class ArticleActivity extends Activity implements
 	@Override
 	public void swap(int id1, int id2, int pos1, int pos2) {
 		ContentValues v = new ContentValues();
-		v.put(DBHelper.ItemList.COLUMN_ORDER, pos2);
+		v.put(DBHelper.ItemList.COLUMN_NAME_ORDER, pos2);
 		DB.updateOrIgnore(DBHelper.ItemList.TABLE_NAME, id1, v);
 		v.clear();
-		v.put(DBHelper.ItemList.COLUMN_ORDER, pos1);
+		v.put(DBHelper.ItemList.COLUMN_NAME_ORDER, pos1);
 		DB.updateOrIgnore(DBHelper.ItemList.TABLE_NAME, id2, v);
 		adapter.swapCursor(DB.getArticles());
 		adapter.notifyDataSetChanged();
@@ -204,12 +203,12 @@ public class ArticleActivity extends Activity implements
 		adapter.notifyDataSetChanged();
 		setEditable(-1, null);
 	}
-
-	public void pickColor(int pos, Article a) {
-
-		Intent intent = new Intent(this, ColorPicker.class);
+	
+	@Override
+	public void pickColor(Article a) {
+		Intent intent = new Intent(this, ColorPickerActivity.class);
 		intent.putExtra(ARTICLE_ID, a.getId());
-		startActivityForResult(intent, REQUEST_CODE);
+		startActivityForResult(intent, REQUEST_CODE);		
 	}
 
 	@Override
@@ -217,6 +216,8 @@ public class ArticleActivity extends Activity implements
 		if (requestCode == 123) {
 			if (resultCode == RESULT_OK) {
 				Intent intent = getIntent();
+				ContentValues v = new ContentValues();
+				v.put(DBHelper.ItemList.COLUMN_NAME_COLOR, data.getIntExtra(ColorPickerActivity.COLOR, 0));
 				finish();
 				startActivity(intent);
 			}

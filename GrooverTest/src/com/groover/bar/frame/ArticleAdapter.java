@@ -16,6 +16,7 @@ import android.widget.EditText;
 public class ArticleAdapter extends BaseAdapter {
 
 	public interface UpdateListener {
+		
 		public void delete(Article article);
 
 		public void swap(int id1, int id2, int pos1, int pos2);
@@ -23,6 +24,8 @@ public class ArticleAdapter extends BaseAdapter {
 		public void edit(int pos, Article a);
 
 		public void setEditable(int pos, Article a);
+		
+		public void pickColor(Article a);
 	}
 
 	private Article[] articles;
@@ -70,6 +73,7 @@ public class ArticleAdapter extends BaseAdapter {
 		Button btEdit;
 		Button btUp;
 		Button btDown;
+		Button btColor;
 	}
 
 	@Override
@@ -90,12 +94,14 @@ public class ArticleAdapter extends BaseAdapter {
 					.findViewById(R.articleRow.price);
 			holder.btDelete = (Button) convertView
 					.findViewById(R.articleRow.delete);
+			holder.btColor = (Button) convertView.findViewById(R.articleRow.color);
 			holder.btEdit = (Button) convertView
 					.findViewById(R.articleRow.edit);
 			holder.btUp = (Button) convertView.findViewById(R.articleRow.up);
 			holder.btDown = (Button) convertView
 					.findViewById(R.articleRow.down);
-
+			
+			
 			convertView.setTag(holder);
 		} else {
 			holder = (ViewHolder) convertView.getTag();
@@ -103,6 +109,7 @@ public class ArticleAdapter extends BaseAdapter {
 
 		holder.txtName.setText(a.getName());
 		holder.txtPrice.setText(df.format(a.getPrice()));
+		holder.btColor.setOnClickListener(new colorAdapter(a,notice));
 		holder.btDelete.setOnClickListener(new deleteAdapter(a, notice));
 		holder.btEdit.setOnClickListener(new editAdapter(position, holder.btUp,
 				holder.btDown, holder.txtName, holder.txtPrice, a, notice));
@@ -111,6 +118,23 @@ public class ArticleAdapter extends BaseAdapter {
 
 		return convertView;
 	}
+	
+	private class colorAdapter implements OnClickListener {
+
+		Article article;
+		UpdateListener updateListener;
+
+		public colorAdapter(Article a, UpdateListener l) {
+			updateListener = l;
+			article = a;
+		}
+
+		@Override
+		public void onClick(View arg0) {
+			updateListener.pickColor(article);
+		}
+	}
+	
 
 	private class deleteAdapter implements OnClickListener {
 
