@@ -110,6 +110,8 @@ public class OrderAdapter extends BaseAdapter {
 				holder.txtAmount));
 		holder.btSubstr.setOnClickListener(new substractionAdapter(position,
 				holder.txtAmount));
+		
+		convertView.setBackgroundColor(s.getArticle().getColor());
 
 		return convertView;
 	}

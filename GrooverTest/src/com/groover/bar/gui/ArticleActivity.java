@@ -23,7 +23,8 @@ import android.support.v4.app.NavUtils;
 public class ArticleActivity extends Activity implements
 		ArticleAdapter.UpdateListener {
 
-	private static final String ARTICLE_ID = "article_id";
+	static final String ARTICLE_ID = "article_id";
+	private static final String TAG = ArticleActivity.class.getSimpleName();
 	private DBHelper DB;
 	private ListView artikellijst;
 
@@ -213,14 +214,16 @@ public class ArticleActivity extends Activity implements
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		if (requestCode == 123) {
-			if (resultCode == RESULT_OK) {
+		
+		if (requestCode == REQUEST_CODE && resultCode == RESULT_OK) {
+
 				Intent intent = getIntent();
 				ContentValues v = new ContentValues();
 				v.put(DBHelper.ItemList.COLUMN_NAME_COLOR, data.getIntExtra(ColorPickerActivity.COLOR, 0));
+				DB.updateOrIgnore(DBHelper.ItemList.TABLE_NAME, data.getIntExtra(ARTICLE_ID,-1), v);
 				finish();
 				startActivity(intent);
-			}
+
 		}
 	}
 

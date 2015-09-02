@@ -24,7 +24,7 @@ public class ArticleFactory {
 
 			if (source.getInt(0) == id) {
 				return new Article(id, source.getDouble(2),
-						source.getString(1), source.getInt(3) < 1);
+						source.getString(1), source.getInt(3) < 1, source.getInt(4));
 			}
 
 			source.moveToNext();

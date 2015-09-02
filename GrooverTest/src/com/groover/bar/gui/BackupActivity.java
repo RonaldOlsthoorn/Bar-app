@@ -18,9 +18,11 @@ import com.groover.bar.frame.DBHelper.BackupLog;
 
 import android.app.Activity;
 import android.app.AlarmManager;
+import android.app.AlertDialog;
 import android.app.PendingIntent;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
@@ -63,39 +65,8 @@ public class BackupActivity extends Activity {
 				Context.MODE_PRIVATE);
 
 		mBackupsEnabled = (ToggleButton) findViewById(R.backup.toggle);
-		mBackupsEnabled.setChecked(backupSP.getBoolean(
-				PrefConstants.BACKUP_ENABLED, false));
-		mBackupsEnabled
-				.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-
-					@Override
-					public void onCheckedChanged(CompoundButton buttonView,
-							boolean isChecked) {
-
-						setBackupSettingsEnabled(isChecked);
-
-					}
-				});
-
 		mTimePicker = (TimePicker) findViewById(R.backup.timePicker);
-		mTimePicker.setIs24HourView(true);
-		mTimePicker.setCurrentHour(backupSP.getInt(
-				PrefConstants.BACKUP_PREFS_INTERVAL, 0) / (3600 * 1000));
-		mTimePicker.setCurrentMinute(backupSP.getInt(
-				PrefConstants.BACKUP_PREFS_INTERVAL, 0)
-				/ (60 * 1000)
-				- 60
-				* mTimePicker.getCurrentHour());
-
 		mBackupType = (RadioGroup) findViewById(R.backup.backuptype);
-		if (backupSP.getString(PrefConstants.BACKUP_TYPE,
-				PrefConstants.BACKUP_TYPE_LOCAL).equals(
-				PrefConstants.BACKUP_TYPE_LOCAL)) {
-			mBackupType.check(R.backup.radioLocal);
-		} else {
-			mBackupType.check(R.backup.radioInternet);
-		}
-
 		mUrl = (EditText) findViewById(R.backup.ftpUrl);
 		mUrl.setText(backupSP.getString(PrefConstants.BACKUP_PREFS_FTP_URL,
 				"ftp.grooverjazz.nl"));
@@ -108,6 +79,44 @@ public class BackupActivity extends Activity {
 				PrefConstants.BACKUP_PREFS_PASSWORD, ""));
 
 		mTestconnection = (Button) findViewById(R.backup.testconnection);
+
+		mBackupsEnabled
+				.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+
+					@Override
+					public void onCheckedChanged(CompoundButton buttonView,
+							boolean isChecked) {
+
+						setBackupSettingsEnabled(isChecked);
+
+					}
+				});
+
+		mBackupsEnabled.setChecked(backupSP.getBoolean(
+				PrefConstants.BACKUP_ENABLED, false));
+
+		mTimePicker.setIs24HourView(true);
+		mTimePicker.setCurrentHour(backupSP.getInt(
+				PrefConstants.BACKUP_PREFS_INTERVAL, 0) / (3600 * 1000));
+		mTimePicker.setCurrentMinute(backupSP.getInt(
+				PrefConstants.BACKUP_PREFS_INTERVAL, 0)
+				/ (60 * 1000)
+				- 60
+				* mTimePicker.getCurrentHour());
+
+		
+		if (backupSP.getString(PrefConstants.BACKUP_TYPE,
+				PrefConstants.BACKUP_TYPE_LOCAL).equals(
+				PrefConstants.BACKUP_TYPE_LOCAL)) {
+			mBackupType.check(R.backup.radioLocal);
+			setInternetSettingsEnabled(false);
+		} else {
+			mBackupType.check(R.backup.radioInternet);
+			setInternetSettingsEnabled(true);
+		}
+
+		setBackupSettingsEnabled(backupSP.getBoolean(
+				PrefConstants.BACKUP_ENABLED, false));
 
 	}
 
@@ -135,16 +144,16 @@ public class BackupActivity extends Activity {
 			setInternetSettingsEnabled(true);
 		}
 	}
-	
-	public void onTestConnection(View view){
-		
+
+	public void onTestConnection(View view) {
+
 		if (mBackupType.getCheckedRadioButtonId() == R.backup.radioLocal) {
 			TestLocalBackupTask task = new TestLocalBackupTask();
-			task.doInBackground();
-			
+			task.execute();
+
 		} else {
 			TestInternetBackupTask task = new TestInternetBackupTask();
-			task.doInBackground();			
+			task.execute();
 		}
 	}
 
@@ -221,7 +230,6 @@ public class BackupActivity extends Activity {
 		mUrl.setEnabled(enable);
 		mUname.setEnabled(enable);
 		mPassword.setEnabled(enable);
-		mTestconnection.setEnabled(enable);
 	}
 
 	private class TestInternetBackupTask extends AsyncTask<Void, Void, String> {
@@ -230,19 +238,25 @@ public class BackupActivity extends Activity {
 		public static final String RESULT_OK = "Backup test successfull";
 		public static final String RESULT_UPLOAD_FAILED = "Backup test failed. Failed upload.";
 		public static final String RESULT_UNKNOWN_ERROR = "Backup test faild. Unknown error";
+		private static final String RESULT_CONNECTION_FAILED = "Backup test failed. Unable to connect";
 
 		@Override
 		protected String doInBackground(Void... params) {
-			String response = "";
-			
+
+			OrderExporter ex = new OrderExporter(BackupActivity.this);
+						
+
 			String url = mUrl.getText().toString();
 			String uName = mUname.getText().toString();
 			String passWord = mPassword.getText().toString();
-			
+
 			FTPClient client = new FTPClient();
 			FileInputStream fis = null;
-			
+
 			try {
+				
+				ex.backupLocal();
+				
 				int reply;
 				client.connect(url);
 				client.enterLocalPassiveMode();
@@ -254,11 +268,16 @@ public class BackupActivity extends Activity {
 				if (!FTPReply.isPositiveCompletion(reply)) {
 					client.disconnect();
 					Log.i("ftp", "disconnect");
-					return RESULT_LOGIN_FAILED;
+					return RESULT_CONNECTION_FAILED;
 				}
 
-				client.login(uName, passWord);
-				boolean res = client.changeWorkingDirectory("bar/backups");
+				boolean res = client.login(uName, passWord);
+				
+				if (!res){
+					return RESULT_LOGIN_FAILED;
+				}
+				
+				res = client.changeWorkingDirectory("bar/backups");
 
 				if (!res) {
 					client.makeDirectory("bar");
@@ -267,27 +286,38 @@ public class BackupActivity extends Activity {
 					res = client.changeWorkingDirectory("backups");
 
 				}
-				
-				if(!res){
-					
+
+				if (!res) {
+
 					client.logout();
 					return RESULT_UPLOAD_FAILED;
 				}
 
-				res = client.storeFile("test", new InputStream() {
-					
-					@Override
-					public int read() throws IOException {
-						return 0;
+				File backupFolder = new File(BackupActivity.this.getFilesDir(),
+						"backups");
+
+				if (!backupFolder.exists()) {
+					return RESULT_UNKNOWN_ERROR;
+				}
+
+				for (File child : backupFolder.listFiles()) {
+
+					for (File grandchild : child.listFiles()) {
+
+						fis = new FileInputStream(grandchild);
+						res = client.storeFile(grandchild.getName(), fis);
+						Log.i("ftp", grandchild.getAbsolutePath() + " " + res
+								+ " " + client.getReplyString());
+
 					}
-				});
-				
-				if(!res){
-					
+				}
+
+				if (!res) {
+
 					client.logout();
 					return RESULT_UPLOAD_FAILED;
 				}
-							
+
 				client.logout();
 				client.disconnect();
 				return RESULT_OK;
@@ -355,8 +385,17 @@ public class BackupActivity extends Activity {
 	}
 
 	public void displayTestResult(String res) {
-		InfoDialog id= new InfoDialog(this, "res");
-		id.show();
-	}
-
+		Log.e(TAG, "result: "+ res);
+		AlertDialog.Builder builder = new AlertDialog.Builder(BackupActivity.this);
+        builder.setMessage(res);
+        builder.setCancelable(true);
+        builder.setPositiveButton("Ok",
+                new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                dialog.cancel();
+            }
+        });
+        
+        AlertDialog alert = builder.create();
+        alert.show();	}
 }

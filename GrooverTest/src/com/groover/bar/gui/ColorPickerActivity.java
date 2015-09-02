@@ -11,6 +11,7 @@ import com.groover.bar.color.SVBar;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -21,11 +22,13 @@ import android.widget.TextView;
 public class ColorPickerActivity extends Activity implements OnColorChangedListener {
 
 	public static final String COLOR = "color";
+	private static final String TAG = ColorPickerActivity.class.getSimpleName();
 	private ColorPicker picker;
 	private SVBar svBar;
 	private OpacityBar opacityBar;
 	private Button button;
 	private TextView text;
+	private int artId;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -35,21 +38,12 @@ public class ColorPickerActivity extends Activity implements OnColorChangedListe
 		picker = (ColorPicker) findViewById(R.colorpicker.picker);
 		svBar = (SVBar) findViewById(R.colorpicker.svbar);
 		opacityBar = (OpacityBar) findViewById(R.colorpicker.opacitybar);
-		button = (Button) findViewById(R.colorpicker.button1);
-		text = (TextView) findViewById(R.colorpicker.textView1);
 		
 		picker.addSVBar(svBar);
 		picker.addOpacityBar(opacityBar);
-		picker.setOnColorChangedListener(this);
+		picker.setOnColorChangedListener(this);	
 		
-		button.setOnClickListener(new OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				text.setTextColor(picker.getColor());
-				picker.setOldCenterColor(picker.getColor());
-			}
-		});
+		artId = getIntent().getIntExtra(ArticleActivity.ARTICLE_ID, -1);
 	}
 
 	@Override
@@ -61,20 +55,17 @@ public class ColorPickerActivity extends Activity implements OnColorChangedListe
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		// Handle action bar item clicks here. The action bar will
-		// automatically handle clicks on the Home/Up button, so long
-		// as you specify a parent activity in AndroidManifest.xml.
-		int id = item.getItemId();
-		if (id == R.id.action_settings) {
-			return true;
-		}
+		
 		return super.onOptionsItemSelected(item);
 	}
 	
-	public void onSelectColor(View view){
+	public void changeColor(View view){
 		
 		Intent intent = new Intent(this, ArticleActivity.class);
 		intent.putExtra(COLOR, picker.getColor());
+		intent.putExtra(ArticleActivity.ARTICLE_ID, artId);
+		
+		Log.e(TAG, "color: "+picker.getColor());
 		
 		if (getParent() == null) {
 			setResult(Activity.RESULT_OK, intent);

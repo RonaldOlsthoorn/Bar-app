@@ -46,7 +46,7 @@ public class ArticleAdapter extends BaseAdapter {
 		while (source.getPosition() < source.getCount()) {
 			articles[source.getPosition()] = new Article(source.getInt(0),
 					source.getDouble(2), source.getString(1),
-					source.getInt(3) < 1);
+					source.getInt(3) < 1, source.getInt(4));
 			source.moveToNext();
 		}
 	}
@@ -115,7 +115,8 @@ public class ArticleAdapter extends BaseAdapter {
 				holder.btDown, holder.txtName, holder.txtPrice, a, notice));
 		holder.btUp.setOnClickListener(new upAdapter(a, position, notice));
 		holder.btDown.setOnClickListener(new downAdapter(a, position, notice));
-
+		convertView.setBackgroundColor(a.getColor());
+		
 		return convertView;
 	}
 	
@@ -220,7 +221,7 @@ public class ArticleAdapter extends BaseAdapter {
 
 			if (checks) {
 				article.setName(name.getText().toString());
-				article.setPrice(Double.parseDouble(price.getText().toString()));
+				article.setPrice(Double.parseDouble(price.getText().toString().replace(',', '.')));
 				updateListener.edit(article.getId(), article);
 				((Button) button).setText("Aanpassen");
 				up.setEnabled(true);
@@ -282,7 +283,7 @@ public class ArticleAdapter extends BaseAdapter {
 
 		while (c.getPosition() < c.getCount()) {
 			articles[c.getPosition()] = new Article(c.getInt(0),
-					c.getDouble(2), c.getString(1), c.getInt(3) < 1);
+					c.getDouble(2), c.getString(1), c.getInt(3) < 1, c.getInt(4));
 			c.moveToNext();
 		}
 	}

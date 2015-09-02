@@ -7,22 +7,17 @@ public class Article {
 	private double price;
 	private String name;
 	private boolean editable;
+	private int color;
 	
-	public Article(int id, double p, String n, boolean b){
+	public Article(int id, double p, String n, boolean b, int c){
 		
 		art_id = id;
 		price = p;
 		name = n;
 		editable = b;
-		
+		color = c;
 	}
 	
-	public Article(int id, double p, String n) {
-		art_id = id;
-		price = p;
-		name = n;
-		editable = false;
-	}
 
 	public int getId(){return art_id;}
 	public double getPrice(){return price;}
@@ -39,9 +34,19 @@ public class Article {
 		price = p;
 	}
 	
+	public void setColor(int c){
+		
+		color =c;
+	}
+	
 	public void setEditable(boolean b){
 		
 		editable = b;
+	}
+
+	public int getColor() {
+		
+		return color;
 	}
 	
 }
