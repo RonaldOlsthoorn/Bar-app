@@ -60,7 +60,7 @@
     </LinearLayout>
 
     <view
-        class="com.groover.bar.frame.CustomListview" 
+        class="nl.groover.bar.frame.CustomListview"
         android:id="@+order/orderList"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

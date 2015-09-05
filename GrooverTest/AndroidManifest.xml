@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.groover.bar"
+    package="nl.groover.bar"
     android:versionCode="1"
     android:versionName="1.0" >
 
@@ -148,7 +148,7 @@
             android:parentActivityName=".gui.BarBazzActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.groover.bar.gui.BarBazzActivity" />
+                android:value="nl.groover.bar.gui.BarBazzActivity" />
         </activity>
         <activity
             android:name=".gui.EditOrderActivity"
@@ -161,10 +161,10 @@
             android:parentActivityName=".gui.BeheerActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.groover.bar.gui.BeheerActivity" />
+                android:value="nl.groover.bar.gui.BeheerActivity" />
         </activity>
         <activity
-            android:name="com.groover.bar.gui.ColorPickerActivity"
+            android:name="nl.groover.bar.gui.ColorPickerActivity"
             android:label="@string/title_activity_color_picker" >
         </activity>
     </application>

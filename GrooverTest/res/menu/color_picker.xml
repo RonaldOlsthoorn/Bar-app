@@ -1,5 +1,5 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context="com.groover.bar.ColorPickerActivity" >
+    tools:context="nl.groover.bar.ColorPickerActivity" >
 
 </menu>
