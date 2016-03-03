@@ -59,17 +59,23 @@
 
     </LinearLayout>
 
-    <view
-        class="com.groover.bar.frame.CustomListview" 
-        android:id="@+order/orderList"
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@+id/linLayoutBottom"
         android:layout_alignLeft="@+id/linLayoutTop"
         android:layout_below="@+id/linLayoutTop"
-        android:layout_marginLeft="5dp"
+        android:layout_marginLeft="5dp" >
+    <view
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        class="com.groover.bar.frame.CustomListview" 
+        android:id="@+order/orderList"
+        
         android:orientation="vertical"
          />
+    
+    </ScrollView>
 
     <!--
           <ListView
