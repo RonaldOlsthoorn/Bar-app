@@ -1,0 +1,67 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/background"
+    tools:context=".BeheerActivity" >
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_weight="0.5"
+        android:gravity="center"
+        android:orientation="vertical" >
+
+        <Button
+            android:id="@+beheer/leden"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:onClick="toLeden"
+            android:padding="30dp"
+            android:text="Leden"
+            android:textSize="30sp" />
+
+        <Button
+            android:id="@+beheer/Artikelen"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:onClick="toArtikelen"
+            android:padding="30dp"
+            android:text="Artikelen"
+            android:textSize="30sp" />
+
+        <Button
+            android:id="@+beheer/Penning"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:onClick="toPenning"
+            android:padding="30dp"
+            android:text="Penning"
+            android:textSize="30sp" />
+
+        <Button
+            android:id="@+id/button1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="toBackups"
+            android:padding="30dp"
+            android:text="Backups"
+            android:textSize="30sp" />
+
+        <Button
+            android:id="@+beheer/credentials"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:onClick="editCredentials"
+            android:padding="30dp"
+            android:text="Gebruikersnaam \n wachtwoord wijzigen"
+            android:textSize="30sp" />
+    </LinearLayout>
+
+</RelativeLayout>
