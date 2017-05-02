@@ -8,6 +8,7 @@ import java.util.Stack;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.util.Log;
 import android.util.SparseArray;
 
 /**
@@ -69,8 +70,8 @@ public class Order {
 		return true;
 	}
 	
-	public boolean writeToDB(Context c){	
-		
+	public boolean writeToDB(Context c){
+
 		DBHelper db = DBHelper.getDBHelper(c);
 		ContentValues v = new ContentValues();
 		

@@ -9,18 +9,11 @@
         android:layout_height="wrap_content" >
 
         <TextView
-            android:id="@+ledenlijstrow2/voornaam"
+            android:id="@+ledenlijstrow2/naam"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginRight="5dp"
-            android:text="Medium Text"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
-
-        <TextView
-            android:id="@+ledenlijstrow2/achternaam"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Medium Text"
+            android:text=""
             android:textAppearance="?android:attr/textAppearanceMedium" />
 
     </LinearLayout>

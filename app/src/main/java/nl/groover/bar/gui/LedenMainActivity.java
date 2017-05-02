@@ -44,18 +44,15 @@ public class LedenMainActivity extends FragmentActivity implements
 	private Button voegtoe;
 
 	private EditText vtVoornaam;
+	private EditText vtTussenvoegsel;
 	private EditText vtAchternaam;
 	private EditText vtId;
 
 	private int current;
 
-	private SimpleCursorAdapter adapter;
+	private NameCursorAdapter adapter;
 	private Cursor c;
-	private String[] FROM = new String[] {
-			DBHelper.MemberTable.COLUMN_FIRST_NAME,
-			DBHelper.MemberTable.COLUMN_LAST_NAME };
-	private int[] TO = new int[] { R.ledenlijstrow2.voornaam,
-			R.ledenlijstrow2.achternaam };
+
 
 	private View editPane;
 	private int REQUEST_FILE = 1;
@@ -78,17 +75,16 @@ public class LedenMainActivity extends FragmentActivity implements
 		voegtoe = (Button) findViewById(R.leden.voegtoe_button);
 
 		vtVoornaam = (EditText) findViewById(R.leden.voegtoe_voornaam);
+		vtTussenvoegsel = (EditText) findViewById(R.leden.voegtoe_tussenvoegsel);
 		vtAchternaam = (EditText) findViewById(R.leden.voegtoe_achternaam);
 		vtId = (EditText) findViewById(R.leden.id);
 
 		c = DB.getMembers();
 
-		adapter = new SimpleCursorAdapter(this, R.layout.ledenlijstrow2, c,
-				FROM, TO, 0);
+		adapter = new NameCursorAdapter(this, c, NameCursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
 
 		ledenlijst.setOnItemClickListener(this);
 		ledenlijst.setAdapter(adapter);
-
 	}
 
 	@Override
@@ -130,6 +126,7 @@ public class LedenMainActivity extends FragmentActivity implements
 			try {
 				int id = Integer.parseInt(vtId.getText().toString());
 				if (id < 1) {
+
 					vtId.setError("Field must be a non-negative number!");
 					vtId.requestFocus();
 					checks = false;
@@ -141,7 +138,6 @@ public class LedenMainActivity extends FragmentActivity implements
 						vtId.requestFocus();
 						checks = false;
 					}
-
 				}
 
 			} catch (NumberFormatException e) {
@@ -169,6 +165,7 @@ public class LedenMainActivity extends FragmentActivity implements
 
 			int id = Integer.parseInt(vtId.getText().toString());
 			String voornaam = vtVoornaam.getText().toString();
+			String tussenvoegsel = vtTussenvoegsel.getText().toString();
 			String achternaam = vtAchternaam.getText().toString();
 
 			vtVoornaam.setError(null);
@@ -178,6 +175,7 @@ public class LedenMainActivity extends FragmentActivity implements
 			ContentValues v = new ContentValues();
 			v.put(DBHelper.MemberTable.COLUMN_GR_ID, id);
 			v.put(DBHelper.MemberTable.COLUMN_FIRST_NAME, voornaam);
+			v.put(DBHelper.MemberTable.COLUMN_PREFIX, tussenvoegsel);
 			v.put(DBHelper.MemberTable.COLUMN_LAST_NAME, achternaam);
 			v.put(DBHelper.MemberTable.COLUMN_BALANCE, 0);
 
@@ -197,7 +195,8 @@ public class LedenMainActivity extends FragmentActivity implements
 		current = (int) arg3;
 
 		vtVoornaam.setText(c.getString(1));
-		vtAchternaam.setText(c.getString(2));
+		vtTussenvoegsel.setText(c.getString(2));
+		vtAchternaam.setText(c.getString(3));
 		vtId.setText(current + "");
 
 		editPane.setVisibility(View.VISIBLE);
@@ -206,7 +205,6 @@ public class LedenMainActivity extends FragmentActivity implements
 		vtVoornaam.setError(null);
 		vtAchternaam.setError(null);
 		vtId.setError(null);
-
 	}
 
 	public void wijzigLid(View view) {
@@ -265,6 +263,7 @@ public class LedenMainActivity extends FragmentActivity implements
 			c.moveToPosition(current);
 
 			String voornaam = vtVoornaam.getText().toString();
+			String tussenvoegsel = vtTussenvoegsel.getText().toString();
 			String achternaam = vtAchternaam.getText().toString();
 			int id = Integer.parseInt(vtId.getText().toString());
 
@@ -275,6 +274,7 @@ public class LedenMainActivity extends FragmentActivity implements
 			ContentValues v = new ContentValues();
 			v.put(DBHelper.MemberTable.COLUMN_GR_ID, id);
 			v.put(DBHelper.MemberTable.COLUMN_FIRST_NAME, voornaam);
+			v.put(DBHelper.MemberTable.COLUMN_PREFIX, tussenvoegsel);
 			v.put(DBHelper.MemberTable.COLUMN_LAST_NAME, achternaam);
 
 			DB.updateOrIgnore(DBHelper.MemberTable.TABLE_NAME, current, v);
@@ -300,22 +300,21 @@ public class LedenMainActivity extends FragmentActivity implements
 	public void annuleren(View view) {
 
 		setToDefault();
-
 	}
 
 	public void setToDefault() {
-		// TODO Auto-generated method stub
+
 		editPane.setVisibility(View.GONE);
 		voegtoe.setVisibility(View.VISIBLE);
 
 		vtId.setText("");
 		vtVoornaam.setText("");
+		vtTussenvoegsel.setText("");
 		vtAchternaam.setText("");
 
 		vtVoornaam.setError(null);
 		vtAchternaam.setError(null);
 		vtId.setError(null);
-
 	}
 
 	// IMPORT
@@ -325,9 +324,7 @@ public class LedenMainActivity extends FragmentActivity implements
 
 		intent.putExtra(FileDialog.SELECTION_MODE, SelectionMode.MODE_OPEN);
 		intent.putExtra(FileDialog.FORMAT_FILTER, new String[] { "xml" });
-		intent.putExtra(FileDialog.START_PATH, Environment
-				.getExternalStorageDirectory().getPath());
-
+		intent.putExtra(FileDialog.START_PATH, getExternalFilesDir(null).getPath());
 		startActivityForResult(intent, REQUEST_FILE);
 	}
 
@@ -391,7 +388,6 @@ public class LedenMainActivity extends FragmentActivity implements
 		protected void onPreExecute() {
 			progressDialog = ProgressDialog.show(LedenMainActivity.this,
 					"importing...", "Process Description Text", true);
-
 		}
 
 		@Override
@@ -402,7 +398,6 @@ public class LedenMainActivity extends FragmentActivity implements
 
 		@Override
 		protected Boolean doInBackground(File... params) {
-			// TODO Auto-generated method stub
 
 			File f = params[0];
 			return importer.importMembers(f);

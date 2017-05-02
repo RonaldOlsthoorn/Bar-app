@@ -3,44 +3,53 @@ package nl.groover.bar.gui;
 import android.content.Context;
 import android.database.Cursor;
 import android.support.v4.widget.SimpleCursorAdapter;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CursorAdapter;
 import android.widget.TextView;
 
 import java.text.DecimalFormat;
 
-public class FormatTextAdapter extends SimpleCursorAdapter{
-	
-	private boolean childrenEnabled=true;
-	private DecimalFormat df;
-	private int id;
-	
-	public FormatTextAdapter(Context context, int layout, Cursor c,
-			String[] from, int[] to, int flags, DecimalFormat df, int id) {
-		super(context, layout, c, from, to, flags);
-		// TODO Auto-generated constructor stub
-		this.df = df;
-		this.id = id;
-	}
-	
-	@Override
-	public boolean isEnabled(int position) {
-	    return childrenEnabled;
-	}
-	
-	public void setAllChildrenEnabled(boolean enabled){
-		childrenEnabled = enabled;
-	}
-	
-	public View getView(int position, View convertView, ViewGroup parent){
-		
-		View v = super.getView(position, convertView, parent);
-		
-		TextView tv = (TextView) v.findViewById(id);
-		tv.setText(df.format(Double.parseDouble(tv.getText().toString())));
-		
-		return v;
-		
+import nl.groover.bar.R;
+
+public class FormatTextAdapter extends CursorAdapter {
+
+	private DecimalFormat df = new DecimalFormat("0.00");
+	private LayoutInflater cursorInflater;
+
+	public FormatTextAdapter(Context context, Cursor c, int flags) {
+		super(context, c, flags);
+
+		cursorInflater = (LayoutInflater) context.getSystemService(
+				Context.LAYOUT_INFLATER_SERVICE);
 	}
 
+
+	@Override
+	public View newView(Context context, Cursor cursor, ViewGroup parent) {
+
+		return cursorInflater.inflate(R.layout.ledenlijstrow, parent, false);
+	}
+
+	@Override
+	public void bindView(View view, Context context, Cursor cursor) {
+
+		TextView textViewAccount = (TextView) view.findViewById(R.ledenlijstrow.account);
+		textViewAccount.setText(df.format(cursor.getDouble(5)));
+
+		TextView textViewName = (TextView) view.findViewById(R.ledenlijstrow.name);
+		String name = cursor.getString(1);
+
+		String prefix = cursor.getString(2);
+
+		if( prefix != null){
+			name = name + " " + prefix;
+		}
+
+		name = name + " "+ cursor.getString(3);
+
+		textViewName.setText(name);
+
+	}
 }

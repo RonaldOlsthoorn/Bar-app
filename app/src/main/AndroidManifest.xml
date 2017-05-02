@@ -5,8 +5,8 @@
     android:versionName="1.0" >
 
     <uses-sdk
-        android:minSdkVersion="17"
-        android:targetSdkVersion="21" />
+        android:minSdkVersion="25"
+        android:targetSdkVersion="25" />
 
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
@@ -34,18 +34,18 @@
         <activity
             android:name=".gui.LedenMainActivity"
             android:label="@string/title_activity_leden_main"
-            android:parentActivityName=".gui.MainActivity" >
+            android:parentActivityName=".gui.BeheerActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="gui.MainActivity" />
+                android:value="gui.BeheerActivity" />
         </activity>
         <activity
             android:name=".gui.ArticleActivity"
             android:label="@string/title_activity_article"
-            android:parentActivityName=".gui.MainActivity" >
+            android:parentActivityName=".gui.BeheerActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".gui.MainActivity" />
+                android:value=".gui.BeheerActivity" />
         </activity>
         <activity
             android:name=".gui.BeheerActivity"
@@ -64,30 +64,14 @@
                 android:value="gui.MainActivity" />
         </activity>
         <activity
-            android:name=".gui.TurfMenuActivity"
-            android:label="@string/title_activity_turf_menu"
-            android:parentActivityName=".gui.BarBazzActivity" >
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="gui.BarBazzActivity" />
-        </activity>
-        <activity
-            android:name=".gui.EditTurfListActivity"
-            android:label="@string/title_activity_edit_turf_list"
-            android:parentActivityName=".gui.TurfMenuActivity" >
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="gui.TurfMenuActivity" />
-        </activity>
-        <activity
             android:name=".gui.TurfSelectCustomerActivity"
+            android:parentActivityName=".gui.BarBazzActivity"
             android:configChanges="orientation|keyboardHidden"
             android:label="@string/title_activity_turf_select_customer"
-            android:parentActivityName=".gui.TurfMenuActivity"
             android:screenOrientation="portrait" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="gui.TurfMenuActivity" />
+                android:value="gui.BarBazzActivity" />
         </activity>
         <activity
             android:name=".gui.OrderActivity"
