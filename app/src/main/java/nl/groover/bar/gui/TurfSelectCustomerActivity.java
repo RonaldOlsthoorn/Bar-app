@@ -44,13 +44,7 @@ public class TurfSelectCustomerActivity extends Activity implements
 	private ListView l_leden_aanwezig;
 
 	private FormatTextAdapter a_leden;
-	private DecimalFormat df = new DecimalFormat("0.00");
-	private String[] FROM_LEDEN = new String[] {
-			DBHelper.MemberTable.COLUMN_FIRST_NAME,
-			DBHelper.MemberTable.COLUMN_LAST_NAME,
-			DBHelper.MemberTable.COLUMN_BALANCE };
-	private int[] TO_LEDEN = new int[] { R.ledenlijstrow.voornaam,
-			R.ledenlijstrow.achternaam, R.ledenlijstrow.account };
+
 	private ListView l_leden;
 	private EditText search;
 	private int height;
@@ -63,8 +57,8 @@ public class TurfSelectCustomerActivity extends Activity implements
 
 			c_filtered = new SearchCursor(DB.getFilteredMember(constraint
 					.toString()));
-			return c_filtered;
 
+			return c_filtered;
 		}
 	};
 
@@ -112,11 +106,10 @@ public class TurfSelectCustomerActivity extends Activity implements
 		setupActionBar();
 
 		DB = DBHelper.getDBHelper(this);
-		c_leden = new SearchCursor(DB.getListMembers());
+		c_leden = new SearchCursor(DB.getMembers());
 		c_leden_aanwezig = new SearchCursor(DB.getFrequentVisitors());
 
-		a_leden = new FormatTextAdapter(this, R.layout.ledenlijstrow, c_leden,
-				FROM_LEDEN, TO_LEDEN, 0, df, R.ledenlijstrow.account);
+		a_leden = new FormatTextAdapter(this, c_leden, FormatTextAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
 
 		a_leden.setFilterQueryProvider(filterQueryProvider);
 
@@ -124,9 +117,8 @@ public class TurfSelectCustomerActivity extends Activity implements
 		l_leden.setAdapter(a_leden);
 		l_leden.setOnItemClickListener(this);
 
-		a_leden_aanwezig = new FormatTextAdapter(this, R.layout.ledenlijstrow,
-				c_leden_aanwezig, FROM_LEDEN, TO_LEDEN, 0, df,
-				R.ledenlijstrow.account);
+		a_leden_aanwezig = new FormatTextAdapter(this, c_leden_aanwezig,
+				 FormatTextAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
 
 		l_leden_aanwezig = (ListView) findViewById(R.selectCustomer.listFrequentMembers);
 		l_leden_aanwezig.setAdapter(a_leden_aanwezig);
@@ -153,25 +145,45 @@ public class TurfSelectCustomerActivity extends Activity implements
 			if (!c_leden.isClosed()) {
 				c_leden.moveToPosition(pos);
 				customerId = c_leden.getInt(0);
-				customerName = c_leden.getString(1) + " "
-						+ c_leden.getString(2);
+				customerName = c_leden.getString(1) + " ";
+
+				String prefix = c_leden.getString(2);
+
+				if (prefix != null){
+					customerName = customerName+prefix+" ";
+				}
+				customerName = customerName+ c_leden.getString(3);
 				customerType = "individual";
-				customerAcount = c_leden.getInt(3);
+				customerAcount = c_leden.getInt(4);
 			} else {
 				c_filtered.moveToId((int) id);
 				customerId = c_filtered.getInt(0);
-				customerName = c_filtered.getString(1) + " "
-						+ c_filtered.getString(2);
+				customerName = c_leden.getString(1) + " ";
+
+				String prefix = c_leden.getString(2);
+
+				if (prefix != null){
+					customerName = customerName+prefix+" ";
+				}
+				customerName = customerName+ c_leden.getString(3);
 				customerType = "individual";
-				customerAcount = c_filtered.getInt(3);
+				customerAcount = c_filtered.getInt(4);
 			}
 		} else {
 
 			c_leden.moveToId((int) id);
 			customerId = c_leden.getInt(0);
-			customerName = c_leden.getString(1) + " " + c_leden.getString(2);
+			customerName = c_leden.getString(1) + " ";
+
+			String prefix = c_leden.getString(2);
+
+			if (prefix != null){
+				customerName = customerName+prefix+" ";
+			}
+			customerName = customerName+ c_leden.getString(3);
 			customerType = "individual";
-			customerAcount = c_leden.getInt(3);
+			customerAcount = c_leden.getInt(4);
+
 		}
 
 		Intent intent = new Intent(this, OrderActivity.class);

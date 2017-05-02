@@ -63,8 +63,7 @@ public class OrderListAdapter extends BaseAdapter{
 	}
 	
 	private class ViewHolder {
-        TextView txtFirst;
-        TextView txtLast;
+        TextView txtName;
         TextView txtTotal;
         TextView txtDate;
 		Button btDelete;
@@ -83,8 +82,7 @@ public class OrderListAdapter extends BaseAdapter{
 	    if (convertView == null) {
 	    	convertView = mInflater.inflate(layout, null);
 	    	holder = new ViewHolder();
-	    	holder.txtFirst = (TextView) convertView.findViewById(R.orderOverViewRow.first);
-	    	holder.txtLast = (TextView) convertView.findViewById(R.orderOverViewRow.last);
+	    	holder.txtName = (TextView) convertView.findViewById(R.orderOverViewRow.name);
 	    	holder.txtTotal = (TextView) convertView.findViewById(R.orderOverViewRow.subtotal);
 	    	holder.txtDate = (TextView) convertView.findViewById(R.orderOverViewRow.date);
 	    	holder.btDelete = (Button) convertView.findViewById(R.orderOverViewRow.delete);
@@ -94,12 +92,20 @@ public class OrderListAdapter extends BaseAdapter{
 	    else{
 	    	holder = (ViewHolder) convertView.getTag();    	
 	    }
-	    
 
-	    holder.txtFirst.setText(source.getString(2));
-	    holder.txtLast.setText(source.getString(3));
-	    holder.txtTotal.setText(df.format(source.getDouble(5)));
-	    holder.txtDate.setText(source.getString(6));
+		String name = source.getString(2);
+
+		String prefix = source.getString(3);
+
+		if( prefix != null){
+			name = name + " " + prefix;
+		}
+
+		name = name + " "+ source.getString(4);
+
+		holder.txtName.setText(name);
+	    holder.txtTotal.setText(df.format(source.getDouble(6)));
+	    holder.txtDate.setText(source.getString(7));
 	    holder.btDelete.setOnClickListener(new deleteAdapter(id, notice));
 	    holder.btEdit.setOnClickListener(new editAdapter(id, position, notice));
 	    return convertView;

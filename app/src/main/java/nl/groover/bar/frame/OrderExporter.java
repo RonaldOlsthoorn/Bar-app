@@ -71,12 +71,11 @@ public class OrderExporter {
 			SimpleDateFormat df1 = new SimpleDateFormat("dd-MM-yy hh.mm.ss");
 			ts_settled = df1.format(c.getTime());
 			
-			File sdRoot = Environment.getExternalStorageDirectory();
+			File sdRoot = context.getExternalFilesDir(null);
 			File mainFolder = new File(sdRoot,
-					"Groover Bar/afrekeningen/afrekening "+ts_settled);
+					"afrekeningen/afrekening "+ts_settled);
 			mainFolder.mkdirs();
-			
-			
+
 			try{
 				
 				File currentDB = context.getDatabasePath(DBHelper.DATABASE_NAME);
@@ -136,7 +135,6 @@ public class OrderExporter {
 			// We can only read the media
 			mExternalStorageAvailable = true;
 			mExternalStorageWriteable = false;
-
 		} else {
 			// Something else is wrong. It may be one of many other states, but
 			// all we need
@@ -251,8 +249,19 @@ public class OrderExporter {
 
 			xmlSerializer.attribute(null, "GR_ID", "" + c.getInt(0));
 			xmlSerializer.attribute(null, "first_name", c.getString(1));
-			xmlSerializer.attribute(null, "last_name", "" + c.getString(2));
-			xmlSerializer.attribute(null, "total", df.format(c.getDouble(4)));
+
+			String prefix = c.getString(2);
+
+			if (prefix == null){
+
+				xmlSerializer.attribute(null, "prefix", "");
+			}else{
+
+				xmlSerializer.attribute(null, "prefix", prefix);
+			}
+
+			xmlSerializer.attribute(null, "last_name", c.getString(3));
+			xmlSerializer.attribute(null, "total", df.format(c.getDouble(5)));
 
 			orders.moveToFirst();
 
@@ -274,7 +283,6 @@ public class OrderExporter {
 				xmlSerializer.endTag(null, "consumption");
 
 				orders.moveToNext();
-
 			}
 
 			orders.close();
@@ -330,16 +338,26 @@ public class OrderExporter {
 		while (members.getPosition() < members.getCount()) {
 			// open tag: <member>
 			Cursor consumptions = DB.getTotalConsumptionsByMember(members
-					.getInt(3));
+					.getInt(4));
 
 			xmlSerializer.startTag(null, "member");
 
 			xmlSerializer.attribute(null, "GR_ID", "" + members.getInt(0));
 			xmlSerializer.attribute(null, "first_name", members.getString(1));
-			xmlSerializer.attribute(null, "last_name",
-					"" + members.getString(2));
+
+			String prefix = members.getString(3);
+
+			if (prefix == null){
+
+				xmlSerializer.attribute(null, "prefix", "");
+			}else{
+
+				xmlSerializer.attribute(null, "prefix", prefix);
+			}
+
+			xmlSerializer.attribute(null, "last_name", members.getString(3));
 			xmlSerializer.attribute(null, "total",
-					df.format(members.getDouble(4)));
+					df.format(members.getDouble(5)));
 
 			consumptions.moveToFirst();
 

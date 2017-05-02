@@ -44,7 +44,7 @@ public class OrderOverviewActivity extends Activity implements
 			c = DB.getAllOrders();
 		}else{
 			c = DB.getOrdersCust(custId);
-			Log.d("id",custId+"");
+			Log.d("id", custId+"");
 		}
 				
 		adapter = new OrderListAdapter(this, R.layout.order_overview_row, c,

@@ -1,6 +1,8 @@
 package nl.groover.bar.frame;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -12,6 +14,8 @@ import android.app.AlertDialog;
 import android.app.ListActivity;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.os.Environment;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -218,11 +222,13 @@ public class FileDialog extends ListActivity {
 
 		File f = new File(currentPath);
 		File[] files = f.listFiles();
+
 		if (files == null) {
 			currentPath = ROOT;
 			f = new File(currentPath);
 			files = f.listFiles();
 		}
+
 		myPath.setText(getText(R.string.location) + ": " + currentPath);
 
 		if (!currentPath.equals(ROOT)) {
@@ -242,6 +248,7 @@ public class FileDialog extends ListActivity {
 		TreeMap<String, String> dirsPathMap = new TreeMap<String, String>();
 		TreeMap<String, String> filesMap = new TreeMap<String, String>();
 		TreeMap<String, String> filesPathMap = new TreeMap<String, String>();
+
 		for (File file : files) {
 			if (file.isDirectory()) {
 				String dirName = file.getName();

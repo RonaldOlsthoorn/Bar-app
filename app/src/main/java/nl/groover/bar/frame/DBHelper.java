@@ -53,10 +53,17 @@ public class DBHelper extends SQLiteOpenHelper {
 	public Cursor getFilteredMember(String constraint) {
 		SQLiteDatabase db = getReadableDatabase();
 
-		return db.rawQuery("SELECT * FROM " + MemberTable.TABLE_NAME
-				+ " WHERE " + MemberTable.COLUMN_FIRST_NAME + " LIKE \""
-				+ constraint + "%\" ", null);
-
+		return db.rawQuery(
+				"SELECT * FROM " + MemberTable.TABLE_NAME
+				+ " WHERE " + MemberTable.COLUMN_FIRST_NAME
+				+ " LIKE \""
+				+ constraint + "%\" "
+				+ " OR "
+				+ MemberTable.COLUMN_LAST_NAME
+				+ " LIKE \""
+				+ constraint + "%\" "
+				, null
+		);
 	}
 
 	/*
@@ -73,38 +80,21 @@ public class DBHelper extends SQLiteOpenHelper {
 	}
 
 	/*
-	 * Returns a cursor containing all members which are active and can be
-	 * displayed on the list (alle leden die actief op de turflijst staan).
-	 * Inactieve leden weggehaald.
-	 */
-
-	public Cursor getListMembers() {
-
-		SQLiteDatabase db;
-		db = getReadableDatabase();
-
-		return db.query(MemberTable.TABLE_NAME, null, MemberTable.COLUMN_ACTIVE
-				+ " = 1 ", null, null, null, MemberTable.COLUMN_FIRST_NAME
-				+ " COLLATE NOCASE ASC, " + MemberTable.COLUMN_LAST_NAME
-				+ " COLLATE NOCASE ASC");
-
-	}
-
-	/*
 	 * returns all the members that have placed an order within a day
 	 */
 	public Cursor getFrequentVisitors() {
 		SQLiteDatabase db = getReadableDatabase();
 
 		String queryString = "SELECT DISTINCT " + MemberTable.TABLE_NAME + "."
-				+ MemberTable.COLUMN_GR_ID + " AS " + MemberTable.COLUMN_GR_ID
-				+ " , " + MemberTable.COLUMN_FIRST_NAME + " , "
+				+ MemberTable.COLUMN_GR_ID + " AS " + MemberTable.COLUMN_GR_ID + " , "
+				+ MemberTable.COLUMN_FIRST_NAME + " , "
+				+ MemberTable.COLUMN_PREFIX + " , "
 				+ MemberTable.COLUMN_LAST_NAME + " , "
+				+ MemberTable.COLUMN_ACCOUNT + " , "
 				+ MemberTable.COLUMN_BALANCE + " FROM "
 				+ MemberTable.TABLE_NAME + " , " + Order.TABLE_NAME + " WHERE "
 				+ MemberTable.TABLE_NAME + "." + MemberTable.COLUMN_ACCOUNT
-				+ "=" + Order.TABLE_NAME + "." + Order.COLUMN_ACCOUNT + " AND "
-				+ MemberTable.COLUMN_ACTIVE + "=1" + " AND " + Order.TABLE_NAME
+				+ "=" + Order.TABLE_NAME + "." + Order.COLUMN_ACCOUNT  + " AND " + Order.TABLE_NAME
 				+ "." + Order.COLUMN_TS_CREATED + ">"
 				+ "DATETIME(\'now\',\'-1 day\')" + " ORDER BY "
 				+ MemberTable.COLUMN_FIRST_NAME + " COLLATE NOCASE ASC, "
@@ -230,13 +220,18 @@ public class DBHelper extends SQLiteOpenHelper {
 
 		SQLiteDatabase db = getReadableDatabase();
 
-		String query = "SELECT " + Order.TABLE_NAME + "." + Order.COLUMN_ID
+		String query =
+				"SELECT " + Order.TABLE_NAME + "." + Order.COLUMN_ID
 				+ "," + MemberTable.TABLE_NAME + "." + MemberTable.COLUMN_GR_ID
-				+ "," + MemberTable.COLUMN_FIRST_NAME + ","
-				+ MemberTable.COLUMN_LAST_NAME + "," + Order.COLUMN_ACCOUNT
+				+ "," + MemberTable.COLUMN_FIRST_NAME
+				+ "," + MemberTable.COLUMN_PREFIX
+				+ "," + MemberTable.COLUMN_LAST_NAME
+				+ "," + Order.COLUMN_ACCOUNT
 				+ "," + Order.COLUMN_TOTAL + "," + "DATETIME("
-				+ Order.COLUMN_TS_CREATED + ", \'localtime\')" + " FROM "
-				+ Order.TABLE_NAME + " , " + MemberTable.TABLE_NAME + " WHERE "
+				+ Order.COLUMN_TS_CREATED + ", \'localtime\')"
+				+ " FROM "
+				+ Order.TABLE_NAME + " , " + MemberTable.TABLE_NAME
+				+ " WHERE "
 				+ Order.TABLE_NAME + "." + Order.COLUMN_ACCOUNT + "="
 				+ MemberTable.TABLE_NAME + "." + MemberTable.COLUMN_ACCOUNT
 				+ " ORDER BY " + Order.COLUMN_TS_CREATED;
@@ -244,14 +239,18 @@ public class DBHelper extends SQLiteOpenHelper {
 		return db.rawQuery(query, null);
 	}
 
+	/*
+	 * Get all orders from customer with customer id id.
+	 */
 	public Cursor getOrdersCust(int id) {
 
 		SQLiteDatabase db = getReadableDatabase();
 
 		String query = "SELECT " + Order.TABLE_NAME + "." + Order.COLUMN_ID
 				+ "," + MemberTable.TABLE_NAME + "." + MemberTable.COLUMN_GR_ID
-				+ "," + MemberTable.COLUMN_FIRST_NAME + ","
-				+ MemberTable.COLUMN_LAST_NAME + "," + Order.COLUMN_ACCOUNT
+				+ "," + MemberTable.COLUMN_FIRST_NAME
+				+ "," + MemberTable.COLUMN_PREFIX
+				+ "," + MemberTable.COLUMN_LAST_NAME + "," + Order.COLUMN_ACCOUNT
 				+ "," + Order.COLUMN_TOTAL + "," + "DATETIME("
 				+ Order.COLUMN_TS_CREATED + ", \'localtime\')" + " FROM "
 				+ Order.TABLE_NAME + " , " + MemberTable.TABLE_NAME + " WHERE "
@@ -621,11 +620,10 @@ public class DBHelper extends SQLiteOpenHelper {
 		public static final String TABLE_NAME = "members";
 		public static final String COLUMN_GR_ID = _ID;
 		public static final String COLUMN_FIRST_NAME = "first_name";
+		public static final String COLUMN_PREFIX = "prefix";
 		public static final String COLUMN_LAST_NAME = "last_name";
 		public static final String COLUMN_ACCOUNT = "account";
 		public static final String COLUMN_BALANCE = "balance";
-		public static final String COLUMN_ACTIVE = "active";
-
 		public static final String SQL_CREATE_TABLE = "CREATE TABLE IF NOT EXISTS "
 				+ TABLE_NAME
 				+ " ("
@@ -633,6 +631,9 @@ public class DBHelper extends SQLiteOpenHelper {
 				+ " INTEGER PRIMARY KEY ,"
 				+ COLUMN_FIRST_NAME
 				+ " TEXT NOT NULL"
+				+ ","
+				+ COLUMN_PREFIX
+				+ " TEXT"
 				+ ","
 				+ COLUMN_LAST_NAME
 				+ " TEXT NOT NULL"
@@ -642,8 +643,7 @@ public class DBHelper extends SQLiteOpenHelper {
 				+ ","
 				+ COLUMN_BALANCE
 				+ " DECIMAL(10,2) DEFAULT 0"
-				+ ","
-				+ COLUMN_ACTIVE + " BOOLEAN DEFAULT 1" + " )";
+				+ " )";
 
 		public static final String SQL_DELETE_ENTRIES = "DROP TABLE IF EXISTS "
 				+ TABLE_NAME;

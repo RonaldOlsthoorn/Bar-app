@@ -17,7 +17,6 @@ public class Article {
 		editable = b;
 		color = c;
 	}
-	
 
 	public int getId(){return art_id;}
 	public double getPrice(){return price;}

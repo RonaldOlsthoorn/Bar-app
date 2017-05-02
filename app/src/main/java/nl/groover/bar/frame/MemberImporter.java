@@ -45,7 +45,7 @@ public class MemberImporter {
 
 	/**
 	 * Imports members returns true if all succeeded. Otherwise false.
-	 * DELETES ALL ORDERS IN THE PROCESS
+	 * DELETES ALL ORDERS IN THE PROCESS!!
 	 */
 	public boolean importMembers() {
 
@@ -59,7 +59,7 @@ public class MemberImporter {
 			return res;
 		}
 
-		res = true ; 
+		res = true;
 		
 		NodeList createList = doc.getElementById(LIST)
 				.getElementsByTagName("member");
@@ -73,6 +73,8 @@ public class MemberImporter {
 			v.put(DBHelper.MemberTable.COLUMN_GR_ID, n.getAttribute("gr_id"));
 			v.put(DBHelper.MemberTable.COLUMN_FIRST_NAME,
 					n.getAttribute("firstname"));
+			v.put(DBHelper.MemberTable.COLUMN_PREFIX,
+					n.getAttribute("prefix"));
 			v.put(DBHelper.MemberTable.COLUMN_LAST_NAME,
 					n.getAttribute("lastname"));
 
@@ -81,7 +83,6 @@ public class MemberImporter {
 			if(result==-1){
 				res = false;
 			}
-
 		}
 		
 		DB.deleteAllOrders();
