@@ -21,6 +21,7 @@ import nl.groover.bar.R;
  */
 
 public class NameCursorAdapter extends CursorAdapter {
+
     private LayoutInflater mInflater;
 
     public NameCursorAdapter(Context context, Cursor c, int flags) {
