@@ -87,8 +87,7 @@ public class FilteredCursor extends CursorWrapper{
 	 */
 	public boolean addId(int id) {
 		super.moveToFirst();	
-		
-		
+
 		while(super.getPosition()<super.getCount()){
 			
 
@@ -112,7 +111,6 @@ public class FilteredCursor extends CursorWrapper{
 		if(pos<=mPos && mPos>0){
 			
 			mPos--;
-
 		}
 		sort();
 		
@@ -197,8 +195,7 @@ public class FilteredCursor extends CursorWrapper{
 		return base;
 	}
 	
-	
-	
+
 	@Override
 	public int getCount() { return filterMap.size(); }
 

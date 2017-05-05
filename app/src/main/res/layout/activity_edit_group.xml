@@ -86,10 +86,11 @@
         android:id="@+id/edit_group_activity_save"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="Wijzigingen opslaan"
+        android:onClick="save"
+        android:text="Opslaan"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toLeftOf="@+id/edit_group_activity_cancel"/>
+        app:layout_constraintRight_toLeftOf="@+id/edit_group_activity_cancel" />
 
     <Button
         android:id="@+id/edit_group_activity_cancel"

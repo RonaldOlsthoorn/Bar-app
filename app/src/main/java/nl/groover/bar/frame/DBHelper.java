@@ -146,6 +146,27 @@ public class DBHelper extends SQLiteOpenHelper {
 		return db.rawQuery(queryString, null);
 	}
 
+	public Cursor getGroupMembers(int groupId){
+
+		SQLiteDatabase db = getReadableDatabase();
+
+		String query = "SELECT "
+				+ MemberTable.TABLE_NAME+"."+MemberTable.COLUMN_GR_ID+" , "
+				+ MemberTable.TABLE_NAME+"."+MemberTable.COLUMN_FIRST_NAME+" , "
+				+ MemberTable.TABLE_NAME+"."+MemberTable.COLUMN_PREFIX+" , "
+				+ MemberTable.TABLE_NAME+"."+MemberTable.COLUMN_LAST_NAME+" , "
+				+ MemberTable.TABLE_NAME+"."+MemberTable.COLUMN_ACCOUNT+" , "
+				+ MemberTable.TABLE_NAME+"."+MemberTable.COLUMN_BALANCE
+				+ " FROM " + MemberTable.TABLE_NAME + " , " + GroupMembers.TABLE_NAME
+				+ " WHERE "
+				+ MemberTable.TABLE_NAME+"."+MemberTable.COLUMN_GR_ID + " = "
+				+ GroupMembers.TABLE_NAME+"."+GroupMembers.COLUMN_MEMBER_ID
+				+ " AND "
+				+ GroupMembers.TABLE_NAME+"."+GroupMembers.COLUMN_GR_ID+" = "+groupId;
+
+		return db.rawQuery(query, null);
+	}
+
 	/*
 	 * Not used yet. Returns all accounts. Accounts can belong to both groups as
 	 * members. Group feature NOT implemented yet.
@@ -368,8 +389,6 @@ public class DBHelper extends SQLiteOpenHelper {
 		return res;
 	}
 
-
-
 	/*
 	 * Processes an update on a table of row "table" with identifier "id". The
 	 * new values are stored in the ContentValues.
@@ -412,20 +431,14 @@ public class DBHelper extends SQLiteOpenHelper {
 
 		Cursor c = db.rawQuery(query, null);
 
-		boolean res = c.getCount()!=0;
+		boolean res = c.getCount()<1;
 
 		c.close();
 
 		return res;
 	}
 
-	public boolean addGroupMember(int groupId, int memberId) throws Exception{
-
-		boolean permission = checkAllowedToUpdateGroup(groupId);
-
-		if (!permission){
-			throw new Exception("No permission to edit this group. Usettled orders!");
-		}
+	public boolean addGroupMember(int groupId, int memberId){
 
 		ContentValues v = new ContentValues();
 		v.put(GroupMembers.COLUMN_GR_ID, groupId);
@@ -435,13 +448,7 @@ public class DBHelper extends SQLiteOpenHelper {
 		return res != -1;
 	}
 
-	public boolean renameGroup(int groupId, String newName) throws Exception{
-
-		boolean permission = checkAllowedToUpdateGroup(groupId);
-
-		if (!permission){
-			throw new Exception("No permission to edit this group. Usettled orders!");
-		}
+	public boolean renameGroup(int groupId, String newName){
 
 		ContentValues v = new ContentValues();
 		v.put(GroupTable.COLUMN_GR_ID, groupId);
@@ -494,43 +501,30 @@ public class DBHelper extends SQLiteOpenHelper {
 		}
 	}
 
-	public boolean deleteGroupMember(int groupId, int memberId) throws Exception{
-
-		boolean permission = checkAllowedToUpdateGroup(groupId);
-
-		if (!permission){
-			throw new Exception("No permission to edit this group. Usettled orders!");
-		}
+	public boolean deleteGroupMembers(int groupId){
 
 		SQLiteDatabase db = getWritableDatabase();
+		boolean res = false;
 
-		String query = " DELETE FROM "+GroupMembers.TABLE_NAME
-				+ " WHERE "+GroupMembers.COLUMN_GR_ID+" = "+groupId
-				+ " AND "+GroupMembers.COLUMN_MEMBER_ID+" = "+memberId;
+		try {
+			db.delete(GroupMembers.TABLE_NAME, GroupMembers.COLUMN_GR_ID
+					+ "=?", new String[] { groupId + "" });
 
-		db.rawQuery(query, null);
+			res = true;
 
-		return true;
+		} catch (SQLException e) {
+			Log.d(TAG, "deleteOrIgnore on " + groupId + " fail");
+			res = false;
+		}
+		db.close();
+		return res;
 	}
 
-	public boolean deleteGroup(int groupId) throws Exception{
+	public boolean deleteGroup(int groupId){
 
-		boolean permission = checkAllowedToUpdateGroup(groupId);
+		deleteGroupMembers(groupId);
 
-		if (!permission){
-			throw new Exception("No permission to edit this group. Usettled orders!");
-		}
-
-		SQLiteDatabase db = getWritableDatabase();
-
-		String query = " DELETE FROM "+GroupMembers.TABLE_NAME
-				+ " WHERE "+GroupMembers.COLUMN_GR_ID+" = "+groupId;
-
-		db.rawQuery(query, null);
-
-		deleteOrIgnore(GroupTable.TABLE_NAME, groupId);
-
-		return true;
+		return deleteOrIgnore(GroupTable.TABLE_NAME, groupId);
 	}
 
 	/*
@@ -581,6 +575,10 @@ public class DBHelper extends SQLiteOpenHelper {
 		if (tableName.equals(MemberTable.TABLE_NAME)) {
 			return MemberTable.getIdColumnName();
 		}
+		if (tableName.equals(GroupTable.TABLE_NAME)) {
+			return GroupTable.getIdColumnName();
+		}
+
 		if (tableName.equals(AccountList.TABLE_NAME)) {
 			return AccountList.getIdColumnName();
 		}
@@ -806,7 +804,7 @@ public class DBHelper extends SQLiteOpenHelper {
 		public static final String SQL_DELETE_ENTRIES = "DROP TABLE IF EXISTS "
 				+ TABLE_NAME;
 
-		public static final String TRIGGER_NEW_ACCOUNT = "CREATE TRIGGER create_new_account "
+		public static final String TRIGGER_NEW_ACCOUNT = "CREATE TRIGGER create_new_account_member "
 
 				+ "AFTER INSERT ON "
 				+ TABLE_NAME
@@ -868,7 +866,7 @@ public class DBHelper extends SQLiteOpenHelper {
 		public static final String SQL_DELETE_ENTRIES = "DROP TABLE IF EXISTS "
 				+ TABLE_NAME;
 
-		public static final String TRIGGER_NEW_ACCOUNT = "CREATE TRIGGER create_new_account "
+		public static final String TRIGGER_NEW_ACCOUNT = "CREATE TRIGGER create_new_account_group "
 
 				+ "AFTER INSERT ON "
 				+ TABLE_NAME

@@ -1,18 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:orientation="horizontal" >
 
     <LinearLayout
-            android:layout_width="match_parent"
+            android:layout_gravity="center"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="25dp"
             android:layout_marginBottom="25dp"          
             android:layout_weight="1" >
 
             <TextView
-                android:id="@+group_list_row/name"
+                android:id="@+id/group_list_row_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginRight="5dp"
@@ -27,6 +28,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="0"
+            android:layout_gravity="center"
             android:text="€"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:layout_marginTop="25dp"
@@ -34,10 +36,11 @@
             android:textSize="30sp" />
 
         <TextView
-            android:id="@+group_list_row/account"
+            android:id="@+id/group_list_row_account"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="0"
+            android:layout_gravity="center"
             android:text="0.00"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:layout_marginTop="25dp"
@@ -45,21 +48,23 @@
             android:textSize="30sp" />
 
         <Button
-            android:id="@+group_list_row/edit"
+            android:id="@+id/group_list_row_edit"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="0"
+            android:layout_gravity="center"
             android:layout_marginTop="25dp"
             android:layout_marginBottom="25dp"
-            android:icon="@mipmap/ic_launcher"/>
+            android:background="@mipmap/ic_edit"/>
 
         <Button
-            android:id="@+group_list_row/delete"
+            android:id="@+id/group_list_row_delete"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center"
             android:layout_weight="0"
             android:layout_marginTop="25dp"
             android:layout_marginBottom="25dp"
-            android:icon="@mipmap/ic_delete"/>
+            android:background="@mipmap/ic_delete"/>
 
 </LinearLayout>

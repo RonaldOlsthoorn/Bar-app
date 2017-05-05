@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.app.Activity;
+import android.view.View;
 import android.widget.ListView;
 
 import java.security.acl.Group;
@@ -14,7 +15,8 @@ import nl.groover.bar.frame.GroupListAdapter;
 
 public class GroupActivity extends Activity {
 
-    private int REQUEST_CODE=1234;
+    public static final int REQUEST_CODE_EDIT=1234;
+    public static final int REQUEST_CODE_NEW=12345;
     private GroupListAdapter adapter;
     private Cursor cursor;
     private DBHelper DB;
@@ -31,9 +33,13 @@ public class GroupActivity extends Activity {
 
         editListener = new EditListener() {
             @Override
-            public void editGroup(int id) {
+            public void editGroup(int id, String name) {
                 Intent intent = new Intent(GroupActivity.this, EditGroupActivity.class);
-                startActivityForResult(intent, REQUEST_CODE);
+                intent.putExtra("request_code", REQUEST_CODE_EDIT);
+                intent.putExtra("group_id", id);
+                intent.putExtra("group_name", name);
+
+                startActivityForResult(intent, REQUEST_CODE_EDIT);
             }
         };
 
@@ -47,17 +53,23 @@ public class GroupActivity extends Activity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
-        if (requestCode == 123) {
             if (resultCode == RESULT_OK) {
-
+                cursor = DB.getAllGroups();
+                adapter.swapCursor(cursor);
                 adapter.notifyDataSetChanged();
             }
-        }
     }
 
     public interface EditListener{
 
-        void editGroup(int id);
+        void editGroup(int id, String name);
     }
 
+    public void newGroup(View v){
+
+        Intent intent = new Intent(GroupActivity.this, EditGroupActivity.class);
+        intent.putExtra("request_code", REQUEST_CODE_NEW);
+
+        startActivityForResult(intent, REQUEST_CODE_EDIT);
+    }
 }
