@@ -79,8 +79,8 @@ public class Order {
 			
 			v.clear();
 			v.put(DBHelper.Order.COLUMN_ACCOUNT, customer.getAccount());
-			v.put(DBHelper.Order.COLUMN_TOTAL,calculateTotal());
-			v.put(DBHelper.Order.COLUMN_TYPE, "consumption");
+			v.put(DBHelper.Order.COLUMN_TOTAL, calculateTotal());
+			v.put(DBHelper.Order.COLUMN_TYPE, DBHelper.Order.ORDER_TYPE_CONSUMPTION);
 			long id = db.insertOrIgnore(DBHelper.Order.TABLE_NAME, v);
 			
 			if(id == -1){

@@ -20,7 +20,7 @@ import nl.groover.bar.gui.GroupActivity;
  * Created by Ronald Olsthoorn on 5/4/2017.
  */
 
-public class GroupListAdapter extends CursorAdapter {
+public class EditGroupListAdapter extends CursorAdapter {
 
     private DBHelper DB;
 
@@ -29,7 +29,7 @@ public class GroupListAdapter extends CursorAdapter {
     private GroupActivity.EditListener editListener;
     private Context context;
 
-    public GroupListAdapter(Context context, Cursor c, int flags, GroupActivity.EditListener editListener){
+    public EditGroupListAdapter(Context context, Cursor c, int flags, GroupActivity.EditListener editListener){
         super(context, c, flags);
 
         this.context = context;

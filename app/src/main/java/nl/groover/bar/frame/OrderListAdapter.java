@@ -23,11 +23,11 @@ public class OrderListAdapter extends BaseAdapter{
 	private Cursor source;
 	private DecimalFormat df = new DecimalFormat("0.00");
 	private ListActionListener notice;
-	
+
 	public interface ListActionListener{
 		
-		public void edit(int id,int pos);
-		public void delete(int id);
+		void edit(int id,int pos);
+		void delete(int id);
 	}
 	
 	public void changeCursor(Cursor c){
@@ -35,13 +35,12 @@ public class OrderListAdapter extends BaseAdapter{
 		source = c;
 	}
 	
-	public OrderListAdapter(Context context, int layout, Cursor c, ListActionListener l){
+	public OrderListAdapter(Context context, int layout, Cursor cursor,  ListActionListener l){
 		
 		this.context = context;
 		this.layout = layout;
-		source = c;
+		source = cursor;
 		notice = l;
-
 	}
 
 	@Override
@@ -93,23 +92,12 @@ public class OrderListAdapter extends BaseAdapter{
 	    	holder = (ViewHolder) convertView.getTag();    	
 	    }
 
-		String name = source.getString(2);
-
-		String prefix = source.getString(3);
-
-		if( prefix != null){
-			name = name + " " + prefix;
-		}
-
-		name = name + " "+ source.getString(4);
-
-		holder.txtName.setText(name);
-	    holder.txtTotal.setText(df.format(source.getDouble(6)));
-	    holder.txtDate.setText(source.getString(7));
+		holder.txtName.setText(source.getString(1));
+	    holder.txtTotal.setText(df.format(source.getDouble(3)));
+	    holder.txtDate.setText(source.getString(4));
 	    holder.btDelete.setOnClickListener(new deleteAdapter(id, notice));
 	    holder.btEdit.setOnClickListener(new editAdapter(id, position, notice));
 	    return convertView;
-
 	}
 	
 	private class deleteAdapter implements OnClickListener{
@@ -143,7 +131,7 @@ public class OrderListAdapter extends BaseAdapter{
 		
 		@Override
 		public void onClick(View arg0) {
-		    l.edit(id,pos);
+		    l.edit(id, pos);
             OrderListAdapter.this.notifyDataSetChanged();
 		}		
 	}

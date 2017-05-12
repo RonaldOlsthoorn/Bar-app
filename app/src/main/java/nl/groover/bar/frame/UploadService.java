@@ -60,7 +60,6 @@ public class UploadService extends IntentService {
 				client.changeWorkingDirectory("bar");
 				client.makeDirectory("backups");
 				res = client.changeWorkingDirectory("backups");
-
 			}
 
 			File backupFolder = new File(this.getFilesDir(), "backups");

@@ -53,17 +53,19 @@ public class DBHelper extends SQLiteOpenHelper {
 	public Cursor getFilteredMember(String constraint) {
 		SQLiteDatabase db = getReadableDatabase();
 
-		return db.rawQuery(
-				"SELECT * FROM " + MemberTable.TABLE_NAME
-				+ " WHERE " + MemberTable.COLUMN_FIRST_NAME
-				+ " LIKE \""
-				+ constraint + "%\" "
-				+ " OR "
-				+ MemberTable.COLUMN_LAST_NAME
-				+ " LIKE \""
-				+ constraint + "%\" "
-				, null
-		);
+		String query =	"SELECT * FROM " + MemberTable.TABLE_NAME
+						+ " WHERE " + MemberTable.COLUMN_FIRST_NAME
+						+ " LIKE \""
+						+ constraint + "%\" "
+						+ " OR "
+						+ MemberTable.COLUMN_LAST_NAME
+						+ " LIKE \""
+						+ constraint + "%\" "
+						+ " ORDER BY "
+						+ MemberTable.COLUMN_FIRST_NAME + " COLLATE NOCASE ASC, "
+						+ MemberTable.COLUMN_LAST_NAME + " COLLATE NOCASE ASC";
+
+		return db.rawQuery(query, null);
 	}
 
 	/*
@@ -117,14 +119,14 @@ public class DBHelper extends SQLiteOpenHelper {
 
 		SQLiteDatabase db = getReadableDatabase();
 
-		return db.rawQuery(
-				"SELECT * FROM " + GroupTable.TABLE_NAME
-						+ " WHERE " + GroupTable.COLUMN_GROUP_NAME
-						+ " LIKE \""
-						+ constraint + "%\" "
+		String query = "SELECT * FROM " + GroupTable.TABLE_NAME
+				+ " WHERE " + GroupTable.COLUMN_GROUP_NAME
+				+ " LIKE \""
+				+ constraint + "%\" "
+				+ " ORDER BY "
+				+ GroupTable.COLUMN_GROUP_NAME + " COLLATE NOCASE ASC ";
 
-				, null
-		);
+		return db.rawQuery(query, null);
 	}
 
 	public Cursor getFrequentGroups() {
@@ -279,56 +281,164 @@ public class DBHelper extends SQLiteOpenHelper {
 		return db.rawQuery(query, null);
 	}
 
-	public Cursor getAllOrders() {
+	public Cursor getGroupSettlementsByMember(int memberId){
 
 		SQLiteDatabase db = getReadableDatabase();
 
-		String query =
-				"SELECT " + Order.TABLE_NAME + "." + Order.COLUMN_ID
-				+ "," + MemberTable.TABLE_NAME + "." + MemberTable.COLUMN_GR_ID
-				+ "," + MemberTable.COLUMN_FIRST_NAME
-				+ "," + MemberTable.COLUMN_PREFIX
-				+ "," + MemberTable.COLUMN_LAST_NAME
-				+ "," + Order.COLUMN_ACCOUNT
-				+ "," + Order.COLUMN_TOTAL + "," + "DATETIME("
-				+ Order.COLUMN_TS_CREATED + ", \'localtime\')"
-				+ " FROM "
-				+ Order.TABLE_NAME + " , " + MemberTable.TABLE_NAME
-				+ " WHERE "
-				+ Order.TABLE_NAME + "." + Order.COLUMN_ACCOUNT + "="
-				+ MemberTable.TABLE_NAME + "." + MemberTable.COLUMN_ACCOUNT
-				+ " ORDER BY " + Order.COLUMN_TS_CREATED;
+		String query = "SELECT "
+				+ GroupSettlement.TABLE_NAME+"."+GroupSettlement.COLUMN_GROUP_NAME+","
+				+ GroupSettlement.TABLE_NAME+"."+GroupSettlement.COLUMN_SUBTOTAL
+				+" FROM "
+				+ GroupSettlement.TABLE_NAME+" , "+Order.TABLE_NAME+" , "+MemberTable.TABLE_NAME
+				+" WHERE "
+				+GroupSettlement.TABLE_NAME+"."+GroupSettlement.COLUMN_ORDER_ID + "="
+				+Order.TABLE_NAME+"."+Order.COLUMN_ID
+				+ " AND "
+				+Order.TABLE_NAME+"."+Order.COLUMN_ACCOUNT + "="
+				+MemberTable.TABLE_NAME+"."+MemberTable.COLUMN_ACCOUNT
+				+ " AND "
+				+MemberTable.TABLE_NAME+"."+MemberTable.COLUMN_GR_ID + "=" + memberId;
 
 		return db.rawQuery(query, null);
 	}
 
 	/*
-	 * Get all orders from customer with customer id id.
-	 */
-	public Cursor getOrdersCust(int id) {
+ * Returns a cursor containing all consumptions, sorted by article.
+ */
+	public Cursor getSettledGroupConsumptions(int groupId) {
 
 		SQLiteDatabase db = getReadableDatabase();
 
-		String query = "SELECT " + Order.TABLE_NAME + "." + Order.COLUMN_ID
-				+ "," + MemberTable.TABLE_NAME + "." + MemberTable.COLUMN_GR_ID
-				+ "," + MemberTable.COLUMN_FIRST_NAME
-				+ "," + MemberTable.COLUMN_PREFIX
-				+ "," + MemberTable.COLUMN_LAST_NAME + "," + Order.COLUMN_ACCOUNT
-				+ "," + Order.COLUMN_TOTAL + "," + "DATETIME("
-				+ Order.COLUMN_TS_CREATED + ", \'localtime\')" + " FROM "
-				+ Order.TABLE_NAME + " , " + MemberTable.TABLE_NAME + " WHERE "
+		String t1 = "t1";
+		String t2 = "t2";
+
+		String query = "SELECT " + t1+"."+ItemList.COLUMN_ID+ ","
+				+ t1+"."+ItemList.COLUMN_NAME_ITEM+","+t1+"."+ItemList.COLUMN_NAME_PRICE
+				+ ","+t2+"."+"sum_amount"
+				+" FROM "+ ItemList.TABLE_NAME +" "+t1+" "
+				+" JOIN "
+				+"(SELECT "+Consumption.COLUMN_ARTICLE_ID+","
+				+ "SUM("+Consumption.COLUMN_AMMOUNT+") AS sum_amount"
+				+ " FROM "+ Consumption.TABLE_NAME+","+Order.TABLE_NAME
+				+ " WHERE "+ Order.TABLE_NAME+"."+Order.COLUMN_ID+"="+Consumption.TABLE_NAME+"."+Consumption.COLUMN_ORDER_ID
+				+ " AND "+ Order.COLUMN_ACCOUNT+"="+groupId
+				+ " AND "+ Order.COLUMN_TS_SETTLED+"="+"NOT NULL"
+				+ " GROUP BY "+Consumption.COLUMN_ARTICLE_ID
+				+ " ) "+t2
+				+" ON "+t1+"."+ItemList.COLUMN_ID + "="+Consumption.COLUMN_ARTICLE_ID
+				+ " ORDER BY "+t1+"."+ItemList.COLUMN_NAME_ORDER
+				;
+
+		return db.rawQuery(query, null);
+	}
+
+	/*
+* Returns a cursor containing all consumptions, sorted by article.
+*/
+	public Cursor getUnsettledGroupConsumptions(int groupId) {
+
+		SQLiteDatabase db = getReadableDatabase();
+
+		String t1 = "t1";
+		String t2 = "t2";
+
+		String query = "SELECT " + t1+"."+ItemList.COLUMN_ID+ ","
+				+ t1+"."+ItemList.COLUMN_NAME_ITEM+","+t1+"."+ItemList.COLUMN_NAME_PRICE
+				+ ","+t2+"."+"sum_amount" + " , "+ "SUM("+t2+"."+"sum_amount" +")"
+				+" FROM "+ ItemList.TABLE_NAME +" "+t1+" "
+				+" JOIN "
+				+"(SELECT "+Consumption.COLUMN_ARTICLE_ID+","
+				+ "SUM("+Consumption.COLUMN_AMMOUNT+") AS sum_amount"
+				+ " FROM "+ Consumption.TABLE_NAME+","+Order.TABLE_NAME
+				+ " WHERE "+ Order.TABLE_NAME+"."+Order.COLUMN_ID+"="+Consumption.TABLE_NAME+"."+Consumption.COLUMN_ORDER_ID
+				+ " AND "+ Order.COLUMN_ACCOUNT+"="+groupId
+				+ " AND "+ Order.COLUMN_TS_SETTLED+"="+"NULL"
+				+ " GROUP BY "+Consumption.COLUMN_ARTICLE_ID
+				+ " ) "+t2
+				+" ON "+t1+"."+ItemList.COLUMN_ID + "="+Consumption.COLUMN_ARTICLE_ID
+				+ " ORDER BY "+t1+"."+ItemList.COLUMN_NAME_ORDER
+				;
+
+		return db.rawQuery(query, null);
+	}
+
+	public void settleGroupConsumptions(int account){
+
+		SQLiteDatabase db = getReadableDatabase();
+
+		String query =
+				"UPDATE " + Order.TABLE_NAME
+				+ " SET " + Order.COLUMN_TS_SETTLED + "="+ "DATETIME(NOW)"
+				+ " WHERE "+Order.COLUMN_ACCOUNT+"="+account;
+
+		db.rawQuery(query, null);
+	}
+
+	public Cursor getAllOrders() {
+
+		SQLiteDatabase db = getReadableDatabase();
+
+		String query =
+				"SELECT " + Order.TABLE_NAME + "." + Order.COLUMN_ID+" , "
+				+ " COALESCE( "
+				+ " TRIM"+"("
+				+ MemberTable.TABLE_NAME+"."+MemberTable.COLUMN_FIRST_NAME+" || "+"\" \""+" || "
+				+ MemberTable.TABLE_NAME+"."+MemberTable.COLUMN_PREFIX
+				+ ")"
+				+" || "+"\" \""+" || "+ MemberTable.TABLE_NAME+"."+MemberTable.COLUMN_LAST_NAME
+				+ " , "+ GroupTable.TABLE_NAME+"."+GroupTable.COLUMN_GROUP_NAME
+				+" )"+" AS name"
+				+ ","+ Order.TABLE_NAME+"." + Order.COLUMN_ACCOUNT
+				+ "," + Order.TABLE_NAME+"."+ Order.COLUMN_TOTAL + "," + "DATETIME("
+				+ Order.COLUMN_TS_CREATED + ", \'localtime\')"
+				+ " FROM "
+				+ Order.TABLE_NAME + " LEFT OUTER JOIN "+MemberTable.TABLE_NAME+" ON "
 				+ Order.TABLE_NAME + "." + Order.COLUMN_ACCOUNT + "="
 				+ MemberTable.TABLE_NAME + "." + MemberTable.COLUMN_ACCOUNT
-				+ " AND " + MemberTable.TABLE_NAME + "."
-				+ MemberTable.COLUMN_GR_ID + " = " + id + " ORDER BY "
-				+ Order.COLUMN_TS_CREATED;
+				+ " LEFT OUTER JOIN "+GroupTable.TABLE_NAME+" ON "
+				+ Order.TABLE_NAME + "." + Order.COLUMN_ACCOUNT + "="
+				+ GroupTable.TABLE_NAME + "." + GroupTable.COLUMN_ACCOUNT
+				+ " ORDER BY " + Order.COLUMN_TS_CREATED + " DESC";
+
+		return db.rawQuery(query, null);
+	}
+
+	/*
+	 * Get all orders from customer with customer accountNr id.
+	 */
+	public Cursor getOrdersCust(int accountNr) {
+
+		SQLiteDatabase db = getReadableDatabase();
+
+		String query = "SELECT " + Order.TABLE_NAME + "." + Order.COLUMN_ID+" , "
+				+ " COALESCE( "
+				+ " TRIM"+"("
+				+ MemberTable.TABLE_NAME+"."+MemberTable.COLUMN_FIRST_NAME+" || "+"\" \""+" || "
+				+ MemberTable.TABLE_NAME+"."+MemberTable.COLUMN_PREFIX
+				+ ")"
+				+" || "+"\" \""+" || "+ MemberTable.TABLE_NAME+"."+MemberTable.COLUMN_LAST_NAME
+				+ " , "+ GroupTable.TABLE_NAME+"."+GroupTable.COLUMN_GROUP_NAME
+				+" )"+" AS name"
+				+ ","+ Order.TABLE_NAME+"." + Order.COLUMN_ACCOUNT
+				+ "," + Order.TABLE_NAME+"."+ Order.COLUMN_TOTAL + "," + "DATETIME("
+				+ Order.COLUMN_TS_CREATED + ", \'localtime\')"
+				+ " FROM "
+				+ Order.TABLE_NAME + " LEFT OUTER JOIN "+MemberTable.TABLE_NAME+" ON "
+				+ Order.TABLE_NAME + "." + Order.COLUMN_ACCOUNT + "="
+				+ MemberTable.TABLE_NAME + "." + MemberTable.COLUMN_ACCOUNT
+				+ " LEFT OUTER JOIN "+GroupTable.TABLE_NAME+" ON "
+				+ Order.TABLE_NAME + "." + Order.COLUMN_ACCOUNT + "="
+				+ GroupTable.TABLE_NAME + "." + GroupTable.COLUMN_ACCOUNT
+				+ " WHERE "
+				+ Order.TABLE_NAME + "." + Order.COLUMN_ACCOUNT + "="+accountNr
+				+ " ORDER BY " + Order.COLUMN_TS_CREATED + " DESC";
 
 		Log.d(TAG, query);
 
 		return db.rawQuery(query, null);
 	}
 
-	public Cursor getOrder(int id) {
+	public Cursor getConsumptionOrder(int id) {
 		SQLiteDatabase db = getReadableDatabase();
 
 		String query = "SELECT " + Consumption.TABLE_NAME + "."
@@ -458,6 +568,64 @@ public class DBHelper extends SQLiteOpenHelper {
 		return res != -1;
 	}
 
+	public void settleAllGroups() throws InvalidGroupException{
+
+		Cursor groups = getAllGroups();
+
+		groups.moveToFirst();
+
+		while(!groups.isAfterLast()){
+
+			int groupId = groups.getInt(0);
+			int groupAccount = groups.getInt(2);
+
+			Cursor groupMembers = getGroupMembers(groupId);
+
+			if(groupMembers.getCount()==0){
+				throw new InvalidGroupException(groups.getString(1));
+			}
+
+			Cursor groupOrders = getUnsettledGroupConsumptions(groupId);
+
+			double balance = groupOrders.getDouble(4);
+
+			if (balance!=0){
+
+				double balancePerMember = balance/groupMembers.getCount();
+
+				groupMembers.moveToFirst();
+
+				while (!groupMembers.isAfterLast()){
+
+					ContentValues v = new ContentValues();
+					v.put(Order.COLUMN_ACCOUNT, groupMembers.getInt(4));
+					v.put(Order.COLUMN_TYPE, Order.ORDER_TYPE_SETTLEMENT);
+					v.put(Order.COLUMN_TOTAL, balancePerMember);
+
+					long orderId = insertOrIgnore(Order.TABLE_NAME, v);
+
+					v.clear();
+
+					v.put(GroupSettlement.COLUMN_ORDER_ID, orderId);
+					v.put(GroupSettlement.COLUMN_GROUP_ID, groupId);
+					v.put(GroupSettlement.COLUMN_GROUP_NAME, groups.getString(1));
+					v.put(GroupSettlement.COLUMN_SUBTOTAL, balancePerMember);
+
+					long settleId = insertOrIgnore(GroupSettlement.TABLE_NAME, v);
+
+					settleGroupConsumptions(groupAccount);
+
+					groupMembers.moveToNext();
+				}
+			}
+
+			groupMembers.close();
+			groupOrders.close();
+
+			groups.moveToNext();
+		}
+		groups.close();
+	}
 
 	public boolean updateCredentials(String username, String passwordUnhashed) {
 
@@ -473,7 +641,6 @@ public class DBHelper extends SQLiteOpenHelper {
 				+ "='password'", null);
 
 		return (i + j) != 0;
-
 	}
 
 	/**
@@ -737,6 +904,8 @@ public class DBHelper extends SQLiteOpenHelper {
 		db.execSQL(Order.SQL_TRIGGER_UPDATE_TOTAL_4);
 
 		db.execSQL(Consumption.SQL_CREATE_TABLE);
+		db.execSQL(GroupSettlement.SQL_CREATE_TABLE);
+
 
 		db.execSQL(BackupLog.SQL_CREATE_TABLE);
 
@@ -757,16 +926,21 @@ public class DBHelper extends SQLiteOpenHelper {
 	@Override
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 		db.execSQL(MemberTable.SQL_DELETE_ENTRIES);
+		db.execSQL(GroupTable.SQL_DELETE_ENTRIES);
+		db.execSQL(GroupMembers.SQL_DELETE_ENTRIES);
 		db.execSQL(ItemList.SQL_DELETE_ENTRIES);
 		db.execSQL(AccountList.SQL_DELETE_ENTRIES);
 		db.execSQL(Order.SQL_DELETE_ENTRIES);
 		db.execSQL(Consumption.SQL_DELETE_ENTRIES);
+		db.execSQL(GroupSettlement.SQL_DELETE_ENTRIES);
 		db.execSQL(BackupLog.SQL_DELETE_ENTRIES);
 		db.execSQL(KeyValueLog.SQL_DELETE_ENTRIES);
+
 
 		onCreate(db);
 		DATABASE_VERSION = newVersion;
 	}
+
 
 	/**
 	 * Inner class representing the table containing all the members
@@ -854,7 +1028,7 @@ public class DBHelper extends SQLiteOpenHelper {
 				+ COLUMN_GR_ID
 				+ " INTEGER PRIMARY KEY ,"
 				+ COLUMN_GROUP_NAME
-				+ " TEXT NOT NULL"
+				+ " TEXT UNIQUE NOT NULL"
 				+ ","
 				+ COLUMN_ACCOUNT
 				+ " INTEGER "
@@ -1048,6 +1222,10 @@ public class DBHelper extends SQLiteOpenHelper {
 		public static final String COLUMN_TS_CREATED = "ts_created";
 		public static final String COLUMN_TS_SETTLED = "ts_settled";
 
+		public static final String ORDER_TYPE_CONSUMPTION = "consumption";
+		public static final String ORDER_TYPE_SETTLEMENT = "group_settlement";
+
+
 		public static final String SQL_CREATE_TABLE = "CREATE TABLE  IF NOT EXISTS "
 				+ TABLE_NAME
 				+ " ("
@@ -1198,6 +1376,41 @@ public class DBHelper extends SQLiteOpenHelper {
 
 	}
 
+	public static abstract class GroupSettlement implements BaseColumns {
+
+		public static final String TABLE_NAME = "group_settlement";
+		public static final String COLUMN_ID = _ID;
+		public static final String COLUMN_ORDER_ID = "order_id";
+		public static final String COLUMN_GROUP_ID = "group_id";
+		public static final String COLUMN_GROUP_NAME = "group_name";
+		public static final String COLUMN_SUBTOTAL = "subtotal";
+
+		public static final String SQL_CREATE_TABLE = "CREATE TABLE  IF NOT EXISTS "
+				+ TABLE_NAME
+				+ " ("
+				+ COLUMN_ID
+				+ " INTEGER PRIMARY KEY AUTOINCREMENT"
+				+ ","
+				+ COLUMN_ORDER_ID
+				+ " INTEGER"
+				+ ","
+				+ COLUMN_GROUP_ID
+				+ " INTEGER"
+				+ ","
+				+ COLUMN_GROUP_NAME
+				+ " TEXT"
+				+ ","
+				+ COLUMN_SUBTOTAL + " DECIMAL(4,2)" + ")";
+
+		public static final String SQL_DELETE_ENTRIES = "DROP TABLE IF EXISTS "
+				+ TABLE_NAME;
+
+		public static String getIdColumnName() {
+			return COLUMN_ID;
+		}
+
+	}
+
 	/**
 	 * Inner class representing the table containing a log of all the backups
 	 */
@@ -1263,6 +1476,19 @@ public class DBHelper extends SQLiteOpenHelper {
 
 		public static String getIdColumnName() {
 			return COLUMN_KEY;
+		}
+	}
+
+	public class InvalidGroupException extends Exception{
+
+		private String groupName;
+
+		public InvalidGroupException(String groupName){
+			this.groupName = groupName;
+		}
+
+		public String getGroupName() {
+			return groupName;
 		}
 	}
 }

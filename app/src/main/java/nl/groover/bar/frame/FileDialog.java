@@ -1,21 +1,9 @@
 package nl.groover.bar.frame;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.TreeMap;
-
-import nl.groover.bar.R;
-
 import android.app.AlertDialog;
 import android.app.ListActivity;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.os.Environment;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -27,81 +15,59 @@ import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.TreeMap;
+
+import nl.groover.bar.R;
+
 
 /**
  * Activity for choosing files/directories
- * Code is stolen from some poor portuguese soul
  * @author android
- * 
+ *
  */
 public class FileDialog extends ListActivity {
 
-	/**
-	 * Sleutel van een item uit de lijst met paden.
-	 */
-	private static final String ITEM_KEY = "key";
 
-	/**
-	 * Afbeelding van een item uit de lijst van paden (directory of bestand).
-	 */
+	private static final String ITEM_KEY = "key";
 	private static final String ITEM_IMAGE = "image";
 
-	/**
-	 * Root directory
-	 */
-	private static final String ROOT = "/";
+	private static final String FS_ROOT = "/";
+	private static String FRAME_ROOT = "/";
 
-	/**
-	 * Parameter invoer Activiteit: eerste weg. Standaard: ROOT.
-	 */
 	public static final String START_PATH = "START_PATH";
 
 	/**
-	 * Parameter invoer Activiteit: filter bestandsformaten. default: ���������*
-	 * Null.
+	 * Filter file extensions. default:
 	 */
 	public static final String FORMAT_FILTER = "FORMAT_FILTER";
 
 	/**
-	 * Parameter output van activiteit: escolhido pad. Standaard: null.
+	 * Parameter output
 	 */
 	public static final String RESULT_PATH = "RESULT_PATH";
 
-	/**
-	 * Parameter invoer Activiteit: soort SELECTIE: u kunt nieuwe paden te maken
-	 * ���������* Of niet. Standaard: false.
-	 * 
-	 * @see {@link SelectionMode}
-	 */
-	public static final String SELECTION_MODE = "SELECTION_MODE";
+	public static final String KEY_ROOT = "KEY_ROOT";
 
-	/**
-	 * Parameter Input Activiteit: tot en mappen mogen kiezen. ���������*
-	 * Standaard: false.
-	 */
-	public static final String CAN_SELECT_DIR = "CAN_SELECT_DIR";
 
 	private List<String> path = null;
 	private TextView myPath;
-	private EditText mFileName;
 	private ArrayList<HashMap<String, Object>> mList;
+	private HashMap<String, Integer> lastPositions = new HashMap<String, Integer>();
 
 	private Button selectButton;
 
 	private LinearLayout layoutSelect;
 	private LinearLayout layoutCreate;
-	private InputMethodManager inputManager;
 	private String parentPath;
-	private String currentPath = ROOT;
-
-	private int selectionMode = SelectionMode.MODE_CREATE;
+	private String currentPath = FS_ROOT;
 
 	private String[] formatFilter = null;
 
-	private boolean canSelectDir = false;
-
 	private File selectedFile;
-	private HashMap<String, Integer> lastPositions = new HashMap<String, Integer>();
 
 	/**
 	 * Called when the activity is first created.
@@ -109,14 +75,11 @@ public class FileDialog extends ListActivity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-				
+
 		setResult(RESULT_CANCELED, getIntent());
 
 		setContentView(R.layout.file_dialog_main);
 		myPath = (TextView) findViewById(R.id.path);
-		mFileName = (EditText) findViewById(R.id.fdEditTextFile);
-
-		inputManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
 
 		selectButton = (Button) findViewById(R.id.fdButtonSelect);
 		selectButton.setEnabled(false);
@@ -132,64 +95,18 @@ public class FileDialog extends ListActivity {
 			}
 		});
 
-		final Button newButton = (Button) findViewById(R.id.fdButtonNew);
-		newButton.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				setCreateVisible(v);
-
-				mFileName.setText("");
-				mFileName.requestFocus();
-			}
-		});
-
-		selectionMode = getIntent().getIntExtra(SELECTION_MODE,
-				SelectionMode.MODE_CREATE);
+		String r = getIntent().getStringExtra(KEY_ROOT);
+		if(r !=null){
+			FRAME_ROOT = r;
+		}
 
 		formatFilter = getIntent().getStringArrayExtra(FORMAT_FILTER);
 
-		canSelectDir = getIntent().getBooleanExtra(CAN_SELECT_DIR, false);
-
-		if (selectionMode == SelectionMode.MODE_OPEN) {
-			newButton.setEnabled(false);
-			newButton.setVisibility(View.GONE);
-		}
-
-		layoutSelect = (LinearLayout) findViewById(R.id.fdLinearLayoutSelect);
-		layoutCreate = (LinearLayout) findViewById(R.id.fdLinearLayoutCreate);
-		layoutCreate.setVisibility(View.GONE);
-
 		final Button cancelButton = (Button) findViewById(R.id.fdButtonCancel);
-		cancelButton.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				setSelectVisible(v);
-			}
-
-		});
-		final Button createButton = (Button) findViewById(R.id.fdButtonCreate);
-		createButton.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				if (mFileName.getText().length() > 0) {
-					getIntent().putExtra(RESULT_PATH,
-							currentPath + "/" + mFileName.getText());
-					setResult(RESULT_OK, getIntent());
-					finish();
-				}
-			}
-		});
 
 		String startPath = getIntent().getStringExtra(START_PATH);
-		startPath = startPath != null ? startPath : ROOT;
-		if (canSelectDir) {
-			File file = new File(startPath);
-			selectedFile = file;
-			selectButton.setEnabled(true);
-		}
+		startPath = startPath != null ? startPath : FRAME_ROOT;
+
 		getDir(startPath);
 	}
 
@@ -208,9 +125,6 @@ public class FileDialog extends ListActivity {
 	}
 
 	/**
-	 * Mounts de structuur van bestanden en mappen van de map meegeleverde
-	 * kinderen. ��������� * ��������� * @ Param dirpath ��������� * Parent
-	 * directory.
 	 */
 	private void getDirImpl(final String dirPath) {
 
@@ -224,18 +138,18 @@ public class FileDialog extends ListActivity {
 		File[] files = f.listFiles();
 
 		if (files == null) {
-			currentPath = ROOT;
+			currentPath = FRAME_ROOT;
 			f = new File(currentPath);
 			files = f.listFiles();
 		}
 
 		myPath.setText(getText(R.string.location) + ": " + currentPath);
 
-		if (!currentPath.equals(ROOT)) {
+		if (!currentPath.equals(FRAME_ROOT)) {
 
-			item.add(ROOT);
-			addItem(ROOT, R.drawable.folder);
-			path.add(ROOT);
+			item.add(FRAME_ROOT);
+			addItem(FS_ROOT, R.drawable.folder);
+			path.add(FRAME_ROOT);
 
 			item.add("../");
 			addItem("../", R.drawable.folder);
@@ -286,7 +200,7 @@ public class FileDialog extends ListActivity {
 		SimpleAdapter fileList = new SimpleAdapter(this, mList,
 				R.layout.file_dialog_row,
 				new String[] { ITEM_KEY, ITEM_IMAGE }, new int[] {
-						R.id.fdrowtext, R.id.fdrowimage });
+				R.id.fdrowtext, R.id.fdrowimage });
 
 		for (String dir : dirsMap.tailMap("").values()) {
 			addItem(dir, R.drawable.folder);
@@ -299,7 +213,6 @@ public class FileDialog extends ListActivity {
 		fileList.notifyDataSetChanged();
 
 		setListAdapter(fileList);
-
 	}
 
 	private void addItem(String fileName, int imageId) {
@@ -310,28 +223,24 @@ public class FileDialog extends ListActivity {
 	}
 
 	/**
-	 * Wanneer u klikt op het item in de lijst, moet u: 1) Als map, open uw
-	 * ��������� * Bestanden zonen; 2) Als je kunt kiezen directory, omschrijft
-	 * het als de ��������� * Pad gekozen. 3) Als het bestand wordt gedefinieerd
-	 * als de gekozen weg. 4) Actief ��������� * Knop voor de selectie.
 	 */
 	@Override
 	protected void onListItemClick(ListView l, View v, int position, long id) {
 
-		File file = new File(path.get(position));
+		String selectedPath = path.get(position);
 
-		setSelectVisible(v);
+		if (selectedPath.equals(FS_ROOT)){
+			selectedPath = FRAME_ROOT;
+		}
+
+		File file = new File(selectedPath);
 
 		if (file.isDirectory()) {
 			selectButton.setEnabled(false);
 			if (file.canRead()) {
 				lastPositions.put(currentPath, position);
 				getDir(path.get(position));
-				if (canSelectDir) {
-					selectedFile = file;
-					v.setSelected(true);
-					selectButton.setEnabled(true);
-				}
+
 			} else {
 				new AlertDialog.Builder(this)
 						.setIcon(R.drawable.icon)
@@ -343,7 +252,7 @@ public class FileDialog extends ListActivity {
 
 									@Override
 									public void onClick(DialogInterface dialog,
-											int which) {
+														int which) {
 
 									}
 								}).show();
@@ -353,53 +262,5 @@ public class FileDialog extends ListActivity {
 			v.setSelected(true);
 			selectButton.setEnabled(true);
 		}
-	}
-
-	@Override
-	public boolean onKeyDown(int keyCode, KeyEvent event) {
-		if ((keyCode == KeyEvent.KEYCODE_BACK)) {
-			selectButton.setEnabled(false);
-
-			if (layoutCreate.getVisibility() == View.VISIBLE) {
-				layoutCreate.setVisibility(View.GONE);
-				layoutSelect.setVisibility(View.VISIBLE);
-			} else {
-				if (!currentPath.equals(ROOT)) {
-					getDir(parentPath);
-				} else {
-					return super.onKeyDown(keyCode, event);
-				}
-			}
-
-			return true;
-		} else {
-			return super.onKeyDown(keyCode, event);
-		}
-	}
-
-	/**
-	 * Bepaalt of de knoppen CREATE zichtbaar zijn.
-	 * 
-	 * @param v
-	 */
-	private void setCreateVisible(View v) {
-		layoutCreate.setVisibility(View.VISIBLE);
-		layoutSelect.setVisibility(View.GONE);
-
-		inputManager.hideSoftInputFromWindow(v.getWindowToken(), 0);
-		selectButton.setEnabled(false);
-	}
-
-	/**
-	 * Bepaalt of de knop select zichtbaar is
-	 * 
-	 * @param v
-	 */
-	private void setSelectVisible(View v) {
-		layoutCreate.setVisibility(View.GONE);
-		layoutSelect.setVisibility(View.VISIBLE);
-
-		inputManager.hideSoftInputFromWindow(v.getWindowToken(), 0);
-		selectButton.setEnabled(false);
 	}
 }

@@ -135,22 +135,31 @@ public class EditGroupActivity extends FragmentActivity {
             } else {
 
                 groupId = (int) DB.createGroup(name);
-                group.moveToFirst();
 
-                while (group.getPosition() < group.getCount()) {
+                if(groupId==-1){
 
-                    DB.addGroupMember(groupId, group.getInt(0));
-                    group.moveToNext();
+                    BasicAlertDialogFragment dialog = new BasicAlertDialogFragment("Group name already in use!");
+                    dialog.show(getSupportFragmentManager(), "error_db");
+                }else{
+                    group.moveToFirst();
+
+                    while (group.getPosition() < group.getCount()) {
+
+                        DB.addGroupMember(groupId, group.getInt(0));
+                        group.moveToNext();
+                    }
+
+                    Intent intent = new Intent(this, GroupActivity.class);
+
+                    if (getParent() == null) {
+                        setResult(Activity.RESULT_OK, intent);
+                    } else {
+                        getParent().setResult(Activity.RESULT_OK, intent);
+                    }
+                    finish();
+
                 }
 
-                Intent intent = new Intent(this, GroupActivity.class);
-
-                if (getParent() == null) {
-                    setResult(Activity.RESULT_OK, intent);
-                } else {
-                    getParent().setResult(Activity.RESULT_OK, intent);
-                }
-                finish();
             }
         }
     }

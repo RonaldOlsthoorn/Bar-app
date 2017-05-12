@@ -1,6 +1,7 @@
 package nl.groover.bar.gui;
 
 import nl.groover.bar.R;
+import nl.groover.bar.frame.Customer;
 import nl.groover.bar.frame.DBHelper;
 import nl.groover.bar.frame.OrderListAdapter;
 
@@ -29,26 +30,31 @@ public class OrderOverviewActivity extends Activity implements
 	private OrderListAdapter adapter;
 	private int orderId;
 	private Cursor c;
-	private int custId = -1;
+	private int accountNr = -1;
+
+	private Customer customer;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_order_overview);
 
-		custId = getIntent().getIntExtra("custId", -1);
+		accountNr = getIntent().getIntExtra("account", -1);
 
 		DB = DBHelper.getDBHelper(this);
 		
-		if(custId==-1){
+		if(accountNr==-1){
+
 			c = DB.getAllOrders();
 		}else{
-			c = DB.getOrdersCust(custId);
-			Log.d("id", custId+"");
+
+			customer =  new Customer(getIntent().getIntExtra("account", -1),
+					getIntent().getStringExtra("name"));
+
+			c = DB.getOrdersCust(accountNr);
 		}
-				
-		adapter = new OrderListAdapter(this, R.layout.order_overview_row, c,
-				this);
+
+		adapter = new OrderListAdapter(this, R.layout.order_overview_row, c, this);
 		list = (ListView) findViewById(R.orderOverview.list);
 		list.setAdapter(adapter);
 	}
@@ -89,10 +95,8 @@ public class OrderOverviewActivity extends Activity implements
 
 		Intent intent = new Intent(this, EditOrderActivity.class);
 		intent.putExtra("order", c.getInt(0));
-		intent.putExtra("type", "individual");
-		intent.putExtra("ID", c.getString(1));
-		intent.putExtra("account", c.getInt(4));
-		intent.putExtra("name", c.getString(2) +" " +c.getString(3));
+		intent.putExtra("name", c.getString(1));
+		intent.putExtra("account", c.getInt(2));
 
 		startActivityForResult(intent, REQUEST_CODE);
 	}
@@ -111,7 +115,13 @@ public class OrderOverviewActivity extends Activity implements
 				Toast toast = Toast.makeText(OrderOverviewActivity.this,
 						"Bestelling verwijderd", Toast.LENGTH_SHORT);
 				toast.show();
-				c = DB.getAllOrders();
+
+				if(accountNr == -1){
+					c = DB.getAllOrders(); // TODO change!!
+				}else{
+					c  = DB.getOrdersCust(accountNr);
+				}
+
 				adapter.changeCursor(c);
 				adapter.notifyDataSetChanged();
 			}
@@ -131,14 +141,4 @@ public class OrderOverviewActivity extends Activity implements
 		AlertDialog alertDialog = alertDialogBuilder.create();
 		alertDialog.show();
 	}
-
-//	public void onItemClick(AdapterView<?> parent, View view, int position,
-//			long id) {
-//
-//		Log.d("itemclick", "click");
-//
-//		if ((view.equals(findViewById(R.orderOverViewRow.edit)))) {
-//			Log.d("itemclick", "found item");
-//		}
-//	}
 }

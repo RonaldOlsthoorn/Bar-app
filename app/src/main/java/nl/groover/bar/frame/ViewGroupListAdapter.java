@@ -1,8 +1,7 @@
-package nl.groover.bar.gui;
+package nl.groover.bar.frame;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.support.v4.widget.SimpleCursorAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,12 +12,12 @@ import java.text.DecimalFormat;
 
 import nl.groover.bar.R;
 
-public class FormatTextAdapter extends CursorAdapter {
+public class ViewGroupListAdapter extends CursorAdapter {
 
 	private DecimalFormat df = new DecimalFormat("0.00");
 	private LayoutInflater cursorInflater;
 
-	public FormatTextAdapter(Context context, Cursor c, int flags) {
+	public ViewGroupListAdapter(Context context, Cursor c, int flags) {
 		super(context, c, flags);
 
 		cursorInflater = (LayoutInflater) context.getSystemService(
@@ -36,20 +35,9 @@ public class FormatTextAdapter extends CursorAdapter {
 	public void bindView(View view, Context context, Cursor cursor) {
 
 		TextView textViewAccount = (TextView) view.findViewById(R.ledenlijstrow.account);
-		textViewAccount.setText(df.format(cursor.getDouble(5)));
+		textViewAccount.setText(df.format(cursor.getDouble(3)));
 
 		TextView textViewName = (TextView) view.findViewById(R.ledenlijstrow.name);
-		String name = cursor.getString(1);
-
-		String prefix = cursor.getString(2);
-
-		if( prefix != null){
-			name = name + " " + prefix;
-		}
-
-		name = name + " "+ cursor.getString(3);
-
-		textViewName.setText(name);
-
+		textViewName.setText(cursor.getString(1));
 	}
 }

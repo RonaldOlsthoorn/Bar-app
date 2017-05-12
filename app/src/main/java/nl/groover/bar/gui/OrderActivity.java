@@ -49,10 +49,8 @@ public class OrderActivity extends Activity implements
 
 		totaal_output = (TextView) findViewById(R.order.total);
 
-		customer = new Customer(getIntent().getIntExtra("ID", -1), getIntent()
-				.getIntExtra("account", -1),
-				getIntent().getStringExtra("type"), getIntent().getStringExtra(
-						"name"));
+		customer = new Customer(getIntent().getIntExtra("account", -1),
+				getIntent().getStringExtra("name"));
 
 		customerName = (TextView) findViewById(R.order.custName);
 		customerName.setText(customer.getName());
@@ -103,7 +101,7 @@ public class OrderActivity extends Activity implements
 	public void toOrderOverview(View view) {
 
 		Intent intent = new Intent(this, OrderOverviewActivity.class);
-		intent.putExtra("custId", customer.getId());
+		intent.putExtra("account", customer.getAccount());
 		startActivity(intent);
 	}
 	

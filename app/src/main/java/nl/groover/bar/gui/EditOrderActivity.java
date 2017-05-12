@@ -49,10 +49,8 @@ public class EditOrderActivity extends Activity implements OnItemClickListener,
 
 		totaal_output = (TextView) findViewById(R.editOrder.total);
 
-		customer = new Customer(getIntent().getIntExtra("ID", -1), getIntent()
-				.getIntExtra("account", -1),
-				getIntent().getStringExtra("type"), getIntent().getStringExtra(
-						"name"));
+		customer = new Customer(getIntent().getIntExtra("account", -1),
+				getIntent().getStringExtra("name"));
 
 		customerName = (TextView) findViewById(R.editOrder.custName);
 		customerName.setText(customer.getName());
@@ -63,7 +61,7 @@ public class EditOrderActivity extends Activity implements OnItemClickListener,
 
 		orderId = getIntent().getIntExtra("order", -1);
 		c_Order = OrderFactory.createExistingOrder(customer, c_Articles,
-				DB.getOrder(orderId));
+				DB.getConsumptionOrder(orderId));
 		updateTotal();
 		l_order = (ListView) findViewById(R.editOrder.orderList);
 

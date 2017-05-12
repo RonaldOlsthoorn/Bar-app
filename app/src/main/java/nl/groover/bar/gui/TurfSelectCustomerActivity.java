@@ -1,13 +1,13 @@
 package nl.groover.bar.gui;
 
-import java.text.DecimalFormat;
-
 import nl.groover.bar.R;
 import nl.groover.bar.frame.DBHelper;
 import nl.groover.bar.frame.SearchCursor;
+import nl.groover.bar.frame.ViewGroupListAdapter;
 
 import android.os.Bundle;
 import android.app.Activity;
+import android.support.v4.widget.SimpleCursorAdapter;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.AttributeSet;
@@ -19,46 +19,76 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.FilterQueryProvider;
-import android.widget.LinearLayout;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 import android.support.v4.app.NavUtils;
-import android.support.v4.widget.CursorAdapter;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.os.Build;
+import android.widget.TabHost;
 
 public class TurfSelectCustomerActivity extends Activity implements
 		OnItemClickListener, TextWatcher {
 
 	private final int REQUEST_CODE = 123;
 	private DBHelper DB;
-	private SearchCursor c_leden;
-	private SearchCursor c_leden_aanwezig;
-	private SearchCursor c_filtered;
+	private SearchCursor cMembers;
+	private SearchCursor cGroups;
+	private SearchCursor cFrequentMembers;
+	private SearchCursor cFrequentGroups;
 
-	private FormatTextAdapter a_leden_aanwezig;
-	private ListView l_leden_aanwezig;
+	private TabHost tabHost;
 
-	private FormatTextAdapter a_leden;
+	private MemberListAdapter aFrequentMembers;
+	private ViewGroupListAdapter aFrequentGroups;
 
-	private ListView l_leden;
-	private EditText search;
+	private ListView lFrequentMembers;
+	private ListView lFrequentGroups;
+
+	private MemberListAdapter aMembers;
+	private ViewGroupListAdapter aGroups;
+
+	private ListView lMembers;
+	private ListView lGroups;
+
+	private EditText searchMembers;
+	private EditText searchGroups;
+
 	private int height;
 	private boolean softkeyHidden;
 
-	private FilterQueryProvider filterQueryProvider = new FilterQueryProvider() {
+	private int TAB;
+	private static final int TAB_MEMBERS = 1;
+	private static final int TAB_GROUPS = 2;
+
+	public static final String CUSTOMER_TYPE = "customer_type";
+	public static final String CUSTOMER_TYPE_INDIVIDUAL = "individual";
+	public static final String CUSTOMER_TYPE_GROUP = "group";
+
+
+	private FilterQueryProvider filterMembers = new FilterQueryProvider() {
 		public Cursor runQuery(CharSequence constraint) {
 			// assuming you have your custom DBHelper instance
 			// ready to execute the DB request
 
-			c_filtered = new SearchCursor(DB.getFilteredMember(constraint
+			cMembers = new SearchCursor(DB.getFilteredMember(constraint
 					.toString()));
 
-			return c_filtered;
+			return cMembers;
+		}
+	};
+
+	private FilterQueryProvider filterGroups = new FilterQueryProvider() {
+		public Cursor runQuery(CharSequence constraint) {
+			// assuming you have your custom DBHelper instance
+			// ready to execute the DB request
+
+			cGroups = new SearchCursor(DB.getFilterGroups(constraint.toString()));
+
+			return cGroups;
 		}
 	};
 
@@ -106,30 +136,66 @@ public class TurfSelectCustomerActivity extends Activity implements
 		setupActionBar();
 
 		DB = DBHelper.getDBHelper(this);
-		c_leden = new SearchCursor(DB.getMembers());
-		c_leden_aanwezig = new SearchCursor(DB.getFrequentVisitors());
+		cMembers = new SearchCursor(DB.getMembers());
+		cGroups = new SearchCursor(DB.getAllGroups());
+		cFrequentMembers = new SearchCursor(DB.getFrequentVisitors());
+		cFrequentGroups = new SearchCursor(DB.getFrequentGroups());
 
-		a_leden = new FormatTextAdapter(this, c_leden, FormatTextAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
+		aMembers = new MemberListAdapter(this, cMembers, MemberListAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
+		aMembers.setFilterQueryProvider(filterMembers);
 
-		a_leden.setFilterQueryProvider(filterQueryProvider);
+		aGroups = new ViewGroupListAdapter(this, cGroups,
+				SimpleCursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
+		aGroups.setFilterQueryProvider(filterGroups);
 
-		l_leden = (ListView) findViewById(R.selectCustomer.listAllMembers);
-		l_leden.setAdapter(a_leden);
-		l_leden.setOnItemClickListener(this);
+		lMembers = (ListView) findViewById(R.id.select_customer_activity_list_all_members);
+		lMembers.setAdapter(aMembers);
+		lMembers.setOnItemClickListener(this);
 
-		a_leden_aanwezig = new FormatTextAdapter(this, c_leden_aanwezig,
-				 FormatTextAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
+		lGroups = (ListView) findViewById(R.id.select_customer_activity_list_all_groups);
+		lGroups.setAdapter(aGroups);
+		lGroups.setOnItemClickListener(this);
 
-		l_leden_aanwezig = (ListView) findViewById(R.selectCustomer.listFrequentMembers);
-		l_leden_aanwezig.setAdapter(a_leden_aanwezig);
-		l_leden_aanwezig.setOnItemClickListener(this);
+		aFrequentMembers = new MemberListAdapter(this, cFrequentMembers,
+				 MemberListAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
 
-		search = (EditText) findViewById(R.selectCustomer.search);
+		aFrequentGroups = new ViewGroupListAdapter(this, cFrequentGroups,
+				SimpleCursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
+
+		lFrequentMembers = (ListView) findViewById(R.id.select_customer_activity_list_frequent_members);
+		lFrequentMembers.setAdapter(aFrequentMembers);
+		lFrequentMembers.setOnItemClickListener(this);
+
+		lFrequentGroups = (ListView) findViewById(R.id.select_customer_activity_list_frequent_groups);
+		lFrequentGroups.setAdapter(aFrequentGroups);
+		lFrequentGroups.setOnItemClickListener(this);
+
+		searchMembers = (EditText) findViewById(R.id.select_customer_activity_search_member);
+		searchGroups = (EditText) findViewById(R.id.select_customer_activity_search_groups);
+
 
 		Resources res = getResources();
 		int color = res.getColor(android.R.color.black);
-		search.setTextColor(color);
-		search.addTextChangedListener(this);
+		searchMembers.setTextColor(color);
+		searchMembers.addTextChangedListener(this);
+
+		searchGroups.setTextColor(color);
+		searchGroups.addTextChangedListener(this);
+
+		TabHost tabHost = (TabHost)findViewById(R.id.select_customer_activity_root);
+		tabHost.setup();
+
+		//Tab 1
+		TabHost.TabSpec spec = tabHost.newTabSpec("Leden");
+		spec.setContent(R.id.Leden);
+		spec.setIndicator("Leden");
+		tabHost.addTab(spec);
+
+		//Tab 2
+		spec = tabHost.newTabSpec("Groepen");
+		spec.setContent(R.id.Groepen);
+		spec.setIndicator("Groepen");
+		tabHost.addTab(spec);
 	}
 
 	@Override
@@ -141,54 +207,33 @@ public class TurfSelectCustomerActivity extends Activity implements
 		String customerType;
 		int customerAcount;
 
-		if (adapterView.equals(l_leden)) {
-			if (!c_leden.isClosed()) {
-				c_leden.moveToPosition(pos);
-				customerId = c_leden.getInt(0);
-				customerName = c_leden.getString(1) + " ";
+		if (adapterView.equals(lMembers) || adapterView.equals(lFrequentMembers)) {
 
-				String prefix = c_leden.getString(2);
+			cMembers.moveToId((int) id);
+			customerId = cMembers.getInt(0);
+			customerName = cMembers.getString(1) + " ";
 
-				if (prefix != null){
-					customerName = customerName+prefix+" ";
-				}
-				customerName = customerName+ c_leden.getString(3);
-				customerType = "individual";
-				customerAcount = c_leden.getInt(4);
-			} else {
-				c_filtered.moveToId((int) id);
-				customerId = c_filtered.getInt(0);
-				customerName = c_leden.getString(1) + " ";
-
-				String prefix = c_leden.getString(2);
-
-				if (prefix != null){
-					customerName = customerName+prefix+" ";
-				}
-				customerName = customerName+ c_leden.getString(3);
-				customerType = "individual";
-				customerAcount = c_filtered.getInt(4);
-			}
-		} else {
-
-			c_leden.moveToId((int) id);
-			customerId = c_leden.getInt(0);
-			customerName = c_leden.getString(1) + " ";
-
-			String prefix = c_leden.getString(2);
+			String prefix = cMembers.getString(2);
 
 			if (prefix != null){
 				customerName = customerName+prefix+" ";
 			}
-			customerName = customerName+ c_leden.getString(3);
-			customerType = "individual";
-			customerAcount = c_leden.getInt(4);
+			customerName = customerName+ cMembers.getString(3);
+			customerType = CUSTOMER_TYPE_INDIVIDUAL;
+			customerAcount = cMembers.getInt(4);
+		} else if (adapterView.equals(lGroups) || adapterView.equals(lFrequentGroups)) {
 
+			cGroups.moveToId((int) id);
+			customerId = cGroups.getInt(0);
+			customerName = cGroups.getString(1);
+			customerType = CUSTOMER_TYPE_GROUP;
+			customerAcount = cGroups.getInt(2);
+		}else{
+			return;
 		}
 
 		Intent intent = new Intent(this, OrderActivity.class);
-		intent.putExtra("type", customerType);
-		intent.putExtra("ID", customerId);
+		intent.putExtra(CUSTOMER_TYPE, customerType);
 		intent.putExtra("account", customerAcount);
 		intent.putExtra("name", customerName);
 
@@ -206,7 +251,7 @@ public class TurfSelectCustomerActivity extends Activity implements
 		}
 	}
 
-	public class MainSearchLayout extends LinearLayout {
+	public class MainSearchLayout extends TabHost {
 
 		public MainSearchLayout(Context context, AttributeSet attributeSet) {
 			super(context, attributeSet);
@@ -219,28 +264,38 @@ public class TurfSelectCustomerActivity extends Activity implements
 		protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
 			Log.d("Search Layout", "Handling Keyboard Window shown");
 
-			final int proposedheight = MeasureSpec.getSize(heightMeasureSpec);
+			final int proposedHeight = MeasureSpec.getSize(heightMeasureSpec);
 
-			if (height > proposedheight) {
+			if (height > proposedHeight) {
 				// Keyboard is shown
 				Log.d("Search Layout", "Keyboard shown");
 				softkeyHidden = false;
-				height = proposedheight;
-				findViewById(R.selectCustomer.boxAllMembers).setVisibility(
+				height = proposedHeight;
+
+				findViewById(R.id.select_customer_activity_box_all_members).setVisibility(
 						VISIBLE);
-				findViewById(R.selectCustomer.boxFrequentVisitiors)
+				findViewById(R.id.select_customer_activity_box_frequent_visitiors)
 						.setVisibility(GONE);
 
+				findViewById(R.id.select_customer_activity_box_all_groups).setVisibility(
+						VISIBLE);
+				findViewById(R.id.select_customer_activity_box_frequent_groups)
+						.setVisibility(GONE);
 			}
-			if (height < proposedheight) {
+			if (height < proposedHeight) {
 
-				height = proposedheight;
+				height = proposedHeight;
 				// Keyboard is hidden
 				softkeyHidden = true;
 				Log.d("Search Layout", "Keyboard hidden");
-				findViewById(R.selectCustomer.boxAllMembers)
+				findViewById(R.id.select_customer_activity_box_all_members)
 						.setVisibility(GONE);
-				findViewById(R.selectCustomer.boxFrequentVisitiors)
+				findViewById(R.id.select_customer_activity_box_frequent_visitiors)
+						.setVisibility(VISIBLE);
+
+				findViewById(R.id.select_customer_activity_box_all_groups)
+						.setVisibility(GONE);
+				findViewById(R.id.select_customer_activity_box_frequent_groups)
 						.setVisibility(VISIBLE);
 			}
 
@@ -256,20 +311,34 @@ public class TurfSelectCustomerActivity extends Activity implements
 	@Override
 	public void onTextChanged(CharSequence s, int start, int before, int count) {
 		if (s.length() > 0 && softkeyHidden == true) {
-			findViewById(R.selectCustomer.boxAllMembers).setVisibility(
+
+			findViewById(R.id.select_customer_activity_box_all_members).setVisibility(
 					View.VISIBLE);
-			findViewById(R.selectCustomer.boxFrequentVisitiors).setVisibility(
+			findViewById(R.id.select_customer_activity_box_frequent_visitiors).setVisibility(
+					View.GONE);
+
+			findViewById(R.id.select_customer_activity_box_all_groups).setVisibility(
+					View.VISIBLE);
+			findViewById(R.id.select_customer_activity_box_frequent_groups).setVisibility(
 					View.GONE);
 		}
 		if (s.length() == 0 && softkeyHidden == true) {
-			findViewById(R.selectCustomer.boxAllMembers).setVisibility(
+			findViewById(R.id.select_customer_activity_box_all_members).setVisibility(
 					View.GONE);
-			findViewById(R.selectCustomer.boxFrequentVisitiors).setVisibility(
+			findViewById(R.id.select_customer_activity_box_frequent_visitiors).setVisibility(
+					View.VISIBLE);
+
+			findViewById(R.id.select_customer_activity_box_all_groups).setVisibility(
+					View.GONE);
+			findViewById(R.id.select_customer_activity_box_frequent_groups).setVisibility(
 					View.VISIBLE);
 		}
 
-		a_leden.getFilter().filter(s);
-		a_leden.notifyDataSetChanged();
+		aMembers.getFilter().filter(s);
+		aMembers.notifyDataSetChanged();
+
+		aGroups.getFilter().filter(s);
+		aGroups.notifyDataSetChanged();
 	}
 
 	@Override

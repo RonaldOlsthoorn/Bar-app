@@ -116,8 +116,11 @@ public class OrderExporter {
 			}catch(IOException e){
 				
 				return new IOReport(false,IOReport.CAUSE_WRITING_EXCEPTION);
+			}catch(DBHelper.InvalidGroupException e){
 
+				return new IOReport(false,IOReport.CAUSE_ZERO_GROUP, e.getGroupName());
 			}
+
 		}
 	}
 
@@ -151,7 +154,7 @@ public class OrderExporter {
 			SimpleDateFormat df1 = new SimpleDateFormat("dd-MM-yy hh.mm.ss");
 			ts_settled = df1.format(c.getTime());
 
-			File sdRoot = Environment.getExternalStorageDirectory();
+			File sdRoot = context.getExternalFilesDir(null);
 			File mainFolder = new File(sdRoot,
 					"Groover Bar/backup " + ts_settled);
 			mainFolder.mkdirs();
@@ -169,14 +172,6 @@ public class OrderExporter {
 					new FileOutputStream(xml1));
 			extractOrdersFromDB(buf1);
 			buf1.close();
-
-			File xml2 = new File(mainFolder, "afrekening " + ts_settled
-					+ ".xml");
-
-			BufferedOutputStream buf2 = new BufferedOutputStream(
-					new FileOutputStream(xml2));
-			extractReceiptFromDB(buf2);
-			buf2.close();
 
 			// backup success. note to database.
 			ContentValues v = new ContentValues();
@@ -213,13 +208,6 @@ public class OrderExporter {
 		extractOrdersFromDB(buf1);
 		buf1.close();
 
-		File xml2 = new File(mainFolder, "afrekening " + ts_settled
-				+ ".xml");
-
-		BufferedOutputStream buf2 = new BufferedOutputStream(
-				new FileOutputStream(xml2));
-		extractReceiptFromDB(buf2);
-		buf2.close();
 	}
 
 	private void extractOrdersFromDB(BufferedOutputStream buf)
@@ -298,7 +286,9 @@ public class OrderExporter {
 	}
 
 	private void extractReceiptFromDB(BufferedOutputStream buf)
-			throws IllegalArgumentException, IllegalStateException, IOException {
+			throws IllegalArgumentException, IllegalStateException, IOException, DBHelper.InvalidGroupException {
+
+		DB.settleAllGroups();
 
 		XmlSerializer xmlSerializer = Xml.newSerializer();
 		xmlSerializer.setOutput(buf, "UTF-8");
@@ -337,9 +327,6 @@ public class OrderExporter {
 
 		while (members.getPosition() < members.getCount()) {
 			// open tag: <member>
-			Cursor consumptions = DB.getTotalConsumptionsByMember(members
-					.getInt(4));
-
 			xmlSerializer.startTag(null, "member");
 
 			xmlSerializer.attribute(null, "GR_ID", "" + members.getInt(0));
@@ -348,16 +335,17 @@ public class OrderExporter {
 			String prefix = members.getString(3);
 
 			if (prefix == null){
-
 				xmlSerializer.attribute(null, "prefix", "");
 			}else{
-
 				xmlSerializer.attribute(null, "prefix", prefix);
 			}
 
 			xmlSerializer.attribute(null, "last_name", members.getString(3));
 			xmlSerializer.attribute(null, "total",
 					df.format(members.getDouble(5)));
+
+			Cursor consumptions = DB.getTotalConsumptionsByMember(members
+					.getInt(4));
 
 			consumptions.moveToFirst();
 
@@ -376,10 +364,27 @@ public class OrderExporter {
 				consumptions.moveToNext();
 			}
 			consumptions.close();
+
+			Cursor settlements = DB.getGroupSettlementsByMember(members.getInt(0));
+
+			settlements.moveToFirst();
+
+			while (settlements.getPosition() < settlements.getCount()) {
+
+				xmlSerializer.startTag(null, "group settlement");
+				xmlSerializer
+						.attribute(null, "group name", "" + settlements.getString(1));
+				xmlSerializer.attribute(null, "total",
+						df.format(settlements.getDouble(2)));
+
+				xmlSerializer.endTag(null, "group settlement");
+				consumptions.moveToNext();
+			}
+			settlements.close();
+
 			xmlSerializer.endTag(null, "member");
 
 			members.moveToNext();
-
 		}
 
 		xmlSerializer.endTag(null, "list");
@@ -388,7 +393,6 @@ public class OrderExporter {
 
 		xmlSerializer.endDocument();
 		xmlSerializer.flush();
-
 	}
 
 	void DeleteRecursive(File fileOrDirectory) {

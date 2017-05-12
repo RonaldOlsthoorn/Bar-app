@@ -77,7 +77,12 @@ public class PenningActivity extends FragmentActivity {
 			BasicAlertDialogFragment dialog = new BasicAlertDialogFragment("No sd card mounted. Check if there is an sd card in the slot. Tablet must not be connect to a pc using USB!");
 			dialog.show(getSupportFragmentManager(), "error_sd");
 			return;
-		}else{
+		}if(report.getCause().equals(IOReport.CAUSE_ZERO_GROUP)){
+			BasicAlertDialogFragment dialog = new BasicAlertDialogFragment("Group: "+report.getGroupName()+" has no members!!");
+			dialog.show(getSupportFragmentManager(), "error_group");
+			return;
+		}
+		else{
 			BasicAlertDialogFragment dialog = new BasicAlertDialogFragment("An error occured during the process. No backup made");
 			dialog.show(getSupportFragmentManager(), "error_sd");
 		}

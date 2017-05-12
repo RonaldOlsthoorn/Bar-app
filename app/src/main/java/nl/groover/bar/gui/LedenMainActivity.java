@@ -9,11 +9,8 @@ import nl.groover.bar.frame.FileDialog;
 import nl.groover.bar.frame.MemberImporter;
 import nl.groover.bar.frame.OrderExporter;
 
-import nl.groover.bar.frame.SelectionMode;
-
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Environment;
 
 import android.app.ProgressDialog;
 import android.content.ContentValues;
@@ -32,8 +29,6 @@ import android.widget.ListView;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.NavUtils;
-import android.support.v4.widget.CursorAdapter;
-import android.support.v4.widget.SimpleCursorAdapter;
 
 public class LedenMainActivity extends FragmentActivity implements
 		OnItemClickListener, ContinueDialogFragment.NoticeDialogListener {
@@ -322,9 +317,9 @@ public class LedenMainActivity extends FragmentActivity implements
 
 		Intent intent = new Intent(this, FileDialog.class);
 
-		intent.putExtra(FileDialog.SELECTION_MODE, SelectionMode.MODE_OPEN);
 		intent.putExtra(FileDialog.FORMAT_FILTER, new String[] { "xml" });
 		intent.putExtra(FileDialog.START_PATH, getExternalFilesDir(null).getPath());
+		intent.putExtra(FileDialog.KEY_ROOT, getExternalFilesDir(null).getPath());
 		startActivityForResult(intent, REQUEST_FILE);
 	}
 

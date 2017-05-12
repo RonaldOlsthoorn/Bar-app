@@ -7,17 +7,15 @@ import android.app.Activity;
 import android.view.View;
 import android.widget.ListView;
 
-import java.security.acl.Group;
-
 import nl.groover.bar.R;
 import nl.groover.bar.frame.DBHelper;
-import nl.groover.bar.frame.GroupListAdapter;
+import nl.groover.bar.frame.EditGroupListAdapter;
 
 public class GroupActivity extends Activity {
 
     public static final int REQUEST_CODE_EDIT=1234;
     public static final int REQUEST_CODE_NEW=12345;
-    private GroupListAdapter adapter;
+    private EditGroupListAdapter adapter;
     private Cursor cursor;
     private DBHelper DB;
 
@@ -44,7 +42,7 @@ public class GroupActivity extends Activity {
         };
 
         cursor = DB.getAllGroups();
-        adapter = new GroupListAdapter(this, cursor, GroupListAdapter.FLAG_REGISTER_CONTENT_OBSERVER, editListener);
+        adapter = new EditGroupListAdapter(this, cursor, EditGroupListAdapter.FLAG_REGISTER_CONTENT_OBSERVER, editListener);
 
         ListView groupList = (ListView) findViewById(R.group_activity.group_list);
         groupList.setAdapter(adapter);
