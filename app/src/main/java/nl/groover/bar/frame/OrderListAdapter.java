@@ -19,10 +19,11 @@ import android.widget.TextView;
 public class OrderListAdapter extends BaseAdapter{
 	
 	private Context context;
-	private int layout;
 	private Cursor source;
 	private DecimalFormat df = new DecimalFormat("0.00");
 	private ListActionListener notice;
+
+	private int layout = R.layout.order_overview_row;
 
 	public interface ListActionListener{
 		
@@ -35,10 +36,9 @@ public class OrderListAdapter extends BaseAdapter{
 		source = c;
 	}
 	
-	public OrderListAdapter(Context context, int layout, Cursor cursor,  ListActionListener l){
+	public OrderListAdapter(Context context, Cursor cursor,  ListActionListener l){
 		
 		this.context = context;
-		this.layout = layout;
 		source = cursor;
 		notice = l;
 	}

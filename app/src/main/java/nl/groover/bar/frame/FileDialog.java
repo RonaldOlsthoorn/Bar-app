@@ -103,6 +103,12 @@ public class FileDialog extends ListActivity {
 		formatFilter = getIntent().getStringArrayExtra(FORMAT_FILTER);
 
 		final Button cancelButton = (Button) findViewById(R.id.fdButtonCancel);
+		cancelButton.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				finish();
+			}
+		});
 
 		String startPath = getIntent().getStringExtra(START_PATH);
 		startPath = startPath != null ? startPath : FRAME_ROOT;
@@ -121,7 +127,6 @@ public class FileDialog extends ListActivity {
 		if (position != null && useAutoSelection) {
 			getListView().setSelection(position);
 		}
-
 	}
 
 	/**

@@ -54,7 +54,8 @@ public class OrderOverviewActivity extends Activity implements
 			c = DB.getOrdersCust(accountNr);
 		}
 
-		adapter = new OrderListAdapter(this, R.layout.order_overview_row, c, this);
+		adapter = new OrderListAdapter(this, c, this);
+
 		list = (ListView) findViewById(R.orderOverview.list);
 		list.setAdapter(adapter);
 	}

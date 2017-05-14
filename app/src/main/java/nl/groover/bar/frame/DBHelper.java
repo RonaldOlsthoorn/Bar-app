@@ -225,37 +225,11 @@ public class DBHelper extends SQLiteOpenHelper {
 				ItemList.COLUMN_NAME_CAT, null, ItemList.COLUMN_NAME_CAT
 						+ " COLLATE NOCASE ASC");
 	}
-
-	/*
-	 * Returns a cursor containing all consumptions. Note that group clearances
-	 * ("groeps afrekeningen") are stored in another table. In this version the
-	 * groups version is disabled so it does not matter.
-	 */
-	public Cursor getConsumptionsByMember(int memberId) {
-
-		SQLiteDatabase db = getReadableDatabase();
-
-		String query = "SELECT " + Consumption.COLUMN_SUBTOTAL + ","
-				+ "DATETIME(" + Order.COLUMN_TS_CREATED + ", \'localtime\')"
-				+ "," + Order.COLUMN_TYPE + ","
-				+ Consumption.COLUMN_ARTICLE_NAME + ","
-				+ Consumption.COLUMN_AMMOUNT + ","
-				+ Consumption.COLUMN_ARTICLE_PRICE + " FROM "
-				+ Order.TABLE_NAME + " , " + Consumption.TABLE_NAME + " WHERE "
-				+ Order.TABLE_NAME + "." + Order.COLUMN_ACCOUNT + "="
-				+ memberId + " AND " + Order.TABLE_NAME + "." + Order.COLUMN_ID
-				+ "=" + Consumption.TABLE_NAME + "."
-				+ Consumption.COLUMN_ORDER_ID + " ORDER BY "
-				+ Order.COLUMN_TS_CREATED;
-
-		return db.rawQuery(query, null);
-	}
-	
 	
 	/*
 	 * Returns a cursor containing all consumptions, sorted by article. 
 	 */
-	public Cursor getTotalConsumptionsByMember(int memberId) {
+	public Cursor getTotalConsumptionsCust(int account) {
 
 		SQLiteDatabase db = getReadableDatabase();
 
@@ -271,12 +245,11 @@ public class DBHelper extends SQLiteOpenHelper {
 				+ "SUM("+Consumption.COLUMN_AMMOUNT+") AS sum_amount"
 				+ " FROM "+ Consumption.TABLE_NAME+","+Order.TABLE_NAME
 				+ " WHERE "+ Order.TABLE_NAME+"."+Order.COLUMN_ID+"="+Consumption.TABLE_NAME+"."+Consumption.COLUMN_ORDER_ID
-				+ " AND "+ Order.COLUMN_ACCOUNT+"="+memberId
+				+ " AND "+ Order.COLUMN_ACCOUNT+"="+account
 				+ " GROUP BY "+Consumption.COLUMN_ARTICLE_ID
 				+ " ) "+t2
 				+" ON "+t1+"."+ItemList.COLUMN_ID + "="+Consumption.COLUMN_ARTICLE_ID
-				+ " ORDER BY "+t1+"."+ItemList.COLUMN_NAME_ORDER
-				;
+				+ " ORDER BY "+t1+"."+ItemList.COLUMN_NAME_ORDER;
 
 		return db.rawQuery(query, null);
 	}
@@ -303,61 +276,31 @@ public class DBHelper extends SQLiteOpenHelper {
 	}
 
 	/*
- * Returns a cursor containing all consumptions, sorted by article.
- */
-	public Cursor getSettledGroupConsumptions(int groupId) {
-
-		SQLiteDatabase db = getReadableDatabase();
-
-		String t1 = "t1";
-		String t2 = "t2";
-
-		String query = "SELECT " + t1+"."+ItemList.COLUMN_ID+ ","
-				+ t1+"."+ItemList.COLUMN_NAME_ITEM+","+t1+"."+ItemList.COLUMN_NAME_PRICE
-				+ ","+t2+"."+"sum_amount"
-				+" FROM "+ ItemList.TABLE_NAME +" "+t1+" "
-				+" JOIN "
-				+"(SELECT "+Consumption.COLUMN_ARTICLE_ID+","
-				+ "SUM("+Consumption.COLUMN_AMMOUNT+") AS sum_amount"
-				+ " FROM "+ Consumption.TABLE_NAME+","+Order.TABLE_NAME
-				+ " WHERE "+ Order.TABLE_NAME+"."+Order.COLUMN_ID+"="+Consumption.TABLE_NAME+"."+Consumption.COLUMN_ORDER_ID
-				+ " AND "+ Order.COLUMN_ACCOUNT+"="+groupId
-				+ " AND "+ Order.COLUMN_TS_SETTLED+"="+"NOT NULL"
-				+ " GROUP BY "+Consumption.COLUMN_ARTICLE_ID
-				+ " ) "+t2
-				+" ON "+t1+"."+ItemList.COLUMN_ID + "="+Consumption.COLUMN_ARTICLE_ID
-				+ " ORDER BY "+t1+"."+ItemList.COLUMN_NAME_ORDER
-				;
-
-		return db.rawQuery(query, null);
-	}
-
-	/*
-* Returns a cursor containing all consumptions, sorted by article.
-*/
+	* Returns a cursor containing all consumptions, sorted by article.
+	*/
 	public Cursor getUnsettledGroupConsumptions(int groupId) {
 
 		SQLiteDatabase db = getReadableDatabase();
 
-		String t1 = "t1";
-		String t2 = "t2";
-
-		String query = "SELECT " + t1+"."+ItemList.COLUMN_ID+ ","
-				+ t1+"."+ItemList.COLUMN_NAME_ITEM+","+t1+"."+ItemList.COLUMN_NAME_PRICE
-				+ ","+t2+"."+"sum_amount" + " , "+ "SUM("+t2+"."+"sum_amount" +")"
-				+" FROM "+ ItemList.TABLE_NAME +" "+t1+" "
-				+" JOIN "
-				+"(SELECT "+Consumption.COLUMN_ARTICLE_ID+","
-				+ "SUM("+Consumption.COLUMN_AMMOUNT+") AS sum_amount"
-				+ " FROM "+ Consumption.TABLE_NAME+","+Order.TABLE_NAME
-				+ " WHERE "+ Order.TABLE_NAME+"."+Order.COLUMN_ID+"="+Consumption.TABLE_NAME+"."+Consumption.COLUMN_ORDER_ID
-				+ " AND "+ Order.COLUMN_ACCOUNT+"="+groupId
-				+ " AND "+ Order.COLUMN_TS_SETTLED+"="+"NULL"
-				+ " GROUP BY "+Consumption.COLUMN_ARTICLE_ID
-				+ " ) "+t2
-				+" ON "+t1+"."+ItemList.COLUMN_ID + "="+Consumption.COLUMN_ARTICLE_ID
-				+ " ORDER BY "+t1+"."+ItemList.COLUMN_NAME_ORDER
-				;
+		String query = "SELECT "
+				+ Order.TABLE_NAME+"."+Order.COLUMN_ID
+				+","+Order.TABLE_NAME+"."+Order.COLUMN_TS_CREATED
+				+","+Consumption.TABLE_NAME+"."+Consumption.COLUMN_ARTICLE_NAME
+				+","+Consumption.TABLE_NAME+"."+Consumption.COLUMN_ARTICLE_PRICE
+				+","+Consumption.TABLE_NAME+"."+Consumption.COLUMN_SUBTOTAL
+				+ ","+"SUM("+ Order.TABLE_NAME+"."+Order.COLUMN_TOTAL+")"
+				+" FROM "
+				+Order.TABLE_NAME+","
+				+Consumption.TABLE_NAME+","
+				+GroupTable.TABLE_NAME
+				+ " WHERE "
+				+ Order.TABLE_NAME+"."+Order.COLUMN_ID
+				+"="+Consumption.TABLE_NAME+"."+Consumption.COLUMN_ORDER_ID
+				+ " AND "
+				+ Order.TABLE_NAME+"."+Order.COLUMN_ACCOUNT+"="
+				+ GroupTable.TABLE_NAME+"."+GroupTable.COLUMN_ACCOUNT
+				+ " AND "
+				+ GroupTable.TABLE_NAME+"."+GroupTable.COLUMN_GR_ID+"="+groupId;
 
 		return db.rawQuery(query, null);
 	}
@@ -368,7 +311,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
 		String query =
 				"UPDATE " + Order.TABLE_NAME
-				+ " SET " + Order.COLUMN_TS_SETTLED + "="+ "DATETIME(NOW)"
+				+ " SET " + Order.COLUMN_TS_SETTLED + "="+ "DATETIME()"
 				+ " WHERE "+Order.COLUMN_ACCOUNT+"="+account;
 
 		db.rawQuery(query, null);
@@ -433,7 +376,36 @@ public class DBHelper extends SQLiteOpenHelper {
 				+ Order.TABLE_NAME + "." + Order.COLUMN_ACCOUNT + "="+accountNr
 				+ " ORDER BY " + Order.COLUMN_TS_CREATED + " DESC";
 
-		Log.d(TAG, query);
+		return db.rawQuery(query, null);
+	}
+
+	/*
+	 * Get all orders from customer with customer accountNr id.
+	 */
+	public Cursor getConsumptionsCust(int accountNr) {
+
+		SQLiteDatabase db = getReadableDatabase();
+
+		String query = "SELECT "
+				+ Consumption.TABLE_NAME+"."+Consumption.COLUMN_ARTICLE_NAME
+				+ ","+Consumption.TABLE_NAME+"."+Consumption.COLUMN_AMMOUNT
+				+ ","+Consumption.TABLE_NAME+"."+Consumption.COLUMN_ARTICLE_PRICE
+				+ ","+Consumption.TABLE_NAME+"."+Consumption.COLUMN_SUBTOTAL
+				+ ","+"DATETIME("+Order.COLUMN_TS_CREATED+", \'localtime\')"
+				+ " FROM "
+				+ Consumption.TABLE_NAME+","
+				+ Order.TABLE_NAME + " LEFT OUTER JOIN "+MemberTable.TABLE_NAME+" ON "
+				+ Order.TABLE_NAME + "." + Order.COLUMN_ACCOUNT + "="
+				+ MemberTable.TABLE_NAME + "." + MemberTable.COLUMN_ACCOUNT
+				+ " LEFT OUTER JOIN "+GroupTable.TABLE_NAME+" ON "
+				+ Order.TABLE_NAME + "." + Order.COLUMN_ACCOUNT + "="
+				+ GroupTable.TABLE_NAME + "." + GroupTable.COLUMN_ACCOUNT
+				+ " WHERE "
+				+ Order.TABLE_NAME + "." + Order.COLUMN_ACCOUNT + "="+accountNr
+				+" AND "
+				+ Consumption.TABLE_NAME+"."+Consumption.COLUMN_ORDER_ID+"="
+				+ Order.TABLE_NAME + "." + Order.COLUMN_ID
+				+ " ORDER BY " + Order.COLUMN_TS_CREATED + " DESC";
 
 		return db.rawQuery(query, null);
 	}
@@ -571,10 +543,9 @@ public class DBHelper extends SQLiteOpenHelper {
 	public void settleAllGroups() throws InvalidGroupException{
 
 		Cursor groups = getAllGroups();
-
 		groups.moveToFirst();
 
-		while(!groups.isAfterLast()){
+		while(groups.getPosition()<groups.getCount()){
 
 			int groupId = groups.getInt(0);
 			int groupAccount = groups.getInt(2);
@@ -587,36 +558,39 @@ public class DBHelper extends SQLiteOpenHelper {
 
 			Cursor groupOrders = getUnsettledGroupConsumptions(groupId);
 
-			double balance = groupOrders.getDouble(4);
+			if(groupOrders.getCount()==0){
 
-			if (balance!=0){
+				groupMembers.close();
+				groupOrders.close();
+				groups.moveToNext();
+				continue;
+			}
 
-				double balancePerMember = balance/groupMembers.getCount();
+			groupOrders.moveToFirst();
+			double balance = groupOrders.getDouble(5);
+			double balancePerMember = balance/groupMembers.getCount();
 
-				groupMembers.moveToFirst();
+			groupMembers.moveToFirst();
 
-				while (!groupMembers.isAfterLast()){
+			while (groupMembers.getPosition()<groupMembers.getCount()){
 
-					ContentValues v = new ContentValues();
-					v.put(Order.COLUMN_ACCOUNT, groupMembers.getInt(4));
-					v.put(Order.COLUMN_TYPE, Order.ORDER_TYPE_SETTLEMENT);
-					v.put(Order.COLUMN_TOTAL, balancePerMember);
+				ContentValues v = new ContentValues();
+				v.put(Order.COLUMN_ACCOUNT, groupMembers.getInt(4));
+				v.put(Order.COLUMN_TYPE, Order.ORDER_TYPE_SETTLEMENT);
+				v.put(Order.COLUMN_TOTAL, balancePerMember);
+				long orderId = insertOrIgnore(Order.TABLE_NAME, v);
+				v.clear();
 
-					long orderId = insertOrIgnore(Order.TABLE_NAME, v);
+				v.put(GroupSettlement.COLUMN_ORDER_ID, orderId);
+				v.put(GroupSettlement.COLUMN_GROUP_ID, groupId);
+				v.put(GroupSettlement.COLUMN_GROUP_NAME, groups.getString(1));
+				v.put(GroupSettlement.COLUMN_SUBTOTAL, balancePerMember);
 
-					v.clear();
+				long settleId = insertOrIgnore(GroupSettlement.TABLE_NAME, v);
 
-					v.put(GroupSettlement.COLUMN_ORDER_ID, orderId);
-					v.put(GroupSettlement.COLUMN_GROUP_ID, groupId);
-					v.put(GroupSettlement.COLUMN_GROUP_NAME, groups.getString(1));
-					v.put(GroupSettlement.COLUMN_SUBTOTAL, balancePerMember);
+				settleGroupConsumptions(groupAccount);
 
-					long settleId = insertOrIgnore(GroupSettlement.TABLE_NAME, v);
-
-					settleGroupConsumptions(groupAccount);
-
-					groupMembers.moveToNext();
-				}
+				groupMembers.moveToNext();
 			}
 
 			groupMembers.close();

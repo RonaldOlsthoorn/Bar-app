@@ -25,6 +25,7 @@ import android.util.Xml;
 
 public class OrderExporter {
 
+	private static final String TAG = "EXPOTER";
 	private DBHelper DB;
 	private Context context;
 	private String ts_settled;
@@ -77,7 +78,7 @@ public class OrderExporter {
 			mainFolder.mkdirs();
 
 			try{
-				
+
 				File currentDB = context.getDatabasePath(DBHelper.DATABASE_NAME);
 				File backupDB = new File(mainFolder, "DB.db");
 				backupDB.createNewFile();
@@ -92,9 +93,14 @@ public class OrderExporter {
 
 				BufferedOutputStream buf1 = new BufferedOutputStream(
 						new FileOutputStream(xml1));
+
+				Log.d(TAG, "check 1");
+
 				extractOrdersFromDB(buf1);
+
 				buf1.close();
-				
+
+
 				File xml2 = new File(mainFolder, "afrekening "
 						+ ts_settled + ".xml");
 
@@ -102,7 +108,9 @@ public class OrderExporter {
 						new FileOutputStream(xml2));
 				extractReceiptFromDB(buf2);
 				buf2.close();
-				
+
+				Log.d(TAG, "check 6");
+
 				//backup success. note to database.
 				ContentValues v = new ContentValues();
 				v.put(DBHelper.BackupLog.COLUMN_SUCCESS, true);
@@ -207,11 +215,11 @@ public class OrderExporter {
 				new FileOutputStream(xml1));
 		extractOrdersFromDB(buf1);
 		buf1.close();
-
 	}
 
 	private void extractOrdersFromDB(BufferedOutputStream buf)
 			throws IllegalArgumentException, IllegalStateException, IOException {
+
 
 		XmlSerializer xmlSerializer = Xml.newSerializer();
 		xmlSerializer.setOutput(buf, "UTF-8");
@@ -225,20 +233,19 @@ public class OrderExporter {
 		xmlSerializer.startTag(null, "list");
 		xmlSerializer.attribute(null, "id", "members");
 
-		Cursor c = DB.getMembers();
-		c.moveToFirst();
+		Cursor members = DB.getMembers();
+		members.moveToFirst();
 
-		while (c.getPosition() < c.getCount()) {
+		while (members.getPosition() < members.getCount()) {
+
 			// open tag: <member>
-
-			Cursor orders = DB.getConsumptionsByMember(c.getInt(3));
 
 			xmlSerializer.startTag(null, "member");
 
-			xmlSerializer.attribute(null, "GR_ID", "" + c.getInt(0));
-			xmlSerializer.attribute(null, "first_name", c.getString(1));
+			xmlSerializer.attribute(null, "GR_ID", "" + members.getInt(0));
+			xmlSerializer.attribute(null, "first_name", members.getString(1));
 
-			String prefix = c.getString(2);
+			String prefix = members.getString(2);
 
 			if (prefix == null){
 
@@ -248,9 +255,10 @@ public class OrderExporter {
 				xmlSerializer.attribute(null, "prefix", prefix);
 			}
 
-			xmlSerializer.attribute(null, "last_name", c.getString(3));
-			xmlSerializer.attribute(null, "total", df.format(c.getDouble(5)));
+			xmlSerializer.attribute(null, "last_name", members.getString(3));
+			xmlSerializer.attribute(null, "total", df.format(members.getDouble(5)));
 
+			Cursor orders = DB.getConsumptionsCust(members.getInt(4));
 			orders.moveToFirst();
 
 			while (orders.getPosition() < orders.getCount()) {
@@ -258,15 +266,14 @@ public class OrderExporter {
 				xmlSerializer.startTag(null, "consumption");
 
 				xmlSerializer
-						.attribute(null, "ts_created", orders.getString(1));
-				xmlSerializer.attribute(null, "ts_settled", ts_settled);
-				xmlSerializer.attribute(null, "article", orders.getString(3));
-				xmlSerializer.attribute(null, "amount", "" + orders.getInt(4));
+						.attribute(null, "ts_created", orders.getString(4));
+				xmlSerializer.attribute(null, "article", orders.getString(0));
+				xmlSerializer.attribute(null, "amount", "" + orders.getInt(1));
 				xmlSerializer.attribute(null, "price",
-						df.format(orders.getDouble(5)));
+						df.format(orders.getDouble(2)));
 
 				xmlSerializer.attribute(null, "subtotal",
-						df.format(orders.getDouble(0)));
+						df.format(orders.getDouble(03)));
 
 				xmlSerializer.endTag(null, "consumption");
 
@@ -276,12 +283,90 @@ public class OrderExporter {
 			orders.close();
 			xmlSerializer.endTag(null, "member");
 
-			c.moveToNext();
+			members.moveToNext();
 		}
 
+		members.close();
+
 		xmlSerializer.endTag(null, "list");
+
+		xmlSerializer.startTag(null, "list");
+		xmlSerializer.attribute(null, "id", "groups");
+
+		Cursor groups = DB.getAllGroups();
+		groups.moveToFirst();
+
+		while (groups.getPosition() < groups.getCount()) {
+			// open tag: <group>
+			Log.d(TAG, "check 5");
+
+			xmlSerializer.startTag(null, "group");
+
+			xmlSerializer.attribute(null, "GR_ID", "" + groups.getInt(0));
+			xmlSerializer.attribute(null, "name", groups.getString(1));
+
+			xmlSerializer.attribute(null, "total", df.format(groups.getDouble(3)));
+
+			Cursor groupMembers = DB.getGroupMembers(groups.getInt(0));
+
+				groupMembers.moveToFirst();
+
+				while(groupMembers.getPosition()<groupMembers.getCount()){
+
+					xmlSerializer.startTag(null, "member");
+				xmlSerializer.attribute(null, "first_name", groupMembers.getString(1));
+
+				String prefix = groupMembers.getString(2);
+
+				if (prefix == null){
+					xmlSerializer.attribute(null, "prefix", "");
+				}else{
+					xmlSerializer.attribute(null, "prefix", prefix);
+				}
+				xmlSerializer.attribute(null, "last_name", groupMembers.getString(3));
+
+				xmlSerializer.endTag(null, "member");
+
+				groupMembers.moveToNext();
+			}
+
+			groupMembers.close();
+
+			Cursor orders = DB.getConsumptionsCust(groups.getInt(2));
+			orders.moveToFirst();
+
+			while (orders.getPosition() < orders.getCount()) {
+
+				xmlSerializer.startTag(null, "consumption");
+
+				xmlSerializer
+						.attribute(null, "ts_created", orders.getString(4));
+				xmlSerializer.attribute(null, "article", orders.getString(0));
+				xmlSerializer.attribute(null, "amount", "" + orders.getInt(1));
+				xmlSerializer.attribute(null, "price",
+						df.format(orders.getDouble(2)));
+
+				xmlSerializer.attribute(null, "subtotal",
+						df.format(orders.getDouble(3)));
+
+				xmlSerializer.endTag(null, "consumption");
+
+				orders.moveToNext();
+			}
+
+			orders.close();
+			xmlSerializer.endTag(null, "group");
+
+			groups.moveToNext();
+		}
+
+		groups.close();
+
+		xmlSerializer.endTag(null, "list");
+
 		xmlSerializer.endTag(null, "bestellingen");
 		xmlSerializer.endDocument();
+
 		xmlSerializer.flush();
 	}
 
@@ -317,6 +402,8 @@ public class OrderExporter {
 			articles.moveToNext();
 		}
 
+		articles.close();
+
 		xmlSerializer.endTag(null, "list");
 
 		xmlSerializer.startTag(null, "list");
@@ -332,7 +419,7 @@ public class OrderExporter {
 			xmlSerializer.attribute(null, "GR_ID", "" + members.getInt(0));
 			xmlSerializer.attribute(null, "first_name", members.getString(1));
 
-			String prefix = members.getString(3);
+			String prefix = members.getString(2);
 
 			if (prefix == null){
 				xmlSerializer.attribute(null, "prefix", "");
@@ -344,8 +431,7 @@ public class OrderExporter {
 			xmlSerializer.attribute(null, "total",
 					df.format(members.getDouble(5)));
 
-			Cursor consumptions = DB.getTotalConsumptionsByMember(members
-					.getInt(4));
+			Cursor consumptions = DB.getTotalConsumptionsCust(members.getInt(4));
 
 			consumptions.moveToFirst();
 
@@ -371,14 +457,14 @@ public class OrderExporter {
 
 			while (settlements.getPosition() < settlements.getCount()) {
 
-				xmlSerializer.startTag(null, "group settlement");
+				xmlSerializer.startTag(null, "group_settlement");
 				xmlSerializer
-						.attribute(null, "group name", "" + settlements.getString(1));
+						.attribute(null, "group_name", "" + settlements.getString(0));
 				xmlSerializer.attribute(null, "total",
-						df.format(settlements.getDouble(2)));
+						df.format(settlements.getDouble(1)));
 
-				xmlSerializer.endTag(null, "group settlement");
-				consumptions.moveToNext();
+				xmlSerializer.endTag(null, "group_settlement");
+				settlements.moveToNext();
 			}
 			settlements.close();
 
@@ -386,6 +472,74 @@ public class OrderExporter {
 
 			members.moveToNext();
 		}
+
+		members.close();
+
+		xmlSerializer.endTag(null, "list");
+
+		xmlSerializer.startTag(null, "list");
+		xmlSerializer.attribute(null, "id", "groups");
+
+		Cursor groups = DB.getAllGroups();
+		groups.moveToFirst();
+
+		while (groups.getPosition() < groups.getCount()) {
+			// open tag: <member>
+			xmlSerializer.startTag(null, "group");
+
+			xmlSerializer.attribute(null, "name", groups.getString(1));
+			xmlSerializer.attribute(null, "total",
+					df.format(groups.getDouble(3)));
+
+			Cursor groupMembers = DB.getGroupMembers(groups.getInt(0));
+
+			groupMembers.moveToFirst();
+
+			while(groupMembers.getPosition()<groupMembers.getCount()){
+
+				xmlSerializer.startTag(null, "member");
+				xmlSerializer.attribute(null, "first_name", groupMembers.getString(1));
+
+				String prefix = groupMembers.getString(2);
+
+				if (prefix == null){
+					xmlSerializer.attribute(null, "prefix", "");
+				}else{
+					xmlSerializer.attribute(null, "prefix", prefix);
+				}
+				xmlSerializer.attribute(null, "last_name", groupMembers.getString(3));
+
+				xmlSerializer.endTag(null, "member");
+
+				groupMembers.moveToNext();
+			}
+
+			groupMembers.close();
+
+			Cursor consumptions = DB.getTotalConsumptionsCust(groups.getInt(2));
+			consumptions.moveToFirst();
+
+			while (consumptions.getPosition() < consumptions.getCount()) {
+
+				xmlSerializer.startTag(null, "article");
+				xmlSerializer
+						.attribute(null, "id", "" + consumptions.getInt(0));
+				xmlSerializer
+						.attribute(null, "name", consumptions.getString(1));
+				xmlSerializer.attribute(null, "price",
+						df.format(consumptions.getDouble(2)));
+				xmlSerializer.attribute(null, "amount",
+						"" + consumptions.getInt(3));
+				xmlSerializer.endTag(null, "article");
+				consumptions.moveToNext();
+			}
+			consumptions.close();
+
+			xmlSerializer.endTag(null, "group");
+
+			groups.moveToNext();
+		}
+		groups.close();
 
 		xmlSerializer.endTag(null, "list");
 
