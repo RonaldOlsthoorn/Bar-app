@@ -259,6 +259,7 @@ public class DBHelper extends SQLiteOpenHelper {
 		SQLiteDatabase db = getReadableDatabase();
 
 		String query = "SELECT "
+				+ GroupSettlement.TABLE_NAME+"."+GroupSettlement.COLUMN_GROUP_ID+","
 				+ GroupSettlement.TABLE_NAME+"."+GroupSettlement.COLUMN_GROUP_NAME+","
 				+ GroupSettlement.TABLE_NAME+"."+GroupSettlement.COLUMN_SUBTOTAL
 				+" FROM "
@@ -568,6 +569,16 @@ public class DBHelper extends SQLiteOpenHelper {
 
 			groupOrders.moveToFirst();
 			double balance = groupOrders.getDouble(5);
+
+			if(balance==0){
+
+				settleGroupConsumptions(groupAccount);
+				groupMembers.close();
+				groupOrders.close();
+				groups.moveToNext();
+				continue;
+			}
+
 			double balancePerMember = balance/groupMembers.getCount();
 
 			groupMembers.moveToFirst();

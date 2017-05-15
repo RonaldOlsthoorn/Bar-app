@@ -298,11 +298,10 @@ public class OrderExporter {
 
 		while (groups.getPosition() < groups.getCount()) {
 			// open tag: <group>
-			Log.d(TAG, "check 5");
 
 			xmlSerializer.startTag(null, "group");
 
-			xmlSerializer.attribute(null, "GR_ID", "" + groups.getInt(0));
+			xmlSerializer.attribute(null, "id", "" + groups.getInt(0));
 			xmlSerializer.attribute(null, "name", groups.getString(1));
 
 			xmlSerializer.attribute(null, "total", df.format(groups.getDouble(3)));
@@ -313,7 +312,8 @@ public class OrderExporter {
 
 				while(groupMembers.getPosition()<groupMembers.getCount()){
 
-					xmlSerializer.startTag(null, "member");
+				xmlSerializer.startTag(null, "member");
+				xmlSerializer.attribute(null, "GR_ID", "" + groupMembers.getInt(0));
 				xmlSerializer.attribute(null, "first_name", groupMembers.getString(1));
 
 				String prefix = groupMembers.getString(2);
@@ -458,10 +458,12 @@ public class OrderExporter {
 			while (settlements.getPosition() < settlements.getCount()) {
 
 				xmlSerializer.startTag(null, "group_settlement");
+				xmlSerializer.attribute(null, "group_id", "" + settlements.getInt(0));
+
 				xmlSerializer
-						.attribute(null, "group_name", "" + settlements.getString(0));
+						.attribute(null, "group_name", "" + settlements.getString(1));
 				xmlSerializer.attribute(null, "total",
-						df.format(settlements.getDouble(1)));
+						df.format(settlements.getDouble(2)));
 
 				xmlSerializer.endTag(null, "group_settlement");
 				settlements.moveToNext();
@@ -487,6 +489,8 @@ public class OrderExporter {
 			// open tag: <member>
 			xmlSerializer.startTag(null, "group");
 
+			xmlSerializer.attribute(null, "id", "" + groups.getInt(0));
+
 			xmlSerializer.attribute(null, "name", groups.getString(1));
 			xmlSerializer.attribute(null, "total",
 					df.format(groups.getDouble(3)));
@@ -498,6 +502,9 @@ public class OrderExporter {
 			while(groupMembers.getPosition()<groupMembers.getCount()){
 
 				xmlSerializer.startTag(null, "member");
+
+				xmlSerializer.attribute(null, "GR_ID", "" + groupMembers.getInt(0));
+
 				xmlSerializer.attribute(null, "first_name", groupMembers.getString(1));
 
 				String prefix = groupMembers.getString(2);
@@ -507,6 +514,7 @@ public class OrderExporter {
 				}else{
 					xmlSerializer.attribute(null, "prefix", prefix);
 				}
+
 				xmlSerializer.attribute(null, "last_name", groupMembers.getString(3));
 
 				xmlSerializer.endTag(null, "member");
