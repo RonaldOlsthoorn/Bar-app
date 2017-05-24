@@ -14,28 +14,24 @@ import android.database.Cursor;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ListView;
 import android.support.v4.app.NavUtils;
 
-public class ArticleActivity extends Activity implements
-		ArticleAdapter.UpdateListener {
+import java.util.ArrayList;
+
+public class ArticleActivity extends Activity {
 
 	static final String ARTICLE_ID = "article_id";
 	private static final String TAG = ArticleActivity.class.getSimpleName();
 	private DBHelper DB;
 	private ListView artikellijst;
 
-	private EditText et_naam;
-	private EditText et_prijs;
-	private View addPane;
 	private Button voegToe;
 	private ArticleAdapter adapter;
-	private Cursor c_articles;
+	private ArrayList<Article> listArticles;
 
-	private final int REQUEST_CODE = 123;
+	private static final int REQUEST_CODE = 123;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -48,15 +44,8 @@ public class ArticleActivity extends Activity implements
 
 		artikellijst = (ListView) findViewById(R.articles.listview);
 
-		et_naam = (EditText) findViewById(R.articles.name);
-		et_prijs = (EditText) findViewById(R.articles.price);
-		voegToe = (Button) findViewById(R.articles.add_button);
+		setupAdapter();
 
-		addPane = findViewById(R.articles.addPane);
-
-		c_articles = DB.getArticles();
-
-		adapter = new ArticleAdapter(this, DB.getArticles(), this);
 		artikellijst.setAdapter(adapter);
 	}
 
@@ -84,205 +73,127 @@ public class ArticleActivity extends Activity implements
 		return super.onOptionsItemSelected(item);
 	}
 
-	public void vt_article(View v) {
 
-		boolean checks = true;
-		Button b = (Button) v;
-		if (b.getText().equals("Voeg artikel toe")) {
-			addPane.setVisibility(View.VISIBLE);
-			b.setText("Artikel opslaan");
-			return;
-		}
+	public void setupAdapter(){
 
-		if (et_prijs.getText().toString().trim().equals("")) {
+		listArticles = ConvertCursorToArray(DB.getArticlesWithTotalConsumptions());
 
-			et_prijs.setError(getString(R.string.err_field_empty));
-			et_prijs.requestFocus();
-			checks = false;
-		} else {
-			try {
-				double prijs = Double
-						.parseDouble(et_prijs.getText().toString());
-			} catch (NumberFormatException e) {
-				et_prijs.setError("Field must be a number!");
-				et_prijs.requestFocus();
-				checks = false;
-			}
-		}
+		MoveUpListener moveUpListener = new MoveUpListener() {
+			@Override
+			public void moveUp(int pos) {
 
-		if (et_naam.getText().toString().trim().equals("")) {
-
-			et_naam.setError(getString(R.string.err_field_empty));
-			et_naam.requestFocus();
-			checks = false;
-		}
-
-		if (checks) {
-
-			Log.d("add", c_articles.isClosed() + "");
-
-			String naam = et_naam.getText().toString();
-			double prijs = Double.parseDouble(et_prijs.getText().toString());
-
-			ContentValues values = new ContentValues();
-			values.put(DBHelper.ItemList.COLUMN_NAME_ITEM, naam);
-			values.put(DBHelper.ItemList.COLUMN_NAME_PRICE, prijs);
-			values.put(DBHelper.ItemList.COLUMN_NAME_CAT, "all");
-			values.put(DBHelper.ItemList.COLUMN_NAME_ORDER,
-					c_articles.getCount() + 1);
-
-			DB.insertOrIgnore(DBHelper.ItemList.TABLE_NAME, values);
-
-			c_articles = DB.getArticles();
-			adapter.swapCursor(c_articles);
-
-			setToDefault();
-		}
-	}
-
-	public void setToDefault() {
-
-		addPane.setVisibility(View.GONE);
-		et_naam.setText("");
-		et_prijs.setText("");
-		voegToe.setText("Voeg artikel toe");
-
-		et_naam.setError(null);
-		et_prijs.setError(null);
-	}
-
-	@Override
-	public void delete(Article a) {
-
-		if (!a.getEditable()) {
-			AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
-					this);
-
-			// set title
-			alertDialogBuilder.setTitle("Warning");
-
-			// set dialog message
-			alertDialogBuilder
-					.setMessage("Kan artikel niet verwijderen want er zijn al bestellingen geplaatst. Eerst afrekenen!");
-
-			// set dialog message
-			alertDialogBuilder.setPositiveButton("Ok", null);
-			// create alert dialog
-			AlertDialog alertDialog = alertDialogBuilder.create();
-
-			// show it
-			alertDialog.show();
-
-		} else {
-			DB.deleteOrIgnore(DBHelper.ItemList.TABLE_NAME, a.getId());
-			adapter.swapCursor(DB.getArticles());
-			adapter.notifyDataSetChanged();
-		}
-
-	}
-
-	@Override
-	public void swap(int id1, int id2, int pos1, int pos2) {
-		ContentValues v = new ContentValues();
-		v.put(DBHelper.ItemList.COLUMN_NAME_ORDER, pos2);
-		DB.updateOrIgnore(DBHelper.ItemList.TABLE_NAME, id1, v);
-		v.clear();
-		v.put(DBHelper.ItemList.COLUMN_NAME_ORDER, pos1);
-		DB.updateOrIgnore(DBHelper.ItemList.TABLE_NAME, id2, v);
-		adapter.swapCursor(DB.getArticles());
-		adapter.notifyDataSetChanged();
-	}
-
-	@Override
-	public void edit(int pos, Article a) {
-
-		ContentValues v = new ContentValues();
-		v.put(DBHelper.ItemList.COLUMN_NAME_ITEM, a.getName());
-		v.put(DBHelper.ItemList.COLUMN_NAME_PRICE, a.getPrice());
-		DB.updateOrIgnore(DBHelper.ItemList.TABLE_NAME, a.getId(), v);
-		adapter.swapCursor(DB.getArticles());
-		adapter.notifyDataSetChanged();
-		setEditable(-1, null);
-	}
-	
-	@Override
-	public void pickColor(Article a) {
-		Intent intent = new Intent(this, ColorPickerActivity.class);
-		intent.putExtra(ARTICLE_ID, a.getId());
-		startActivityForResult(intent, REQUEST_CODE);		
-	}
-
-	@Override
-	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		
-		if (requestCode == REQUEST_CODE && resultCode == RESULT_OK) {
-
-				Intent intent = getIntent();
 				ContentValues v = new ContentValues();
-				v.put(DBHelper.ItemList.COLUMN_NAME_COLOR, data.getIntExtra(ColorPickerActivity.COLOR, 0));
-				DB.updateOrIgnore(DBHelper.ItemList.TABLE_NAME, data.getIntExtra(ARTICLE_ID,-1), v);
-				finish();
-				startActivity(intent);
+				v.put(DBHelper.ItemList.COLUMN_NAME_ORDER, pos-1);
+				DB.updateOrIgnore(DBHelper.ItemList.TABLE_NAME, listArticles.get(pos).getId(), v);
 
-		}
-	}
+				v.clear();
+				v.put(DBHelper.ItemList.COLUMN_NAME_ORDER, pos);
+				DB.updateOrIgnore(DBHelper.ItemList.TABLE_NAME, listArticles.get(pos-1).getId(), v);
 
-	@Override
-	public void setEditable(int pos, Article a) {
-
-		if (pos == -1) {
-			for (int i = 0; i < adapter.getCount(); i++) {
-				artikellijst.getChildAt(i).findViewById(R.articleRow.delete)
-						.setEnabled(true);
-				artikellijst.getChildAt(i).findViewById(R.articleRow.edit)
-						.setEnabled(true);
-				artikellijst.getChildAt(i).findViewById(R.articleRow.up)
-						.setEnabled(true);
-				artikellijst.getChildAt(i).findViewById(R.articleRow.down)
-						.setEnabled(true);
+				updateAdapter();
 			}
-			return;
-		}
+		};
 
-		if (!a.getEditable()) {
-			Log.d("article", "not editable");
-			AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
-					this);
+		MoveDownListener moveDownListener = new MoveDownListener() {
+			@Override
+			public void moveDown(int pos) {
 
-			// set title
-			alertDialogBuilder.setTitle("Warning");
-			// set dialog message
-			alertDialogBuilder
-					.setMessage("Kan artikel niet aanpassen want er zijn al bestellingen geplaatst. Eerst afrekenen!");
-			// set dialog message
-			alertDialogBuilder.setPositiveButton("Ok", null);
-			// create alert dialog
-			AlertDialog alertDialog = alertDialogBuilder.create();
-			// show it
-			alertDialog.show();
+				ContentValues v = new ContentValues();
+				v.put(DBHelper.ItemList.COLUMN_NAME_ORDER, pos+1);
+				DB.updateOrIgnore(DBHelper.ItemList.TABLE_NAME, listArticles.get(pos).getId(), v);
 
-			return;
+				v.clear();
+				v.put(DBHelper.ItemList.COLUMN_NAME_ORDER, pos);
+				DB.updateOrIgnore(DBHelper.ItemList.TABLE_NAME, listArticles.get(pos+1).getId(), v);
 
-		} else {
+				updateAdapter();
+			}
+		};
 
-			for (int i = 0; i < adapter.getCount(); i++) {
-				if (i != pos) {
-					artikellijst.getChildAt(i)
-							.findViewById(R.articleRow.delete)
-							.setEnabled(false);
-					artikellijst.getChildAt(i).findViewById(R.articleRow.edit)
-							.setEnabled(false);
-					artikellijst.getChildAt(i).findViewById(R.articleRow.up)
-							.setEnabled(false);
-					artikellijst.getChildAt(i).findViewById(R.articleRow.down)
-							.setEnabled(false);
+		EditArticleListener editArticleListener = new EditArticleListener() {
+			@Override
+			public void editArticle(int pos) {
+
+				Intent intent = new Intent(ArticleActivity.this, EditArticleActivity.class);
+				intent.putExtra(ArticleActivity.ARTICLE_ID, listArticles.get(pos).getId());
+				startActivityForResult(intent, ArticleActivity.REQUEST_CODE);
+			}
+		};
+
+		RemoveArticleListener removeArticleListener = new RemoveArticleListener() {
+			@Override
+			public void removeArticle(int pos) {
+
+				if (!listArticles.get(pos).getEditable()) {
+					AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
+							ArticleActivity.this);
+
+					// set title
+					alertDialogBuilder.setTitle("Warning");
+
+					// set dialog message
+					alertDialogBuilder
+							.setMessage("Kan artikel niet verwijderen want er zijn al bestellingen geplaatst. Eerst afrekenen!");
+
+					// set dialog message
+					alertDialogBuilder.setPositiveButton("Ok", null);
+					// create alert dialog
+					AlertDialog alertDialog = alertDialogBuilder.create();
+
+					// show it
+					alertDialog.show();
+
 				} else {
-					artikellijst.getChildAt(i).findViewById(R.articleRow.up)
-							.setEnabled(false);
-					artikellijst.getChildAt(i).findViewById(R.articleRow.down)
-							.setEnabled(false);
+
+					DB.deleteOrIgnore(DBHelper.ItemList.TABLE_NAME, listArticles.get(pos).getId());
+					updateAdapter();
 				}
 			}
+		};
+
+		adapter = new ArticleAdapter(this, listArticles,
+				moveUpListener, moveDownListener, editArticleListener, removeArticleListener);
+	}
+
+	public interface MoveUpListener{
+
+		void moveUp(int pos);
+	}
+
+	public interface MoveDownListener{
+
+		void moveDown(int pos);
+	}
+
+	public interface EditArticleListener{
+
+		void editArticle(int pos);
+	}
+
+	public interface RemoveArticleListener{
+
+		void removeArticle(int pos);
+	}
+
+	public void updateAdapter(){
+
+		listArticles = ConvertCursorToArray(DB.getArticlesWithTotalConsumptions());
+
+		adapter.swapArrayList(listArticles);
+		adapter.notifyDataSetChanged();
+	}
+
+	public ArrayList<Article> ConvertCursorToArray(Cursor c){
+
+		ArrayList<Article> res = new ArrayList<Article>(c.getCount());
+
+		for(c.moveToFirst(); c.getPosition()<c.getCount(); c.moveToNext()){
+
+			res.add(new Article(c.getInt(0),
+					c.getDouble(2), c.getString(1),
+					c.getInt(3) < 1, c.getInt(4)));
 		}
+
+		return res;
 	}
 }

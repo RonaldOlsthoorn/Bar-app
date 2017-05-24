@@ -43,5 +43,6 @@
     <string name="title_activity_color_picker">ColorPickerActivity</string>
     <string name="title_activity_group">GroupActivity</string>
     <string name="title_activity_edit_group">EditGroupActivity</string>
+    <string name="title_activity_edit_article">EditArticleActivity</string>
 
 </resources>

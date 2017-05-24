@@ -5,11 +5,10 @@ dependencies {
 
     // Set this dependency to build and run Espresso tests
     // Set this dependency to build and run UI Automator tests
+
     compile 'com.android.support:support-v4:25.2.0'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
-    testCompile 'junit:junit:4.12'
-
-}
+    testCompile 'junit:junit:4.12'}
 
 android {
 

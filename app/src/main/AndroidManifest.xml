@@ -148,7 +148,15 @@
         </activity>
         <activity
             android:name=".gui.EditGroupActivity"
-            android:label="@string/title_activity_edit_group"></activity>
+            android:label="@string/title_activity_edit_group" />
+        <activity
+            android:name=".gui.EditArticleActivity"
+            android:label="@string/title_activity_edit_article"
+            android:parentActivityName=".gui.ArticleActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="nl.groover.bar.gui.ArticleActivity" />
+        </activity>
     </application>
 
 </manifest>

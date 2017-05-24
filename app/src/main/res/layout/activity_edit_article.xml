@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="nl.groover.bar.gui.EditArticleActivity">
+
+    <TextView
+        android:id="@+id/edit_article_tv1"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toLeftOf="@+id/edit_article_name"
+        app:layout_constraintBaseline_toBaselineOf="@+id/edit_article_name"
+        android:text="naam: "
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"/>
+
+    <EditText
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintLeft_toRightOf="@+id/edit_article_tv1"
+        android:id="@+id/edit_article_name"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:ems="10">
+    </EditText>
+
+    <TextView
+        android:id="@+id/edit_article_tv2"
+        app:layout_constraintTop_toBottomOf="@+id/edit_article_tv1"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toLeftOf="@+id/edit_article_price"
+        app:layout_constraintBaseline_toBaselineOf="@+id/edit_article_price"
+        android:text="prijs: "
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"/>
+
+    <EditText
+        android:id="@+id/edit_article_price"
+        app:layout_constraintTop_toBottomOf="@+id/edit_article_name"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintLeft_toRightOf="@+id/edit_article_tv2"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:ems="10">
+    </EditText>
+
+    <TextView
+        android:id="@+id/edit_article_tv3"
+        app:layout_constraintTop_toBottomOf="@+id/edit_article_tv2"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toLeftOf="@+id/edit_article_color"
+        app:layout_constraintBaseline_toBaselineOf="@+id/edit_article_color"
+        android:text="background color: "
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"/>
+
+    <Button
+        android:id="@+id/edit_article_color"
+        app:layout_constraintTop_toBottomOf="@+id/edit_article_price"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintLeft_toRightOf="@+id/edit_article_tv3"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="pick color">
+    </Button>
+
+    <Button
+        android:id="@+id/edit_article_save"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintLeft_toRightOf="@+id/edit_article_cancel"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="save">
+    </Button>
+
+
+    <Button
+        android:id="@+id/edit_article_cancel"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toLeftOf="@+id/edit_article_save"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="cancel">
+    </Button>
+
+
+</android.support.constraint.ConstraintLayout>
