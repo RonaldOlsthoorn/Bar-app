@@ -211,6 +211,31 @@ public class DBHelper extends SQLiteOpenHelper {
 		return db.rawQuery(query, null);
 	}
 
+	public Cursor getArticlesWithTotalConsumptions() {
+
+		SQLiteDatabase db;
+		db = getReadableDatabase();
+
+		String t1 = "t1";
+		String t2 = "t2";
+
+		String query = "SELECT " + t1+"."+ItemList.COLUMN_ID+ ","
+				+ t1+"."+ItemList.COLUMN_NAME_ITEM+","+t1+"."+ItemList.COLUMN_NAME_PRICE
+				+ ","+t2+"."+"sum_amount"+","+t1+"."+ItemList.COLUMN_NAME_COLOR
+				+" FROM "+ ItemList.TABLE_NAME +" "+t1+" "
+				+" LEFT OUTER JOIN "
+				+"(SELECT "+Consumption.COLUMN_ARTICLE_ID+","
+				+ "SUM("+Consumption.COLUMN_AMMOUNT+") AS sum_amount"
+				+ " FROM "+ Consumption.TABLE_NAME
+				+ " GROUP BY "+Consumption.COLUMN_ARTICLE_ID
+				+ " ) "+t2
+				+" ON "+t1+"."+ItemList.COLUMN_ID + "="+Consumption.COLUMN_ARTICLE_ID
+				+ " ORDER BY "+t1+"."+ItemList.COLUMN_NAME_ORDER
+				;
+
+		return db.rawQuery(query, null);
+	}
+
 	/*
 	 * Returns all the categories at which the articles are ordered (ie food,
 	 * liquor, whisky etc) Currently NOT used

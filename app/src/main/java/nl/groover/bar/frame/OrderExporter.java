@@ -18,7 +18,9 @@ import nl.groover.bar.frame.DBHelper.Order;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Environment;
 import android.util.Log;
 import android.util.Xml;
@@ -88,18 +90,25 @@ public class OrderExporter {
 				src.close();
 				dst.close();
 
+				Intent intent =
+						new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+				intent.setData(Uri.fromFile(backupDB));
+				context.sendBroadcast(intent);
+
 				File xml1 = new File(mainFolder, "bestellingen "
 						+ ts_settled + ".xml");
 
 				BufferedOutputStream buf1 = new BufferedOutputStream(
 						new FileOutputStream(xml1));
 
-				Log.d(TAG, "check 1");
+				intent =
+						new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+				intent.setData(Uri.fromFile(xml1));
+				context.sendBroadcast(intent);
 
 				extractOrdersFromDB(buf1);
 
 				buf1.close();
-
 
 				File xml2 = new File(mainFolder, "afrekening "
 						+ ts_settled + ".xml");
@@ -109,7 +118,10 @@ public class OrderExporter {
 				extractReceiptFromDB(buf2);
 				buf2.close();
 
-				Log.d(TAG, "check 6");
+				intent =
+						new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+				intent.setData(Uri.fromFile(xml2));
+				context.sendBroadcast(intent);
 
 				//backup success. note to database.
 				ContentValues v = new ContentValues();
@@ -128,7 +140,6 @@ public class OrderExporter {
 
 				return new IOReport(false,IOReport.CAUSE_ZERO_GROUP, e.getGroupName());
 			}
-
 		}
 	}
 
@@ -151,7 +162,6 @@ public class OrderExporter {
 			// all we need
 			// to know is we can neither read nor write
 			mExternalStorageAvailable = mExternalStorageWriteable = false;
-
 		}
 
 		if (!mExternalStorageAvailable || !mExternalStorageWriteable) {
@@ -164,7 +174,7 @@ public class OrderExporter {
 
 			File sdRoot = context.getExternalFilesDir(null);
 			File mainFolder = new File(sdRoot,
-					"Groover Bar/backup " + ts_settled);
+					"backups/backup " + ts_settled);
 			mainFolder.mkdirs();
 			
 			if (mainFolder.isDirectory()) {
@@ -180,6 +190,11 @@ public class OrderExporter {
 					new FileOutputStream(xml1));
 			extractOrdersFromDB(buf1);
 			buf1.close();
+
+			Intent intent =
+					new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+			intent.setData(Uri.fromFile(xml1));
+			context.sendBroadcast(intent);
 
 			// backup success. note to database.
 			ContentValues v = new ContentValues();
@@ -273,7 +288,7 @@ public class OrderExporter {
 						df.format(orders.getDouble(2)));
 
 				xmlSerializer.attribute(null, "subtotal",
-						df.format(orders.getDouble(03)));
+						df.format(orders.getDouble(3)));
 
 				xmlSerializer.endTag(null, "consumption");
 

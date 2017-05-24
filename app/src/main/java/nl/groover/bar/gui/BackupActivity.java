@@ -240,15 +240,24 @@ public class BackupActivity extends Activity {
 		public static final String RESULT_UNKNOWN_ERROR = "Backup test faild. Unknown error";
 		private static final String RESULT_CONNECTION_FAILED = "Backup test failed. Unable to connect";
 
+		private String url;
+		private String uName;
+		private String passWord;
+
+
+		@Override
+		protected void onPreExecute() {
+
+			url = mUrl.getText().toString();
+			uName = mUname.getText().toString();
+			passWord = mPassword.getText().toString();
+		}
+
+
 		@Override
 		protected String doInBackground(Void... params) {
 
 			OrderExporter ex = new OrderExporter(BackupActivity.this);
-						
-
-			String url = mUrl.getText().toString();
-			String uName = mUname.getText().toString();
-			String passWord = mPassword.getText().toString();
 
 			FTPClient client = new FTPClient();
 			FileInputStream fis = null;
