@@ -230,10 +230,22 @@ public class DBHelper extends SQLiteOpenHelper {
 				+ " GROUP BY "+Consumption.COLUMN_ARTICLE_ID
 				+ " ) "+t2
 				+" ON "+t1+"."+ItemList.COLUMN_ID + "="+Consumption.COLUMN_ARTICLE_ID
-				+ " ORDER BY "+t1+"."+ItemList.COLUMN_NAME_ORDER
-				;
+				+ " ORDER BY "+t1+"."+ItemList.COLUMN_NAME_ORDER;
 
 		return db.rawQuery(query, null);
+	}
+
+	public Article getArticle(int id){
+
+		SQLiteDatabase db;
+		db = getReadableDatabase();
+
+		Cursor c = db.query(ItemList.TABLE_NAME, null, ItemList.COLUMN_ID+"=?", new String[]{Integer.toString(id)},
+				null,null,null);
+
+		c.moveToFirst();
+
+		return new Article(id, c.getDouble(2), c.getString(1), true, c.getInt(5));
 	}
 
 	/*
@@ -1139,7 +1151,7 @@ public class DBHelper extends SQLiteOpenHelper {
 				+ COLUMN_NAME_ORDER
 				+ " INTEGER ,"
 				+ COLUMN_NAME_COLOR
-				+ " INTEGER)";
+				+ " INTEGER )";
 
 		public static final String SQL_DELETE_ENTRIES = "DROP TABLE IF EXISTS "
 				+ TABLE_NAME;

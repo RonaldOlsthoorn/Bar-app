@@ -8,6 +8,11 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
+
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.text.ParseException;
 
 import nl.groover.bar.R;
 import nl.groover.bar.frame.Article;
@@ -19,8 +24,15 @@ public class EditArticleActivity extends Activity {
 
     private DBHelper DB;
 
-    private EditText et_naam;
-    private EditText et_prijs;
+    private EditText etName;
+    private EditText etPrice;
+    private Button btColor;
+
+    private Article article;
+
+    private int nArticles;
+
+    private DecimalFormat df = new DecimalFormat("0.00");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,10 +42,27 @@ public class EditArticleActivity extends Activity {
 
         DB = DBHelper.getDBHelper(this);
 
-        et_naam = (EditText) findViewById(R.id.article_row_name);
-        et_prijs = (EditText) findViewById(R.id.article_row_price);
-    }
+        Intent intent = getIntent();
 
+        etName = (EditText) findViewById(R.id.edit_article_name);
+        etPrice = (EditText) findViewById(R.id.edit_article_price);
+        btColor = (Button) findViewById(R.id.edit_article_color);
+
+        int id = intent.getIntExtra(ArticleActivity.ARTICLE_ID, -1);
+        nArticles = intent.getIntExtra(ArticleActivity.N_ARTICLES, -1);
+
+        if (id != -1){
+
+            article = DB.getArticle(id);
+
+            etName.setText(article.getName());
+            String priceString = df.format(article.getPrice());
+            etPrice.setText(df.format(article.getPrice()));
+            btColor.setBackgroundColor(article.getColor());
+        }else{
+            article = new Article(-1, 0, null, true, 0);
+        }
+    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -41,73 +70,71 @@ public class EditArticleActivity extends Activity {
         if (requestCode == REQUEST_CODE && resultCode == RESULT_OK) {
 
             Intent intent = getIntent();
-            ContentValues v = new ContentValues();
-            v.put(DBHelper.ItemList.COLUMN_NAME_COLOR, data.getIntExtra(ColorPickerActivity.COLOR, 0));
-            DB.updateOrIgnore(DBHelper.ItemList.TABLE_NAME, data.getIntExtra(ArticleActivity.ARTICLE_ID,-1), v);
-            finish();
-            startActivity(intent);
-
+            article.setColor(data.getIntExtra(ColorPickerActivity.COLOR, 0));
+            btColor.setBackgroundColor(article.getColor());
         }
     }
 
-    public void pickColor(Article a) {
+    public void pickColor(View v) {
         Intent intent = new Intent(this, ColorPickerActivity.class);
-        intent.putExtra(ArticleActivity.ARTICLE_ID, a.getId());
         startActivityForResult(intent, REQUEST_CODE);
     }
 
 
-    public void edit(int pos, Article a) {
-
-        ContentValues v = new ContentValues();
-        v.put(DBHelper.ItemList.COLUMN_NAME_ITEM, a.getName());
-        v.put(DBHelper.ItemList.COLUMN_NAME_PRICE, a.getPrice());
-        DB.updateOrIgnore(DBHelper.ItemList.TABLE_NAME, a.getId(), v);
-
-    }
-
-    public void vt_article(View v) {
+    public void save(View v) {
 
         boolean checks = true;
+        double prijs = 0;
 
+        if (etPrice.getText().toString().trim().equals("")) {
 
-        if (et_prijs.getText().toString().trim().equals("")) {
-
-            et_prijs.setError(getString(R.string.err_field_empty));
-            et_prijs.requestFocus();
+            etPrice.setError(getString(R.string.err_field_empty));
+            etPrice.requestFocus();
             checks = false;
         } else {
             try {
-                double prijs = Double
-                        .parseDouble(et_prijs.getText().toString());
-            } catch (NumberFormatException e) {
-                et_prijs.setError("Field must be a number!");
-                et_prijs.requestFocus();
+
+                 prijs = df.parse(etPrice.getText().toString()).doubleValue();
+                etPrice.setError(null);
+            } catch (ParseException e) {
+                etPrice.setError("Field must be a comma seperated decimal!");
+                etPrice.requestFocus();
                 checks = false;
             }
         }
 
-        if (et_naam.getText().toString().trim().equals("")) {
+        if (etName.getText().toString().trim().equals("")) {
 
-            et_naam.setError(getString(R.string.err_field_empty));
-            et_naam.requestFocus();
+            etName.setError(getString(R.string.err_field_empty));
+            etName.requestFocus();
             checks = false;
+        }else{
+            etName.setError(null);
         }
 
         if (checks) {
 
-            String naam = et_naam.getText().toString();
-            double prijs = Double.parseDouble(et_prijs.getText().toString());
+            article.setName(etName.getText().toString());
+            article.setPrice(prijs);
 
             ContentValues values = new ContentValues();
-            values.put(DBHelper.ItemList.COLUMN_NAME_ITEM, naam);
-            values.put(DBHelper.ItemList.COLUMN_NAME_PRICE, prijs);
+            values.put(DBHelper.ItemList.COLUMN_NAME_ITEM, article.getName());
+            values.put(DBHelper.ItemList.COLUMN_NAME_PRICE, article.getPrice());
             values.put(DBHelper.ItemList.COLUMN_NAME_CAT, "all");
-            values.put(DBHelper.ItemList.COLUMN_NAME_ORDER, 1); //TODO: adapt!!
+            values.put(DBHelper.ItemList.COLUMN_NAME_COLOR, article.getColor());
 
+            if(article.getId()==-1){
+                values.put(DBHelper.ItemList.COLUMN_NAME_ORDER, nArticles);
+                DB.insertOrIgnore(DBHelper.ItemList.TABLE_NAME, values);
+                Toast.makeText(this, "Artikel "+article.getName()+ " toegevoegd.", Toast.LENGTH_SHORT);
+            }else{
+                DB.updateOrIgnore(DBHelper.ItemList.TABLE_NAME, article.getId(), values);
+                Toast.makeText(this, "Wijzigingen opgeslagen.", Toast.LENGTH_SHORT);
+            }
 
-            DB.insertOrIgnore(DBHelper.ItemList.TABLE_NAME, values);
-
+            Intent intent = new Intent(this, ArticleActivity.class);
+            setResult(Activity.RESULT_OK, intent);
+            finish();
         }
     }
 }

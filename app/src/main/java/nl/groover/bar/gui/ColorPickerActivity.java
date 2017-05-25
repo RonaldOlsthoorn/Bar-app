@@ -26,10 +26,7 @@ public class ColorPickerActivity extends Activity implements OnColorChangedListe
 	private ColorPicker picker;
 	private SVBar svBar;
 	private OpacityBar opacityBar;
-	private Button button;
-	private TextView text;
-	private int artId;
-	
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -41,9 +38,7 @@ public class ColorPickerActivity extends Activity implements OnColorChangedListe
 		
 		picker.addSVBar(svBar);
 		picker.addOpacityBar(opacityBar);
-		picker.setOnColorChangedListener(this);	
-		
-		artId = getIntent().getIntExtra(ArticleActivity.ARTICLE_ID, -1);
+		picker.setOnColorChangedListener(this);
 	}
 
 	@Override
@@ -63,7 +58,6 @@ public class ColorPickerActivity extends Activity implements OnColorChangedListe
 		
 		Intent intent = new Intent(this, ArticleActivity.class);
 		intent.putExtra(COLOR, picker.getColor());
-		intent.putExtra(ArticleActivity.ARTICLE_ID, artId);
 		
 		Log.e(TAG, "color: "+picker.getColor());
 		

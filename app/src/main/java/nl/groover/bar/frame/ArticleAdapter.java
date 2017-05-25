@@ -82,14 +82,16 @@ public class ArticleAdapter extends BaseAdapter {
 			holder.txtPrice = (TextView) convertView.findViewById(R.id.article_row_price);
 			holder.btUp = (Button) convertView.findViewById(R.id.article_row_up);
 			holder.btDown = (Button) convertView.findViewById(R.id.article_row_down);
-			holder.btDelete = (Button) convertView.findViewById(R.id.article_row_delete);
 			holder.btEdit = (Button) convertView.findViewById(R.id.article_row_edit);
+			holder.btDelete = (Button) convertView.findViewById(R.id.article_row_delete);
+
 			convertView.setTag(holder);
 		}
 		else{
 			holder = (ViewHolder) convertView.getTag();
 		}
 
+		convertView.setBackgroundColor(source.get(position).getColor());
 		holder.txtName.setText(source.get(position).getName());
 		holder.txtPrice.setText(df.format(source.get(position).getPrice()));
 
@@ -99,15 +101,15 @@ public class ArticleAdapter extends BaseAdapter {
 		}
 
 		if(position != (source.size()-1)){
-			holder.btUp.setOnClickListener(new MoveDownAdapter(position,
+			holder.btDown.setOnClickListener(new MoveDownAdapter(position,
 					moveDownListener));
 		}
 
-        holder.btDelete.setOnClickListener(new RemoveAdapter(position,
-                removeArticleListener));
-
 		holder.btEdit.setOnClickListener(new EditAdapter(position,
 				editArticleListener));
+
+        holder.btDelete.setOnClickListener(new RemoveAdapter(position,
+                removeArticleListener));
 
 		return convertView;
 	}

@@ -22,7 +22,6 @@ public class Article {
 	public double getPrice(){return price;}
 	public String getName(){return name;}
 	public boolean getEditable(){return editable;}
-	
 
 	public void setName(String n) {
 
@@ -35,7 +34,7 @@ public class Article {
 	
 	public void setColor(int c){
 		
-		color =c;
+		color = c;
 	}
 	
 	public void setEditable(boolean b){

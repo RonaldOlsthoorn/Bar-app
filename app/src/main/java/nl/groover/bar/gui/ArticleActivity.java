@@ -14,6 +14,7 @@ import android.database.Cursor;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Button;
 import android.widget.ListView;
 import android.support.v4.app.NavUtils;
@@ -22,7 +23,9 @@ import java.util.ArrayList;
 
 public class ArticleActivity extends Activity {
 
-	static final String ARTICLE_ID = "article_id";
+	public static final String ARTICLE_ID = "article_id";
+	public static final String N_ARTICLES = "article_number";
+
 	private static final String TAG = ArticleActivity.class.getSimpleName();
 	private DBHelper DB;
 	private ListView artikellijst;
@@ -31,7 +34,7 @@ public class ArticleActivity extends Activity {
 	private ArticleAdapter adapter;
 	private ArrayList<Article> listArticles;
 
-	private static final int REQUEST_CODE = 123;
+	private static final int REQUEST_CODE = 1;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -42,7 +45,7 @@ public class ArticleActivity extends Activity {
 
 		DB = DBHelper.getDBHelper(this);
 
-		artikellijst = (ListView) findViewById(R.articles.listview);
+		artikellijst = (ListView) findViewById(R.id.articles_activity_list);
 
 		setupAdapter();
 
@@ -116,6 +119,7 @@ public class ArticleActivity extends Activity {
 
 				Intent intent = new Intent(ArticleActivity.this, EditArticleActivity.class);
 				intent.putExtra(ArticleActivity.ARTICLE_ID, listArticles.get(pos).getId());
+				intent.putExtra(ArticleActivity.N_ARTICLES, listArticles.size());
 				startActivityForResult(intent, ArticleActivity.REQUEST_CODE);
 			}
 		};
@@ -195,5 +199,22 @@ public class ArticleActivity extends Activity {
 		}
 
 		return res;
+	}
+
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+		if (requestCode == REQUEST_CODE && resultCode == RESULT_OK) {
+
+			updateAdapter();
+		}
+	}
+
+	public void newArticle(View v){
+
+		Intent intent = new Intent(ArticleActivity.this, EditArticleActivity.class);
+		intent.putExtra(ArticleActivity.ARTICLE_ID, -1);
+		intent.putExtra(ArticleActivity.N_ARTICLES, listArticles.size());
+		startActivityForResult(intent, ArticleActivity.REQUEST_CODE);
 	}
 }

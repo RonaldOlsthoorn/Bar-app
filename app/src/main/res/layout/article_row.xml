@@ -2,15 +2,13 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:focusable="false"
-    android:focusableInTouchMode="false"
     android:gravity="right"
     android:orientation="horizontal" >
 
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_weight="1" >
 
@@ -18,13 +16,14 @@
             android:id="@+id/article_row_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
+            android:layout_margin="15dp"
             android:textAppearance="?android:attr/textAppearanceLarge" />
 
         <TextView
             android:id="@+id/article_row_price"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_margin="15dp"
             android:text="Prijs: €"
             android:textAppearance="?android:attr/textAppearanceMedium" />
 
@@ -34,32 +33,32 @@
         android:id="@+id/article_row_down"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_margin="10dp"
         android:layout_gravity="center"
-        android:focusable="false"
         android:background="@mipmap/ic_down" />
 
     <Button
         android:id="@+id/article_row_up"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_margin="10dp"
         android:layout_gravity="center"
-        android:focusable="false"
         android:background="@mipmap/ic_move_up" />
 
     <Button
         android:id="@+id/article_row_edit"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_margin="10dp"
         android:layout_gravity="center"
-        android:focusable="false"
         android:background="@mipmap/ic_edit" />
 
     <Button
         android:id="@+id/article_row_delete"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_margin="10dp"
         android:layout_gravity="center"
-        android:focusable="false"
         android:background="@mipmap/ic_delete" />
 
 </LinearLayout>
