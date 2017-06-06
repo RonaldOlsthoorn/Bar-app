@@ -284,7 +284,17 @@ public class LedenMainActivity extends FragmentActivity implements
 
 	public void verwijderLid(View view) {
 
-		DB.deleteOrIgnore(DBHelper.MemberTable.TABLE_NAME, current);
+		boolean res = DB.checkAlloweToRemoveMember(current);
+
+		if(!res){
+
+			BasicAlertDialogFragment dialog = new BasicAlertDialogFragment("Cannot remove. Still individual/group orders.");
+			dialog.show(getSupportFragmentManager(), "cannot remove");
+
+			return;
+		}
+
+		DB.deleteMember(current);
 
 		c.close();
 		c = DB.getMembers();
@@ -336,7 +346,7 @@ public class LedenMainActivity extends FragmentActivity implements
 
 			} else {
 				LoadData memberLoader = new LoadData();
-				memberLoader.doInBackground(new File(targetPath));
+				memberLoader.execute(new File(targetPath));
 				
 				c.close();
 				c = DB.getMembers();
@@ -367,12 +377,11 @@ public class LedenMainActivity extends FragmentActivity implements
 		}
 	}
 
-	public class LoadData extends AsyncTask<File, Void, Boolean> {
+	public class LoadData extends AsyncTask<File, Integer, Boolean> {
 		
 		ProgressDialog progressDialog;
 		MemberImporter importer;
 		OrderExporter exporter;
-
 
 		public LoadData() {
 			importer = new MemberImporter(LedenMainActivity.this);
@@ -382,7 +391,7 @@ public class LedenMainActivity extends FragmentActivity implements
 		@Override
 		protected void onPreExecute() {
 			progressDialog = ProgressDialog.show(LedenMainActivity.this,
-					"importing...", "Process Description Text", true);
+					"importing...", "Creating new member list.", true);
 		}
 
 		@Override
@@ -393,7 +402,6 @@ public class LedenMainActivity extends FragmentActivity implements
 
 		@Override
 		protected Boolean doInBackground(File... params) {
-
 			File f = params[0];
 			return importer.importMembers(f);
 		}
@@ -413,7 +421,6 @@ public class LedenMainActivity extends FragmentActivity implements
 	@Override
 	public void onDialogNegativeClick(DialogFragment dialog) {
 		// TODO Auto-generated method stub
-		
 	}
 
 }

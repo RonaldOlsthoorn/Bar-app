@@ -49,6 +49,7 @@ public class MemberImporter {
 	 */
 	public boolean importMembers() {
 
+		DB.deleteAllGroups();
 		DB.deleteAllMembers();
 		
 		boolean res = false;

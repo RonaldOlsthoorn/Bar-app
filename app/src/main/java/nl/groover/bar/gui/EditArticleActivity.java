@@ -56,7 +56,6 @@ public class EditArticleActivity extends Activity {
             article = DB.getArticle(id);
 
             etName.setText(article.getName());
-            String priceString = df.format(article.getPrice());
             etPrice.setText(df.format(article.getPrice()));
             btColor.setBackgroundColor(article.getColor());
         }else{
@@ -93,7 +92,6 @@ public class EditArticleActivity extends Activity {
             checks = false;
         } else {
             try {
-
                  prijs = df.parse(etPrice.getText().toString()).doubleValue();
                 etPrice.setError(null);
             } catch (ParseException e) {

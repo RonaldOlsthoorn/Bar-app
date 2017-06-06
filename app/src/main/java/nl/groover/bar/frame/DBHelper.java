@@ -9,6 +9,8 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.provider.BaseColumns;
 import android.util.Log;
 
+import java.lang.reflect.Member;
+
 /*
  * DBHelper is the applications connection to the database.
  * All the queries are stored as functions of this class.
@@ -746,6 +748,16 @@ public class DBHelper extends SQLiteOpenHelper {
 			return res;
 	}
 
+	public void deleteMember(int id){
+
+		SQLiteDatabase db = getWritableDatabase();
+		db.delete(MemberTable.TABLE_NAME, MemberTable.COLUMN_GR_ID+" =?",
+				new String[]{Integer.toString(id)});
+
+		db.delete(GroupMembers.TABLE_NAME, GroupMembers.COLUMN_MEMBER_ID+" =?",
+				new String[]{Integer.toString(id)});
+	}
+
 	/*
 	 * Deletes all members from the database
 	 */
@@ -753,6 +765,86 @@ public class DBHelper extends SQLiteOpenHelper {
 
 		SQLiteDatabase db = getWritableDatabase();
 		db.delete(MemberTable.TABLE_NAME, null, null);
+	}
+
+	public boolean checkAlloweToRemoveMember(int id){
+
+		SQLiteDatabase db = getReadableDatabase();
+		Cursor c = db.query(MemberTable.TABLE_NAME,
+				new String[]{MemberTable.COLUMN_GR_ID, MemberTable.COLUMN_BALANCE},
+				MemberTable.COLUMN_GR_ID+"=?", new String[]{Integer.toString(id)},
+				null,null,null);
+
+		c.moveToFirst();
+
+		if(c.getDouble(1) != 0){
+			c.close();
+			return false;
+		}
+		c.close();
+
+
+		String innerQ1 = "SELECT "
+				+ GroupTable.COLUMN_GR_ID
+				+ "," + GroupTable.COLUMN_BALANCE
+				+ " FROM "
+				+ GroupTable.TABLE_NAME + "," + GroupMembers.TABLE_NAME
+				+ " WHERE "
+				+ GroupTable.TABLE_NAME + "." + GroupTable.COLUMN_GR_ID
+				+ " = " + GroupMembers.TABLE_NAME + "." + GroupMembers.COLUMN_GR_ID
+				+ " AND " + GroupMembers.TABLE_NAME + "." + GroupMembers.COLUMN_MEMBER_ID + " =?"
+				;
+
+		String countM = "count_m";
+
+		String innerQ2 = "SELECT "
+				+ GroupMembers.COLUMN_GR_ID
+				+ ","
+				+ " COUNT() AS " + countM
+				+ " FROM "
+				+ GroupMembers.TABLE_NAME
+				+ " GROUP BY "
+				+ GroupMembers.COLUMN_GR_ID;
+
+
+		String t1 = "t1";
+		String t2 = "t2";
+
+		String query = "SELECT "
+				+ t1+"."+GroupTable.COLUMN_GR_ID+","
+				+ t1+"."+GroupTable.COLUMN_BALANCE+","
+				+ t2+"."+countM
+				+ " FROM "
+				+ "(" +innerQ1+")" + " AS "+ t1
+				+ " , "
+				+ "(" +innerQ2+")" + " AS "+ t2
+				+ " WHERE "
+				+ t1+"."+GroupTable.COLUMN_GR_ID
+				+ " = " + t2+"."+GroupMembers.COLUMN_GR_ID;
+
+		c = db.rawQuery(query, new String[]{Integer.toString(id)});
+
+		c.moveToFirst();
+
+		while(c.getPosition() < c.getCount()){
+
+			if(c.getDouble(1) != 0 || c.getInt(2)<2){
+				c.close();
+				return false;
+			}
+
+			c.moveToNext();
+		}
+
+		c.close();
+		return true;
+	}
+
+	public void deleteAllGroups(){
+
+		SQLiteDatabase db = getWritableDatabase();
+		db.delete(GroupTable.TABLE_NAME, null, null);
+		db.delete(GroupMembers.TABLE_NAME, null, null);
 	}
 
 	/*
