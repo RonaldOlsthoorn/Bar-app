@@ -54,7 +54,8 @@ public class EditGroupListAdapter extends CursorAdapter {
         double balance = cursor.getDouble(3);
         balanceTextField.setText(df.format(balance));
 
-        if(balance==0) {
+        // sometimes a round-off error may result in non-null balances. Use threshold instead.
+        if(balance < 0.001 && balance > -0.001) {
 
             Button editButton = (Button) view.findViewById(R.id.group_list_row_edit);
             editButton.setOnClickListener(

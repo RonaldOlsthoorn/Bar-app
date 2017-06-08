@@ -135,4 +135,11 @@ public class EditArticleActivity extends Activity {
             finish();
         }
     }
+
+    public void cancel(View v){
+
+        Intent intent = new Intent(this, ArticleActivity.class);
+        setResult(Activity.RESULT_CANCELED, intent);
+        finish();
+    }
 }
