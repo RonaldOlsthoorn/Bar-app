@@ -20,7 +20,7 @@
             android:orientation="horizontal" >
 
             <TextView
-                android:id="@+orderOverViewRow/name"
+                android:id="@+id/orderOverViewRow_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="5dp"
@@ -46,7 +46,7 @@
                 android:textAppearance="?android:attr/textAppearanceLarge" />
 
             <TextView
-                android:id="@+orderOverViewRow/subtotal"
+                android:id="@+id/orderOverViewRow_subtotal"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="5dp"
@@ -61,7 +61,7 @@
             android:layout_height="wrap_content" >
 
             <TextView
-                android:id="@+orderOverViewRow/date"
+                android:id="@+id/orderOverViewRow_date"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="5dp"
@@ -73,7 +73,7 @@
     </LinearLayout>
 
     <Button
-        android:id="@+orderOverViewRow/edit"
+        android:id="@+id/orderOverViewRow_edit"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="5dp"
@@ -82,7 +82,7 @@
         android:textSize="30sp" />
 
     <Button
-        android:id="@+orderOverViewRow/delete"
+        android:id="@+id/orderOverViewRow_delete"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="5dp"

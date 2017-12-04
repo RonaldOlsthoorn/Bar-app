@@ -64,21 +64,21 @@ public class BackupActivity extends Activity {
 		backupSP = getSharedPreferences(PrefConstants.BACKUP_PREFS,
 				Context.MODE_PRIVATE);
 
-		mBackupsEnabled = (ToggleButton) findViewById(R.backup.toggle);
-		mTimePicker = (TimePicker) findViewById(R.backup.timePicker);
-		mBackupType = (RadioGroup) findViewById(R.backup.backuptype);
-		mUrl = (EditText) findViewById(R.backup.ftpUrl);
+		mBackupsEnabled = (ToggleButton) findViewById(R.id.backup_toggle);
+		mTimePicker = (TimePicker) findViewById(R.id.backup_timePicker);
+		mBackupType = (RadioGroup) findViewById(R.id.backup_backuptype);
+		mUrl = (EditText) findViewById(R.id.backup_ftpUrl);
 		mUrl.setText(backupSP.getString(PrefConstants.BACKUP_PREFS_FTP_URL,
 				"ftp.grooverjazz.nl"));
 
-		mUname = (EditText) findViewById(R.backup.username);
+		mUname = (EditText) findViewById(R.id.backup_username);
 		mUname.setText(backupSP.getString(PrefConstants.BACKUP_PREFS_UNAME, ""));
 
-		mPassword = (EditText) findViewById(R.backup.password);
+		mPassword = (EditText) findViewById(R.id.backup_password);
 		mPassword.setText(backupSP.getString(
 				PrefConstants.BACKUP_PREFS_PASSWORD, ""));
 
-		mTestconnection = (Button) findViewById(R.backup.testconnection);
+		mTestconnection = (Button) findViewById(R.id.backup_testconnection);
 
 		mBackupsEnabled
 				.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -108,10 +108,10 @@ public class BackupActivity extends Activity {
 		if (backupSP.getString(PrefConstants.BACKUP_TYPE,
 				PrefConstants.BACKUP_TYPE_LOCAL).equals(
 				PrefConstants.BACKUP_TYPE_LOCAL)) {
-			mBackupType.check(R.backup.radioLocal);
+			mBackupType.check(R.id.backup_radioLocal);
 			setInternetSettingsEnabled(false);
 		} else {
-			mBackupType.check(R.backup.radioInternet);
+			mBackupType.check(R.id.backup_radioInternet);
 			setInternetSettingsEnabled(true);
 		}
 
@@ -147,7 +147,7 @@ public class BackupActivity extends Activity {
 
 	public void onTestConnection(View view) {
 
-		if (mBackupType.getCheckedRadioButtonId() == R.backup.radioLocal) {
+		if (mBackupType.getCheckedRadioButtonId() == R.id.backup_radioLocal) {
 			TestLocalBackupTask task = new TestLocalBackupTask();
 			task.execute();
 
@@ -169,7 +169,7 @@ public class BackupActivity extends Activity {
 						.getCurrentMinute() * 60) * 1000);
 
 		String type;
-		if (mBackupType.getCheckedRadioButtonId() == R.backup.radioLocal) {
+		if (mBackupType.getCheckedRadioButtonId() == R.id.backup_radioLocal) {
 			type = PrefConstants.BACKUP_TYPE_LOCAL;
 		} else {
 			type = PrefConstants.BACKUP_TYPE_INTERNET;

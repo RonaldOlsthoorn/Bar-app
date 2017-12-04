@@ -11,20 +11,20 @@
     tools:context="nl.groover.bar.gui.ColorPickerActivity" >
 
     <nl.groover.bar.color.ColorPicker
-        android:id="@+colorpicker/picker"
+        android:id="@+id/colorpicker_picker"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center" />
 
     <nl.groover.bar.color.SVBar
-        android:id="@+colorpicker/svbar"
+        android:id="@+id/colorpicker_svbar"
         android:layout_width="322dp"
         android:layout_height="112dp"
         android:layout_gravity="center"
         android:layout_margin="8dip" />
 
     <nl.groover.bar.color.OpacityBar
-        android:id="@+colorpicker/opacitybar"
+        android:id="@+id/colorpicker_opacitybar"
         android:layout_width="322dp"
         android:layout_height="112dp"
         android:layout_gravity="center"
@@ -36,7 +36,7 @@
         android:weightSum="2" >
 
         <Button
-            android:id="@+colorpicker/button1"
+            android:id="@+id/colorpicker_button1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"

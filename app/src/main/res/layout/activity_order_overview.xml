@@ -10,7 +10,7 @@
     tools:context="nl.groover.bar.gui.OrcerOverviewActivity" >
 
     <ListView
-        android:id="@+orderOverview/list"
+        android:id="@+id/orderOverview_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_alignParentLeft="true"

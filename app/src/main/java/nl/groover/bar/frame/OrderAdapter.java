@@ -86,15 +86,15 @@ public class OrderAdapter extends BaseAdapter {
 
 		holder = new ViewHolder();
 		holder.txtName = (TextView) convertView
-				.findViewById(R.orderRow.article);
-		holder.txtPrice = (TextView) convertView.findViewById(R.orderRow.price);
-		holder.txtSub = (TextView) convertView.findViewById(R.orderRow.sub);
-		holder.btCancel = (Button) convertView.findViewById(R.orderRow.cancel);
-		holder.btAdd = (Button) convertView.findViewById(R.orderRow.addition);
+				.findViewById(R.id.orderRow_article);
+		holder.txtPrice = (TextView) convertView.findViewById(R.id.orderRow_price);
+		holder.txtSub = (TextView) convertView.findViewById(R.id.orderRow_sub);
+		holder.btCancel = (Button) convertView.findViewById(R.id.orderRow_cancel);
+		holder.btAdd = (Button) convertView.findViewById(R.id.orderRow_addition);
 		holder.btSubstr = (Button) convertView
-				.findViewById(R.orderRow.substract);
+				.findViewById(R.id.orderRow_substract);
 		holder.txtAmount = (EditText) convertView
-				.findViewById(R.orderRow.amount);
+				.findViewById(R.id.orderRow_amount);
 
 		holder.txtAmount.addTextChangedListener(new TextAdapter(position,
 				holder.txtSub, notice));

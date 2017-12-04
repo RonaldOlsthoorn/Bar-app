@@ -81,11 +81,11 @@ public class OrderListAdapter extends BaseAdapter{
 	    if (convertView == null) {
 	    	convertView = mInflater.inflate(layout, null);
 	    	holder = new ViewHolder();
-	    	holder.txtName = (TextView) convertView.findViewById(R.orderOverViewRow.name);
-	    	holder.txtTotal = (TextView) convertView.findViewById(R.orderOverViewRow.subtotal);
-	    	holder.txtDate = (TextView) convertView.findViewById(R.orderOverViewRow.date);
-	    	holder.btDelete = (Button) convertView.findViewById(R.orderOverViewRow.delete);
-	    	holder.btEdit = (Button) convertView.findViewById(R.orderOverViewRow.edit);
+	    	holder.txtName = (TextView) convertView.findViewById(R.id.orderOverViewRow_name);
+	    	holder.txtTotal = (TextView) convertView.findViewById(R.id.orderOverViewRow_subtotal);
+	    	holder.txtDate = (TextView) convertView.findViewById(R.id.orderOverViewRow_date);
+	    	holder.btDelete = (Button) convertView.findViewById(R.id.orderOverViewRow_delete);
+	    	holder.btEdit = (Button) convertView.findViewById(R.id.orderOverViewRow_edit);
 		    convertView.setTag(holder);
 	    }
 	    else{

@@ -32,9 +32,9 @@ public class ColorPickerActivity extends Activity implements OnColorChangedListe
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_color_picker);
 		
-		picker = (ColorPicker) findViewById(R.colorpicker.picker);
-		svBar = (SVBar) findViewById(R.colorpicker.svbar);
-		opacityBar = (OpacityBar) findViewById(R.colorpicker.opacitybar);
+		picker = (ColorPicker) findViewById(R.id.colorpicker_picker);
+		svBar = (SVBar) findViewById(R.id.colorpicker_svbar);
+		opacityBar = (OpacityBar) findViewById(R.id.colorpicker_opacitybar);
 		
 		picker.addSVBar(svBar);
 		picker.addOpacityBar(opacityBar);

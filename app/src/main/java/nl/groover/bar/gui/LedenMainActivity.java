@@ -64,15 +64,15 @@ public class LedenMainActivity extends FragmentActivity implements
 
 		DB = DBHelper.getDBHelper(this);
 
-		ledenlijst = (ListView) findViewById(R.leden.listview);
-		editPane = findViewById(R.leden.editPane);
+		ledenlijst = (ListView) findViewById(R.id.leden_listview);
+		editPane = findViewById(R.id.leden_editPane);
 
-		voegtoe = (Button) findViewById(R.leden.voegtoe_button);
+		voegtoe = (Button) findViewById(R.id.leden_voegtoe_button);
 
-		vtVoornaam = (EditText) findViewById(R.leden.voegtoe_voornaam);
-		vtTussenvoegsel = (EditText) findViewById(R.leden.voegtoe_tussenvoegsel);
-		vtAchternaam = (EditText) findViewById(R.leden.voegtoe_achternaam);
-		vtId = (EditText) findViewById(R.leden.id);
+		vtVoornaam = (EditText) findViewById(R.id.leden_voegtoe_voornaam);
+		vtTussenvoegsel = (EditText) findViewById(R.id.leden_voegtoe_tussenvoegsel);
+		vtAchternaam = (EditText) findViewById(R.id.leden_voegtoe_achternaam);
+		vtId = (EditText) findViewById(R.id.leden_id);
 
 		c = DB.getMembers();
 

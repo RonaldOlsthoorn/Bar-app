@@ -7,7 +7,7 @@
     tools:context="nl.groover.bar.gui.GroupActivity">
 
     <TextView
-        android:id="@+group_activity/text_view"
+        android:id="@+id/group_activity_text_view"
         android:layout_width="0dp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
@@ -19,13 +19,13 @@
         tools:layout_editor_absoluteX="8dp" />
 
     <ListView
-        android:id="@+group_activity/group_list"
+        android:id="@+id/group_activity_group_list"
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+group_activity/text_view" />
+        app:layout_constraintTop_toBottomOf="@+id/group_activity_text_view" />
 
 
     <ImageButton

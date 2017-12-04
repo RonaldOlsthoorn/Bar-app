@@ -12,7 +12,7 @@
             android:layout_weight="1" >
 
             <TextView
-                android:id="@+ledenlijstrow/name"
+                android:id="@+id/ledenlijstrow_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginRight="5dp"
@@ -34,7 +34,7 @@
             android:textSize="30sp" />
 
         <TextView
-            android:id="@+ledenlijstrow/account"
+            android:id="@+id/ledenlijstrow_account"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="0"

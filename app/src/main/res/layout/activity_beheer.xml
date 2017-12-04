@@ -15,7 +15,7 @@
         android:orientation="vertical" >
 
         <Button
-            android:id="@+beheer/leden"
+            android:id="@+id/beheer_leden"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="5dp"
@@ -25,7 +25,7 @@
             android:textSize="30sp" />
 
         <Button
-            android:id="@+beheer/groepen"
+            android:id="@+id/beheer_groepen"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="5dp"
@@ -35,7 +35,7 @@
             android:textSize="30sp" />
 
         <Button
-            android:id="@+beheer/Artikelen"
+            android:id="@+id/beheer_Artikelen"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="5dp"
@@ -45,7 +45,7 @@
             android:textSize="30sp" />
 
         <Button
-            android:id="@+beheer/Penning"
+            android:id="@+id/beheer_Penning"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="5dp"
@@ -64,7 +64,7 @@
             android:textSize="30sp" />
 
         <Button
-            android:id="@+beheer/credentials"
+            android:id="@+id/beheer_credentials"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="5dp"
