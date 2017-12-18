@@ -20,7 +20,7 @@
         android:textSize="30sp" />
 
     <ToggleButton
-        android:id="@+backup/toggle"
+        android:id="@+id/backup_toggle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
@@ -32,14 +32,14 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
-        android:layout_alignTop="@+backup/timePicker"
+        android:layout_alignTop="@+id/backup_timePicker"
         android:layout_margin="10dp"
         android:text="backup interval:  "
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:textSize="30sp" />
 
     <TimePicker
-        android:id="@+backup/timePicker"
+        android:id="@+id/backup_timePicker"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/textView1"
@@ -51,7 +51,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
-        android:layout_below="@+backup/timePicker"
+        android:layout_below="@+id/backup_timePicker"
         android:layout_margin="10dp"
         android:text="backup type: "
         android:textAppearance="?android:attr/textAppearanceLarge"
@@ -62,7 +62,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
-        android:layout_below="@+backup/timePicker"
+        android:layout_below="@+id/backup_timePicker"
         android:layout_marginBottom="10dp"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
@@ -72,7 +72,7 @@
         android:textSize="30sp" />
 
     <EditText
-        android:id="@+backup/ftpUrl"
+        android:id="@+id/backup_ftpUrl"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignBaseline="@+id/TextView01"
@@ -93,7 +93,7 @@
         android:textSize="30sp" />
 
     <EditText
-        android:id="@+backup/password"
+        android:id="@+id/backup_password"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignBaseline="@+id/TextView03"
@@ -114,7 +114,7 @@
         android:textSize="30sp" />
 
     <EditText
-        android:id="@+backup/username"
+        android:id="@+id/backup_username"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignBaseline="@+id/TextView02"
@@ -123,14 +123,14 @@
         android:ems="10" />
 
     <RadioGroup
-        android:id="@+backup/backuptype"
+        android:id="@+id/backup_backuptype"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+backup/timePicker"
+        android:layout_alignLeft="@+id/backup_timePicker"
         android:layout_alignTop="@+id/TextView05" >
 
         <RadioButton
-            android:id="@+backup/radioLocal"
+            android:id="@+id/backup_radioLocal"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="10dp"
@@ -140,7 +140,7 @@
             android:textAppearance="?android:attr/textAppearanceLarge" />
 
         <RadioButton
-            android:id="@+backup/radioInternet"
+            android:id="@+id/backup_radioInternet"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:onClick="onRadioButton"
@@ -149,13 +149,13 @@
     </RadioGroup>
 
     <Button
-        android:id="@+backup/testconnection"
+        android:id="@+id/backup_testconnection"
         android:textSize="30sp"
         android:padding="20dp"
         android:onClick="onTestConnection"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignRight="@+backup/password"
+        android:layout_alignRight="@+id/backup_password"
         android:layout_below="@+id/TextView03"
         android:text="Backup now!" />
 

@@ -44,7 +44,7 @@ public class GroupActivity extends Activity {
         cursor = DB.getAllGroups();
         adapter = new EditGroupListAdapter(this, cursor, EditGroupListAdapter.FLAG_REGISTER_CONTENT_OBSERVER, editListener);
 
-        ListView groupList = (ListView) findViewById(R.group_activity.group_list);
+        ListView groupList = (ListView) findViewById(R.id.group_activity_group_list);
         groupList.setAdapter(adapter);
     }
 

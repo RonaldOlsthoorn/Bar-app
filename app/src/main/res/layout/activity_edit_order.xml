@@ -39,7 +39,7 @@
                     android:textAppearance="?android:attr/textAppearanceLarge" />
 
                 <TextView
-                    android:id="@+editOrder/custName"
+                    android:id="@+id/editOrder_custName"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="10dp"
@@ -58,7 +58,7 @@
                 android:textAppearance="?android:attr/textAppearanceLarge" />
 
             <ListView
-                android:id="@+editOrder/orderList"
+                android:id="@+id/editOrder_orderList"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="5dp"
@@ -81,7 +81,7 @@
                 android:textAppearance="?android:attr/textAppearanceLarge" />
 
             <TextView
-                android:id="@+editOrder/total"
+                android:id="@+id/editOrder_total"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="right"

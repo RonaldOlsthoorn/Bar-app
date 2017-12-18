@@ -35,7 +35,7 @@
                 android:textSize="40sp" />
 
             <TextView
-                android:id="@+order/custName"
+                android:id="@+id/order_custName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="10dp"
@@ -69,7 +69,7 @@
     <view class="nl.groover.bar.frame.CustomListview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+order/orderList"
+        android:id="@+id/order_orderList"
         android:orientation="vertical"
          />
     
@@ -109,7 +109,7 @@
                 android:textSize="40sp" />
 
             <TextView
-                android:id="@+order/total"
+                android:id="@+id/order_total"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="right"

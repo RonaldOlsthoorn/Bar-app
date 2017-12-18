@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+orderRow/lin_layout"
+    android:id="@+id/orderRow_lin_layout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginBottom="5dp"
@@ -19,7 +19,7 @@
         android:orientation="vertical" >
 
         <TextView
-            android:id="@+orderRow/article"
+            android:id="@+id/orderRow_article"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -29,7 +29,7 @@
             android:textSize="30sp" />
 
         <TextView
-            android:id="@+orderRow/price"
+            android:id="@+id/orderRow_price"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -40,7 +40,7 @@
     </LinearLayout>
 
     <EditText
-        android:id="@+orderRow/amount"
+        android:id="@+id/orderRow_amount"
         android:layout_width="100dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
@@ -50,7 +50,7 @@
         android:textSize="30sp" />
 
     <Button
-        android:id="@+orderRow/addition"
+        android:id="@+id/orderRow_addition"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
@@ -70,7 +70,7 @@
         android:textSize="30sp" />
 
     <TextView
-        android:id="@+orderRow/sub"
+        android:id="@+id/orderRow_sub"
         android:layout_width="100dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
@@ -80,7 +80,7 @@
     
     <Button
         android:padding="20dp"
-        android:id="@+orderRow/substract"
+        android:id="@+id/orderRow_substract"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
@@ -90,7 +90,7 @@
 
     <Button
         android:padding="20dp"
-        android:id="@+orderRow/cancel"
+        android:id="@+id/orderRow_cancel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="15dp"

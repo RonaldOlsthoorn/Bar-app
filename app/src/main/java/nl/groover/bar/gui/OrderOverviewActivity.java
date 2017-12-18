@@ -56,7 +56,7 @@ public class OrderOverviewActivity extends Activity implements
 
 		adapter = new OrderListAdapter(this, c, this);
 
-		list = (ListView) findViewById(R.orderOverview.list);
+		list = (ListView) findViewById(R.id.orderOverview_list);
 		list.setAdapter(adapter);
 	}
 
