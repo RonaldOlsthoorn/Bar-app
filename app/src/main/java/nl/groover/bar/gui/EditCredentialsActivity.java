@@ -44,12 +44,12 @@ public class EditCredentialsActivity extends Activity {
 		// Show the Up button in the action bar.
 		setupActionBar();
 
-		oldU = (TextView) findViewById(R.editCredentials.oldU);
-		oldP = (TextView) findViewById(R.editCredentials.oldP);
-		newU = (TextView) findViewById(R.editCredentials.newU);
-		newP = (TextView) findViewById(R.editCredentials.newP);
-		newPRepeat = (TextView) findViewById(R.editCredentials.newPRepeat);
-		save = (Button) findViewById(R.editCredentials.save);
+		oldU = (TextView) findViewById(R.id.editCredentials_oldU);
+		oldP = (TextView) findViewById(R.id.editCredentials_oldP);
+		newU = (TextView) findViewById(R.id.editCredentials_newU);
+		newP = (TextView) findViewById(R.id.editCredentials_newP);
+		newPRepeat = (TextView) findViewById(R.id.editCredentials_newPRepeat);
+		save = (Button) findViewById(R.id.editCredentials_save);
 		
 		db = DBHelper.getDBHelper(this);
 

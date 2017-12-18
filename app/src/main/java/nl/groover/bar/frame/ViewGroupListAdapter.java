@@ -34,10 +34,10 @@ public class ViewGroupListAdapter extends CursorAdapter {
 	@Override
 	public void bindView(View view, Context context, Cursor cursor) {
 
-		TextView textViewAccount = (TextView) view.findViewById(R.ledenlijstrow.account);
+		TextView textViewAccount = (TextView) view.findViewById(R.id.ledenlijstrow_account);
 		textViewAccount.setText(df.format(cursor.getDouble(3)));
 
-		TextView textViewName = (TextView) view.findViewById(R.ledenlijstrow.name);
+		TextView textViewName = (TextView) view.findViewById(R.id.ledenlijstrow_name);
 		textViewName.setText(cursor.getString(1));
 	}
 }

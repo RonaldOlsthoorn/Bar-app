@@ -47,12 +47,12 @@ public class OrderActivity extends Activity implements
 		// Show the Up button in the action bar.
 		setupActionBar();
 
-		totaal_output = (TextView) findViewById(R.order.total);
+		totaal_output = (TextView) findViewById(R.id.order_total);
 
 		customer = new Customer(getIntent().getIntExtra("account", -1),
 				getIntent().getStringExtra("name"));
 
-		customerName = (TextView) findViewById(R.order.custName);
+		customerName = (TextView) findViewById(R.id.order_custName);
 		customerName.setText(customer.getName());
 
 		DB = DBHelper.getDBHelper(this);
@@ -60,7 +60,7 @@ public class OrderActivity extends Activity implements
 		c_Articles = DB.getArticles();
 		c_Order = OrderFactory.createEmptyOrder(customer, c_Articles);
 
-		l_order = (CustomListview) findViewById(R.order.orderList);
+		l_order = (CustomListview) findViewById(R.id.order_orderList);
 
 		a_order = new OrderAdapter(this, R.layout.order_row, c_Order, this);
 

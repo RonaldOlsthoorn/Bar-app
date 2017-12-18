@@ -38,7 +38,7 @@ public class NameCursorAdapter extends CursorAdapter {
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
 
-        TextView nameTextField = (TextView) view.findViewById(R.ledenlijstrow2.naam);
+        TextView nameTextField = (TextView) view.findViewById(R.id.ledenlijstrow2_naam);
 
         String firstName = cursor.getString(1);
         String prefix = cursor.getString(2);

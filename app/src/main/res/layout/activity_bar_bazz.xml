@@ -14,7 +14,7 @@
         android:orientation="vertical" >
 
         <Button
-            android:id="@+BarBazz/Turven"
+            android:id="@+id/BarBazz_Turven"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
@@ -25,7 +25,7 @@
             android:textSize="35sp" />
 
         <Button
-            android:id="@+BarBazz/turfLijst"
+            android:id="@+id/BarBazz_turfLijst"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="25dp"

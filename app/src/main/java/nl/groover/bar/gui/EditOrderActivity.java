@@ -47,12 +47,12 @@ public class EditOrderActivity extends Activity implements OnItemClickListener,
 		// Show the Up button in the action bar.
 		setupActionBar();
 
-		totaal_output = (TextView) findViewById(R.editOrder.total);
+		totaal_output = (TextView) findViewById(R.id.editOrder_total);
 
 		customer = new Customer(getIntent().getIntExtra("account", -1),
 				getIntent().getStringExtra("name"));
 
-		customerName = (TextView) findViewById(R.editOrder.custName);
+		customerName = (TextView) findViewById(R.id.editOrder_custName);
 		customerName.setText(customer.getName());
 
 		DB = DBHelper.getDBHelper(this);
@@ -63,7 +63,7 @@ public class EditOrderActivity extends Activity implements OnItemClickListener,
 		c_Order = OrderFactory.createExistingOrder(customer, c_Articles,
 				DB.getConsumptionOrder(orderId));
 		updateTotal();
-		l_order = (ListView) findViewById(R.editOrder.orderList);
+		l_order = (ListView) findViewById(R.id.editOrder_orderList);
 
 		a_order = new OrderAdapter(this, R.layout.order_row, c_Order, this);
 
